@@ -1,4 +1,4 @@
-import type { PipelineStage } from "./settings-state";
+import { pipelineStages, type PipelineStage } from "./settings-state";
 
 export interface SystemSpecs {
   os: string;
@@ -62,6 +62,32 @@ export interface ModelRecommendation {
   compatiblePacks: ModelPack[];
   incompatiblePacks: IncompatibleModelPack[];
   reasons: string[];
+  warnings: string[];
+}
+
+export interface ModelDownloadPlanEntry {
+  modelId: string;
+  stage: PipelineStage;
+  name: string;
+  runtime: ModelCatalogEntry["runtime"];
+  estimatedSizeGB: number;
+  action: "future-download" | "external-tool" | "manual-install" | "skip";
+  status: "waiting-confirmation" | "not-supported-yet" | "installed" | "ready";
+  risks: string[];
+  warnings: string[];
+}
+
+export interface ModelDownloadPlan {
+  selectedPack: ModelPack["id"];
+  entries: ModelDownloadPlanEntry[];
+  summary: {
+    entryCount: number;
+    totalEstimatedDownloadGB: number;
+    totalEstimatedDiskAfterInstallGB: number;
+    unsupportedCount: number;
+    riskyEntryCount: number;
+    stages: PipelineStage[];
+  };
   warnings: string[];
 }
 
@@ -242,6 +268,52 @@ export function recommendModelPack(specs: SystemSpecs): ModelRecommendation {
   };
 }
 
+export function createModelDownloadPlan(
+  specs: SystemSpecs,
+  selectedPack: ModelPack["id"] | "auto"
+): ModelDownloadPlan {
+  const packs = listModelPacks();
+  const recommendation = recommendModelPack(specs);
+  const pack =
+    selectedPack === "auto"
+      ? recommendation.recommendedPack
+      : (packs.find((candidate) => candidate.id === selectedPack) ??
+        recommendation.recommendedPack);
+  const catalog = listModelCatalog();
+  const entries = catalog
+    .filter((model) => pack.modelIds.includes(model.id))
+    .map((model) => createPlanEntry(model, specs));
+  const warnings = [
+    "Downloads are disabled in this phase.",
+    "Use the plan to understand resource requirements before future install commands.",
+    ...pack.warnings,
+    ...(typeof specs.vramGB === "number"
+      ? []
+      : ["VRAM was not detected; local media models may need mock/API fallback."])
+  ];
+
+  return {
+    selectedPack: pack.id,
+    entries,
+    summary: {
+      entryCount: entries.length,
+      totalEstimatedDownloadGB: roundGB(
+        entries.reduce((total, entry) => total + entry.estimatedSizeGB, 0)
+      ),
+      totalEstimatedDiskAfterInstallGB: roundGB(
+        entries.reduce((total, entry) => total + entry.estimatedSizeGB * 1.2, 0)
+      ),
+      unsupportedCount: entries.filter((entry) => entry.status === "not-supported-yet")
+        .length,
+      riskyEntryCount: entries.filter((entry) => entry.risks.length > 0).length,
+      stages: pipelineStages.filter((stage) =>
+        entries.some((entry) => entry.stage === stage)
+      )
+    },
+    warnings
+  };
+}
+
 export function isPackCompatible(specs: SystemSpecs, pack: ModelPack): boolean {
   return getIncompatibilityReasons(specs, pack).length === 0;
 }
@@ -314,4 +386,42 @@ function chooseRecommendedPack(
   }
 
   return nonCustom.find((pack) => pack.id === "lite");
+}
+
+function createPlanEntry(
+  model: ModelCatalogEntry,
+  specs: SystemSpecs
+): ModelDownloadPlanEntry {
+  const risks = [
+    ...(model.sizeGB >= 32 ? ["large-download"] : []),
+    ...(model.stage === "image" || model.stage === "video" ? ["high-vram"] : []),
+    ...(model.runtime === "comfyui" ? ["experimental"] : []),
+    ...(model.runtime === "ffmpeg" ? [] : ["license-review"]),
+    ...(specs.arch && !["x64", "arm64"].includes(specs.arch)
+      ? ["unsupported-platform"]
+      : [])
+  ];
+
+  return {
+    modelId: model.id,
+    stage: model.stage,
+    name: model.name,
+    runtime: model.runtime,
+    estimatedSizeGB: model.sizeGB,
+    action: model.runtime === "ffmpeg" ? "external-tool" : "future-download",
+    status: risks.includes("unsupported-platform")
+      ? "not-supported-yet"
+      : model.status === "ready" || model.status === "installed"
+        ? model.status
+        : "waiting-confirmation",
+    risks,
+    warnings: [
+      ...model.notes,
+      "No model download or model execution is performed in this phase."
+    ]
+  };
+}
+
+function roundGB(value: number): number {
+  return Math.round(value * 10) / 10;
 }

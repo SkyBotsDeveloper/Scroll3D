@@ -133,6 +133,21 @@ export function PromptWorkflowPanel({
         </ul>
       </AlertBox>
 
+      {settings.mode === "local" || settings.mode === "hybrid" ? (
+        <AlertBox title="Local execution preview" tone="info">
+          <p>
+            Local or hybrid execution will require installed and ready models before
+            real runs. This phase uses mock fallback only; no local models are loaded or
+            executed.
+          </p>
+          <ul className="messageList">
+            <li>Future flow: load required model, run stage, unload, then continue.</li>
+            <li>Plan requirements with pnpm runtime:plan-downloads.</li>
+            <li>Check runtime guidance with pnpm runtime:handshake.</li>
+          </ul>
+        </AlertBox>
+      ) : null}
+
       <button
         type="button"
         className="primaryButton primaryCta"

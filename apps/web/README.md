@@ -58,6 +58,11 @@ The app is organized as a polished local dashboard:
   are disabled in developer preview.
 - Local runtime controls are placeholders for future runtime connection and
   model manager work.
+- Settings includes a Model Manager view that estimates required models,
+  download size, disk needs, warning/risk badges, and command hints without
+  downloading anything.
+- The Local Runtime section shows an offline handshake summary, runtime URL,
+  config path, and one-model-at-a-time execution guarantee.
 - Local runtime status distinguishes missing config, missing runtime, model
   not-installed, configured, connected, unavailable, and mock fallback states.
 - The system scan panel uses browser-safe information only; run
@@ -66,3 +71,17 @@ The app is organized as a polished local dashboard:
 - The `Prompt` tab runs mock providers only and does not make network calls.
 - Prompt runs show provider decision summaries for each stage before applying
   deterministic mock project updates.
+
+## Local Runtime Planning Commands
+
+From the repository root:
+
+```bash
+corepack pnpm setup:local
+corepack pnpm runtime:plan-downloads
+corepack pnpm runtime:handshake
+```
+
+These commands create or inspect ignored `.scroll3d/` planning files. They do
+not download models, run local inference, make paid API calls, or contact a
+runtime server in this phase.

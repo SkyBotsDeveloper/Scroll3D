@@ -460,6 +460,14 @@ h1 {
   gap: 6px;
 }
 
+.inlineCluster,
+.riskBadgeList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
 .readonlyGrid strong {
   font-size: 0.9rem;
   overflow-wrap: anywhere;
@@ -683,6 +691,8 @@ h1 {
 .providerBadge.completed,
 .providerBadge.configured,
 .providerBadge.connected,
+.providerBadge.installed,
+.providerBadge.ready,
 .statusPill.ok {
   border-color: rgba(75, 227, 176, 0.5);
   background: rgba(75, 227, 176, 0.12);
@@ -691,6 +701,8 @@ h1 {
 
 .providerBadge.mock,
 .providerBadge.running,
+.providerBadge.warning,
+.providerBadge.waiting-confirmation,
 .statusPill.warning {
   border-color: rgba(255, 181, 77, 0.48);
   background: rgba(255, 181, 77, 0.12);
@@ -703,6 +715,8 @@ h1 {
 .providerBadge.missing-secret,
 .providerBadge.missing-runtime,
 .providerBadge.model-not-installed,
+.providerBadge.not-supported-yet,
+.providerBadge.not-configured,
 .statusPill.error {
   border-color: rgba(255, 107, 122, 0.54);
   background: rgba(255, 107, 122, 0.12);

@@ -21,6 +21,34 @@ export type LocalRuntimeConnectionStatus =
   | "unavailable"
   | "missing-config";
 export type LocalModelPackSelection = "lite" | "balanced" | "pro" | "custom";
+export type ModelDownloadStatus =
+  | "planned"
+  | "waiting-confirmation"
+  | "skipped"
+  | "not-supported-yet"
+  | "downloaded"
+  | "installed"
+  | "failed";
+export type ModelDownloadAction =
+  | "manual-install"
+  | "future-download"
+  | "package-manager"
+  | "external-tool"
+  | "skip";
+export type ModelDownloadRisk =
+  | "large-download"
+  | "high-vram"
+  | "license-review"
+  | "experimental"
+  | "unsupported-platform"
+  | "disk-space-warning";
+export type RuntimeHandshakeStatus =
+  | "unknown"
+  | "reachable"
+  | "incompatible"
+  | "unavailable"
+  | "not-configured"
+  | "error";
 
 export interface RuntimeJobEvent {
   type:
@@ -187,6 +215,123 @@ export interface LocalRuntimeConfigPlan {
   recommendation: ModelPackRecommendation;
   warnings: string[];
   nextSteps: string[];
+}
+
+export interface ModelDownloadRequirement {
+  type: "ram" | "vram" | "disk" | "runtime" | "license" | "platform";
+  label: string;
+  required: string;
+  available?: string | undefined;
+  satisfied: boolean;
+  warning?: string | undefined;
+}
+
+export interface ModelDownloadSource {
+  type: "placeholder" | "documentation" | "external-tool" | "none";
+  label: string;
+  reference?: string | undefined;
+  requiresLicenseReview: boolean;
+}
+
+export interface ModelInstallInstruction {
+  step: number;
+  title: string;
+  command?: string | undefined;
+  note: string;
+}
+
+export interface ModelDownloadPlanEntry {
+  modelId: string;
+  stage: ModelStage;
+  name: string;
+  runtime: LocalModelEntry["runtime"];
+  providerType: LocalModelEntry["providerType"];
+  estimatedSizeGB: number;
+  estimatedDiskAfterInstallGB?: number;
+  requirements: ModelDownloadRequirement[];
+  source: ModelDownloadSource;
+  action: ModelDownloadAction;
+  status: ModelDownloadStatus;
+  installInstructions: ModelInstallInstruction[];
+  risks: ModelDownloadRisk[];
+  warnings: string[];
+}
+
+export interface ModelInstallPlanSummary {
+  selectedPack: LocalModelPackSelection;
+  entryCount: number;
+  stages: ModelStage[];
+  totalEstimatedDownloadGB: number;
+  totalEstimatedDiskAfterInstallGB: number;
+  unsupportedCount: number;
+  riskyEntryCount: number;
+  readyCount: number;
+  noDownloadsPerformed: true;
+  warnings: string[];
+}
+
+export interface ModelDownloadPlan {
+  id: string;
+  selectedPack: LocalModelPackSelection;
+  entries: ModelDownloadPlanEntry[];
+  summary: ModelInstallPlanSummary;
+  warnings: string[];
+  createdAt: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface LocalRuntimeHandshakeRequest {
+  runtimeUrl: string | null;
+  clientVersion: string;
+  requestedStages: ModelStage[];
+  maxConcurrentHeavyJobs: 1;
+  checkedAt: string;
+}
+
+export interface LocalRuntimeCapability {
+  id: string;
+  name: string;
+  enabled: boolean;
+  description: string;
+}
+
+export interface LocalRuntimeHealth {
+  status: RuntimeHandshakeStatus;
+  message: string;
+}
+
+export interface LocalRuntimeVersionInfo {
+  protocolVersion: string;
+  runtimeVersion: string;
+  compatible: boolean;
+}
+
+export interface LocalRuntimeStageSupport {
+  stage: ModelStage;
+  supported: boolean;
+  readyModels: string[];
+  missingModels: string[];
+}
+
+export interface LocalRuntimeModelRegistrySummary {
+  totalModels: number;
+  readyModels: number;
+  installedModels: number;
+  notInstalledModels: number;
+}
+
+export interface LocalRuntimeHandshakeResponse {
+  status: RuntimeHandshakeStatus;
+  runtimeUrl: string | null;
+  version: LocalRuntimeVersionInfo;
+  health: LocalRuntimeHealth;
+  capabilities: LocalRuntimeCapability[];
+  stageSupport: LocalRuntimeStageSupport[];
+  maxConcurrentHeavyJobs: 1;
+  oneModelAtATime: true;
+  modelRegistrySummary: LocalRuntimeModelRegistrySummary;
+  warnings: string[];
+  checkedAt: string;
 }
 
 export interface RuntimeQueue {

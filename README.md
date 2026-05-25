@@ -79,6 +79,9 @@ that can be hosted on static infrastructure.
 - **Phase 12:** provider connection status contracts, safe API request-shape
   scaffolds, local provider discovery hints, local runtime config planning,
   model catalog, and setup-local config generation completed.
+- **Phase 13:** explicit model download planning, model manager summaries,
+  offline runtime handshake contracts, and CLI guidance for future local runtime
+  connection completed.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -257,6 +260,27 @@ Phase 12 makes Settings more realistic while keeping execution disabled:
 7. The web Settings and mock prompt pipeline show provider decision summaries
    while continuing to use deterministic mock output.
 
+## Phase 13 Architecture
+
+Phase 13 makes local mode planning explicit while keeping downloads and runtime
+execution disabled:
+
+1. `@scroll3d/local-runtime` exposes model download plan contracts, per-model
+   requirements, risk flags, install instructions, summaries, validation, and
+   stage filters.
+2. Download plans estimate size, disk use, RAM/VRAM needs, unsupported platform
+   entries, and license/resource warnings without using real model URLs.
+3. Local runtime handshake contracts describe future runtime URL, version,
+   health, capabilities, stage support, model registry summary, and the
+   one-model-at-a-time guarantee.
+4. Root scripts add `pnpm runtime:plan-downloads` and
+   `pnpm runtime:handshake` for CLI planning and offline connection guidance.
+5. `pnpm setup:local` writes both `.scroll3d/local-runtime.config.json` and
+   `.scroll3d/model-download-plan.json`; both are ignored machine-local files.
+6. Web Settings shows a Model Manager section with selected pack, required
+   models per stage, size estimates, risk badges, command hints, and a disabled
+   download button.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -276,7 +300,9 @@ Phase 12 makes Settings more realistic while keeping execution disabled:
   prompt workflow.
 - Phase 11: polished prompt-first web dashboard and improved UX.
 - Phase 12: provider connection and local runtime discovery foundation.
-- Phase 13: plugin provider system and self-hosting documentation.
+- Phase 13: explicit model manager/download planning and runtime handshake
+  foundation.
+- Phase 14: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 
@@ -304,16 +330,21 @@ pnpm runtime:scan
 pnpm runtime:doctor
 pnpm runtime:models
 pnpm setup:local
+pnpm runtime:plan-downloads
+pnpm runtime:handshake
 ```
 
 These commands do not download models or run models. They only print local
 system information, prerequisite notes, known model packs, and setup
-recommendations for future local runtime phases.
+recommendations, model download plans, and offline handshake guidance for future
+local runtime phases.
 
-`pnpm setup:local` writes a safe ignored local plan at
-`.scroll3d/local-runtime.config.json`. Stop the dev server before running setup,
-restart with `pnpm dev`, and open Settings to inspect the runtime plan. Future
-download commands will install models only after explicit user action.
+`pnpm setup:local` writes safe ignored local plans at
+`.scroll3d/local-runtime.config.json` and
+`.scroll3d/model-download-plan.json`. Stop the dev server before running setup,
+inspect the plan with `pnpm runtime:plan-downloads`, restart with `pnpm dev`,
+and open Settings. Future download commands will install models only after
+explicit user action.
 
 Run verification:
 

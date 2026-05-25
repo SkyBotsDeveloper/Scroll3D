@@ -6,6 +6,15 @@ export interface RuntimeStatusResult {
   checkedAt: string;
 }
 
+export interface RuntimeHandshakeDisplay {
+  status: "not-configured" | "unavailable" | "reachable" | "incompatible";
+  runtimeUrl: string | null;
+  oneModelAtATime: true;
+  maxConcurrentHeavyJobs: 1;
+  summary: string;
+  warnings: string[];
+}
+
 export function checkLocalRuntimeStatus(
   settings: LocalRuntimeSettings
 ): RuntimeStatusResult {
@@ -37,4 +46,27 @@ export function formatRuntimeStatus(status: RuntimeConnectionStatus): string {
     case "unknown":
       return "Unknown";
   }
+}
+
+export function createOfflineRuntimeHandshakeDisplay(
+  settings: LocalRuntimeSettings
+): RuntimeHandshakeDisplay {
+  const runtimeUrl = settings.runtimeUrl.trim() ? settings.runtimeUrl : null;
+  const status = runtimeUrl ? "unavailable" : "not-configured";
+  const modelCount = settings.installedModels.length;
+
+  return {
+    status,
+    runtimeUrl,
+    oneModelAtATime: true,
+    maxConcurrentHeavyJobs: 1,
+    summary: `Runtime ${status} at ${runtimeUrl ?? "not configured"}. ${String(
+      modelCount
+    )} models are listed in browser settings.`,
+    warnings: [
+      "Handshake is offline/simulated in this phase.",
+      "No local runtime server is contacted from the browser.",
+      "No model download or model execution is performed."
+    ]
+  };
 }

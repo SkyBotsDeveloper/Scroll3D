@@ -18,3 +18,4 @@ Current docs:
 - [Phase 10 Settings, Runtime Planning, And Mock Prompt Workflow](./phase-10-settings-runtime-prompt.md)
 - [Phase 11 Web App UI/UX Polish](./phase-11-ui-ux-polish.md)
 - [Phase 12 Provider Connection And Local Runtime Discovery](./phase-12-provider-runtime-discovery.md)
+- [Phase 13 Model Manager And Runtime Handshake](./phase-13-model-manager-handshake.md)

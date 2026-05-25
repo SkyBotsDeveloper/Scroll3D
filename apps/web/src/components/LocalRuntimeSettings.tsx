@@ -1,4 +1,8 @@
-import { checkLocalRuntimeStatus, formatRuntimeStatus } from "../lib/runtime-status";
+import {
+  checkLocalRuntimeStatus,
+  createOfflineRuntimeHandshakeDisplay,
+  formatRuntimeStatus
+} from "../lib/runtime-status";
 import { updateSettingsTimestamp, type Scroll3DSettings } from "../lib/settings-state";
 
 interface LocalRuntimeSettingsProps {
@@ -13,6 +17,7 @@ export function LocalRuntimeSettings({
   onMessage
 }: LocalRuntimeSettingsProps) {
   const runtime = settings.localRuntime;
+  const handshake = createOfflineRuntimeHandshakeDisplay(runtime);
 
   return (
     <section className="editorSection" aria-labelledby="runtime-settings-title">
@@ -28,9 +33,10 @@ export function LocalRuntimeSettings({
       <ol className="setupSteps" aria-label="Future local runtime setup flow">
         <li>Stop the web server.</li>
         <li>Run pnpm setup:local.</li>
+        <li>Inspect model requirements with pnpm runtime:plan-downloads.</li>
         <li>Restart with pnpm dev.</li>
-        <li>Connect the local runtime from Settings.</li>
-        <li>Prompt execution runs one required model at a time.</li>
+        <li>Check runtime guidance with pnpm runtime:handshake.</li>
+        <li>Future prompt execution loads, runs, unloads, then advances.</li>
       </ol>
 
       <div className="readonlyGrid">
@@ -57,6 +63,18 @@ export function LocalRuntimeSettings({
         <div>
           <span>Model state</span>
           <strong>not installed</strong>
+        </div>
+        <div>
+          <span>Handshake</span>
+          <strong>{handshake.status}</strong>
+        </div>
+        <div>
+          <span>Heavy jobs</span>
+          <strong>{String(handshake.maxConcurrentHeavyJobs)}</strong>
+        </div>
+        <div>
+          <span>Execution rule</span>
+          <strong>one model at a time</strong>
         </div>
       </div>
 
@@ -115,9 +133,25 @@ export function LocalRuntimeSettings({
         />
       </label>
 
-      <p className="statusText">
-        This phase does not start model servers or download models.
-      </p>
+      <div className="recommendationCard">
+        <div className="inlineCluster">
+          <strong>Offline handshake</strong>
+          <span className={`providerBadge ${handshake.status}`}>
+            {handshake.status}
+          </span>
+        </div>
+        <span>{handshake.summary}</span>
+        <small>
+          Local execution lifecycle: load required model, run stage, unload model, then
+          continue to the next queued stage.
+        </small>
+      </div>
+
+      <ul className="messageList">
+        {handshake.warnings.map((warning) => (
+          <li key={warning}>{warning}</li>
+        ))}
+      </ul>
 
       <button
         type="button"

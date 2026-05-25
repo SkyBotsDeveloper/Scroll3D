@@ -1,4 +1,5 @@
 import {
+  createModelDownloadPlan,
   listModelCatalog,
   listModelPacks,
   recommendModelPack,
@@ -27,15 +28,19 @@ export function ModelRecommendationPanel({
   onChange
 }: ModelRecommendationPanelProps) {
   const recommendation = recommendModelPack(scan.specs);
+  const downloadPlan = createModelDownloadPlan(
+    scan.specs,
+    settings.modelPackPreference
+  );
 
   return (
     <section className="editorSection" aria-labelledby="model-recommendation-title">
       <div className="sectionHeader">
-        <p className="eyebrow">Model packs</p>
-        <h3 id="model-recommendation-title">Recommendation and catalog foundation</h3>
+        <p className="eyebrow">Model manager</p>
+        <h3 id="model-recommendation-title">Download planning and model catalog</h3>
         <p className="statusText">
-          Models are tracked as not-installed planning entries. Downloads require a
-          future explicit command.
+          Generate a safe model plan, estimate resource needs, and keep downloads
+          separate from future runtime execution.
         </p>
       </div>
 
@@ -68,6 +73,60 @@ export function ModelRecommendationPanel({
         </small>
       </div>
 
+      <div className="readonlyGrid compactSummary">
+        <div>
+          <span>Plan pack</span>
+          <strong>{downloadPlan.selectedPack}</strong>
+        </div>
+        <div>
+          <span>Models</span>
+          <strong>{String(downloadPlan.summary.entryCount)}</strong>
+        </div>
+        <div>
+          <span>Download size</span>
+          <strong>{String(downloadPlan.summary.totalEstimatedDownloadGB)} GB</strong>
+        </div>
+        <div>
+          <span>Disk after install</span>
+          <strong>
+            {String(downloadPlan.summary.totalEstimatedDiskAfterInstallGB)} GB
+          </strong>
+        </div>
+        <div>
+          <span>Unsupported</span>
+          <strong>{String(downloadPlan.summary.unsupportedCount)}</strong>
+        </div>
+        <div>
+          <span>Command</span>
+          <strong>pnpm runtime:plan-downloads</strong>
+        </div>
+      </div>
+
+      <div className="modelPackGrid" aria-label="Required model download plan">
+        {downloadPlan.entries.map((entry) => (
+          <div key={entry.modelId} className="frameSetItem">
+            <div className="inlineCluster">
+              <strong>{entry.name}</strong>
+              <span className={`providerBadge ${entry.status}`}>{entry.status}</span>
+            </div>
+            <span>
+              {entry.stage} - {entry.runtime} - approx {String(entry.estimatedSizeGB)}{" "}
+              GB
+            </span>
+            <small>Action: {entry.action}</small>
+            {entry.risks.length ? (
+              <div className="riskBadgeList" aria-label={`${entry.name} risks`}>
+                {entry.risks.map((risk) => (
+                  <span key={risk} className="providerBadge warning">
+                    {risk}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ))}
+      </div>
+
       <div className="modelPackGrid">
         {listModelPacks().map((pack) => (
           <div key={pack.id} className="frameSetItem">
@@ -94,11 +153,16 @@ export function ModelRecommendationPanel({
       </div>
 
       <button type="button" className="secondaryButton" disabled>
-        Future model downloads disabled
+        Download models disabled until a later phase
       </button>
 
+      <p className="statusText">
+        Command hints: pnpm setup:local, pnpm runtime:plan-downloads, pnpm
+        runtime:handshake.
+      </p>
+
       <ul className="messageList">
-        {recommendation.reasons.map((reason) => (
+        {[...recommendation.reasons, ...downloadPlan.warnings].map((reason) => (
           <li key={reason}>{reason}</li>
         ))}
       </ul>

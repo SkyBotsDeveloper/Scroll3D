@@ -16,7 +16,9 @@
     "setup:local": "node scripts/setup-local.mjs",
     "runtime:scan": "node scripts/runtime-scan.mjs",
     "runtime:doctor": "node scripts/runtime-doctor.mjs",
-    "runtime:models": "node scripts/runtime-models.mjs"
+    "runtime:models": "node scripts/runtime-models.mjs",
+    "runtime:plan-downloads": "node scripts/runtime-plan-downloads.mjs",
+    "runtime:handshake": "node scripts/runtime-handshake.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

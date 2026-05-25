@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  createModelDownloadPlan,
   formatSystemSpecs,
   isPackCompatible,
   listModelCatalog,
@@ -65,6 +66,26 @@ describe("model recommendations", () => {
 
     expect(isPackCompatible(specs({ totalRamGB: 8, vramGB: 0 }), lite)).toBe(true);
     expect(formatSystemSpecs(specs({ totalRamGB: 8 }))).toContain("Total RAM: 8 GB");
+  });
+
+  it("creates a browser-safe download plan", () => {
+    const plan = createModelDownloadPlan(specs({ totalRamGB: 16 }), "balanced");
+
+    expect(plan.selectedPack).toBe("balanced");
+    expect(plan.summary.totalEstimatedDownloadGB).toBe(26);
+    expect(plan.warnings.join(" ")).toContain("Downloads are disabled");
+  });
+
+  it("marks unsupported platform entries in download plans", () => {
+    const plan = createModelDownloadPlan(
+      specs({
+        arch: "mips",
+        totalRamGB: 16
+      }),
+      "lite"
+    );
+
+    expect(plan.summary.unsupportedCount).toBe(2);
   });
 });
 
