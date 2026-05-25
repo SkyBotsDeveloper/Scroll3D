@@ -1,7 +1,7 @@
 {
-  "name": "@scroll3d/core",
+  "name": "@scroll3d/local-runtime",
   "version": "0.1.0",
-  "description": "Core Scroll3D project schemas, types, fixtures, and validation helpers.",
+  "description": "Sequential local runtime queue foundation for Scroll3D.",
   "type": "module",
   "license": "MIT",
   "author": "Siddhartha Abhimanyu",
@@ -22,8 +22,5 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "lint": "eslint \"src/**/*.ts\" --max-warnings=0"
-  },
-  "dependencies": {
-    "zod": "^4.1.13"
   }
 }

@@ -61,7 +61,27 @@ importers:
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.15)
 
+  packages/agents:
+    dependencies:
+      '@scroll3d/core':
+        specifier: workspace:*
+        version: link:../core
+      '@scroll3d/providers':
+        specifier: workspace:*
+        version: link:../providers
+      zod:
+        specifier: ^4.1.13
+        version: 4.4.3
+
   packages/core:
+    dependencies:
+      zod:
+        specifier: ^4.1.13
+        version: 4.4.3
+
+  packages/local-runtime: {}
+
+  packages/providers:
     dependencies:
       zod:
         specifier: ^4.1.13

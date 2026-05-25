@@ -1,7 +1,7 @@
 {
-  "name": "@scroll3d/core",
+  "name": "@scroll3d/providers",
   "version": "0.1.0",
-  "description": "Core Scroll3D project schemas, types, fixtures, and validation helpers.",
+  "description": "Provider interfaces and deterministic mock providers for Scroll3D.",
   "type": "module",
   "license": "MIT",
   "author": "Siddhartha Abhimanyu",

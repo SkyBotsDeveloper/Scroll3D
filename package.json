@@ -4,13 +4,14 @@
   "private": true,
   "description": "Open-source AI 3D website builder for cinematic scroll-driven websites.",
   "license": "MIT",
+  "author": "Siddhartha Abhimanyu",
   "packageManager": "pnpm@11.3.0",
   "scripts": {
     "dev": "corepack pnpm --filter @scroll3d/web dev",
     "build": "corepack pnpm -r --if-present build",
-    "typecheck": "corepack pnpm -r --if-present typecheck",
-    "test": "corepack pnpm -r --if-present test",
-    "lint": "corepack pnpm -r --if-present lint",
+    "typecheck": "corepack pnpm -r --if-present build && corepack pnpm -r --if-present typecheck",
+    "test": "corepack pnpm -r --if-present build && corepack pnpm -r --if-present test",
+    "lint": "corepack pnpm -r --if-present build && corepack pnpm -r --if-present lint",
     "format": "prettier --write ."
   },
   "devDependencies": {

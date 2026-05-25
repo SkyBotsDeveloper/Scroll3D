@@ -1,6 +1,23 @@
 # @scroll3d/local-runtime
 
-Future package for local model execution, job queues, and one-heavy-model-at-a-
-time scheduling.
+Sequential local runtime foundation for Scroll3D.
 
-Phase 1 only establishes the package location.
+This package provides an in-memory `SequentialJobRunner` for future local model
+jobs. It does not download models, start a server, or run real inference yet.
+
+## Rules
+
+- Only one heavy model job runs at a time.
+- Jobs are queued sequentially.
+- Pending and running jobs can be cancelled.
+- Job status can be inspected.
+- Model load/unload hooks are available for future runtime integration.
+
+## Exports
+
+- `LocalRuntimeConfig`
+- `RuntimeJob`
+- `RuntimeQueue`
+- `RuntimeModelRef`
+- `ModelLoadPolicy`
+- `SequentialJobRunner`

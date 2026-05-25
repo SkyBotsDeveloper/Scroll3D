@@ -9,6 +9,15 @@ create, inspect, edit, self-host, and export as clean web projects. Scroll3D is
 an original project and must not copy proprietary branding, UI, wording,
 templates, assets, or product behavior from other tools.
 
+## Creator
+
+Creator: Siddhartha Abhimanyu
+
+Contact:
+
+- Telegram: @iflexelite
+- Instagram: elite.sid
+
 ## Modes
 
 - **Local mode:** run supported local models and tools on the user's machine.
@@ -38,16 +47,35 @@ Exported websites should work without a backend. The long-term export target is
 clean HTML, CSS, JavaScript, assets, frame manifests, and optional project JSON
 that can be hosted on static infrastructure.
 
-## Phase 1 Status
+## Phase Status
 
-Phase 1 creates the production-ready monorepo foundation and implements the core
-schema package. The visual editor, provider integrations, local runtime, frame
-extractor, and exporter are intentionally not implemented yet.
+- **Phase 1:** monorepo foundation and core schema package completed.
+- **Phase 2:** provider interfaces, mock providers, agent orchestration
+  contracts, and sequential local runtime queue foundation completed.
+
+The visual editor, real provider integrations, model downloads, frame extraction
+implementation, and exporter are intentionally not implemented yet.
+
+## Phase 2 Architecture
+
+Phase 2 adds three foundations:
+
+- `@scroll3d/providers`: typed provider contracts for local and API modes, with
+  deterministic mock providers for LLM, image, video, frame, and code work.
+- `@scroll3d/agents`: typed agent contracts and a sequential orchestrator for
+  prompt understanding, image generation, video generation, frame extraction,
+  and website compilation.
+- `@scroll3d/local-runtime`: an in-memory sequential job runner for future local
+  model execution where only one heavy model job runs at a time.
+
+Provider implementations are intentionally mock-only in this phase. API keys,
+real model downloads, and real image/video generation belong in later phases.
 
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
-- Phase 2: provider interfaces and agent job orchestration contracts.
+- Phase 2: provider interfaces, agent job orchestration contracts, local runtime
+  queue foundation.
 - Phase 3: local runtime queue with one heavy model job running at a time.
 - Phase 4: scroll engine package for frame-sequence playback.
 - Phase 5: static exporter for clean standalone websites.
