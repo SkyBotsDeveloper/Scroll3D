@@ -222,7 +222,7 @@ h3 {
 
 .editorTabs {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -481,6 +481,127 @@ h3 {
   border-radius: 8px;
   background: rgba(8, 9, 13, 0.42);
   padding: 10px;
+}
+
+.segmentedGrid,
+.providerStageList,
+.apiProviderList,
+.pipelineStepList,
+.modelPackGrid {
+  display: grid;
+  gap: 10px;
+}
+
+.segmentedGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.modeButton,
+.providerStage,
+.apiProviderCard,
+.recommendationCard,
+.pipelineStep {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 9, 13, 0.42);
+  padding: 12px;
+}
+
+.modeButton {
+  display: grid;
+  gap: 6px;
+  color: var(--foreground);
+  text-align: left;
+}
+
+.modeButton span,
+.providerStage span,
+.providerStage small,
+.apiProviderCard span,
+.providerCardFooter span,
+.recommendationCard span,
+.recommendationCard small,
+.pipelineStep span,
+.pipelineStep small {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.modeButton.active,
+.modeButton:hover {
+  border-color: rgba(66, 214, 164, 0.62);
+  background: rgba(66, 214, 164, 0.1);
+}
+
+.providerStage,
+.pipelineStep {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(120px, 0.28fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.providerStage > div,
+.pipelineStep > div,
+.recommendationCard {
+  display: grid;
+  gap: 4px;
+}
+
+.providerBadge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--foreground);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.providerBadge.available,
+.providerBadge.completed {
+  border-color: rgba(66, 214, 164, 0.5);
+  background: rgba(66, 214, 164, 0.12);
+  color: #8effd3;
+}
+
+.providerBadge.mock,
+.providerBadge.running {
+  border-color: rgba(255, 181, 77, 0.48);
+  background: rgba(255, 181, 77, 0.12);
+  color: #ffe0ad;
+}
+
+.providerBadge.unavailable,
+.providerBadge.failed {
+  border-color: rgba(255, 107, 107, 0.54);
+  background: rgba(255, 107, 107, 0.12);
+  color: #ffc4c4;
+}
+
+.providerCardFooter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.settingsPre {
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code);
+  color: #e7eaf2;
+  padding: 12px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.84rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.promptTextarea {
+  min-height: 120px;
 }
 
 .buttonRow {
@@ -767,8 +888,15 @@ h3 {
   .twoColumnFields,
   .threeColumnFields,
   .contentFieldGrid,
-  .readonlyGrid {
+  .readonlyGrid,
+  .segmentedGrid,
+  .providerStage,
+  .pipelineStep {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .editorTabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .status {

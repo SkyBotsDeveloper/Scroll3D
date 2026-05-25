@@ -12,7 +12,11 @@
     "typecheck": "corepack pnpm -r --if-present build && corepack pnpm -r --if-present typecheck",
     "test": "corepack pnpm -r --if-present build && corepack pnpm -r --if-present test",
     "lint": "corepack pnpm -r --if-present build && corepack pnpm -r --if-present lint",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "setup:local": "node scripts/setup-local.mjs",
+    "runtime:scan": "node scripts/runtime-scan.mjs",
+    "runtime:doctor": "node scripts/runtime-doctor.mjs",
+    "runtime:models": "node scripts/runtime-models.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

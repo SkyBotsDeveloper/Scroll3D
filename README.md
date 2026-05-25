@@ -71,6 +71,9 @@ that can be hosted on static infrastructure.
 - **Phase 9:** first visual editor controls for project basics, theme values,
   section content/order/visibility, scroll scene settings, JSON sync, and export
   refresh completed.
+- **Phase 10:** Settings, provider preferences, API/local/hybrid mode controls,
+  local runtime setup planning commands, system scan/model recommendation
+  foundation, and deterministic mock prompt pipeline completed.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -191,6 +194,27 @@ Phase 9 adds the first visual editor controls to `@scroll3d/web`:
 5. Static preview, generated file list, and browser ZIP download refresh from
    the latest valid project.
 
+## Phase 10 Architecture
+
+Phase 10 adds the first settings and prompt workflow layer to `@scroll3d/web`:
+
+1. Settings persist local/API/hybrid mode, provider preferences per pipeline
+   stage, API provider placeholders, local runtime placeholders, model pack
+   preference, and mock fallback state in browser storage.
+2. API provider setup uses `secretRef` values only; raw API keys are not stored
+   in project JSON, web settings, generated websites, or logs.
+3. Local runtime settings explain the future connection flow and
+   one-heavy-model-at-a-time execution constraint without starting model
+   servers.
+4. Browser-safe system scan and model recommendation helpers provide Lite,
+   Balanced, Pro, and Custom setup planning.
+5. Root scripts provide lightweight local setup planning commands:
+   `pnpm runtime:scan`, `pnpm runtime:doctor`, `pnpm runtime:models`, and
+   `pnpm setup:local`.
+6. The Prompt tab runs a deterministic mock five-step pipeline and can apply the
+   generated project update back into the visual editor, JSON, preview, and ZIP
+   export workflow.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -206,7 +230,8 @@ Phase 9 adds the first visual editor controls to `@scroll3d/web`:
 - Phase 8: web developer preview with JSON editing, export preview, and ZIP
   download.
 - Phase 9: first visual editor controls and JSON sync.
-- Phase 10: AI prompt workflow connected to the queued mock pipeline.
+- Phase 10: settings, runtime setup planning, provider preferences, and mock
+  prompt workflow.
 - Phase 11: plugin provider system and self-hosting documentation.
 
 ## Run Locally
@@ -227,6 +252,19 @@ Start the web app:
 ```bash
 pnpm dev
 ```
+
+Local setup planning commands:
+
+```bash
+pnpm runtime:scan
+pnpm runtime:doctor
+pnpm runtime:models
+pnpm setup:local
+```
+
+These commands do not download models or run models. They only print local
+system information, prerequisite notes, known model packs, and setup
+recommendations for future local runtime phases.
 
 Run verification:
 

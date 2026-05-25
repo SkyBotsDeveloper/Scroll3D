@@ -3,7 +3,7 @@ import { createExportProject } from "./project-updates";
 import { formatProjectJson } from "./sample-project";
 import { validateProjectJson, type ProjectValidationResult } from "./validation";
 
-export type EditorTab = "visual" | "json" | "export";
+export type EditorTab = "visual" | "json" | "export" | "settings" | "prompt";
 
 export interface SyncedProjectState {
   project: Scroll3DProject;

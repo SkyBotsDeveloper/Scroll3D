@@ -21,6 +21,21 @@ jobs. It does not download models, start a server, or run real inference yet.
 - `maxConcurrentHeavyJobs` remains fixed at `1` until explicit multi-model
   scheduling is supported later.
 
+## Local Setup Planning Commands
+
+Root scripts provide lightweight setup planning helpers:
+
+```bash
+corepack pnpm runtime:scan
+corepack pnpm runtime:doctor
+corepack pnpm runtime:models
+corepack pnpm setup:local
+```
+
+These commands scan basic system information, print prerequisite notes, list
+known model pack targets, and recommend a setup profile. They do not download
+models, run inference, start external model servers, or require API keys.
+
 ## Exports
 
 - `LocalRuntimeConfig`

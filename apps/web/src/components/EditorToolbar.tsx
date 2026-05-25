@@ -23,9 +23,9 @@ export function EditorToolbar({
         <h1>Scroll3D</h1>
         <p className="subtitle">Open-source AI 3D website builder</p>
         <p className="projectSubtitle">Editing: {project.name}</p>
-        <div className="status" aria-label="Current Phase 9 status">
+        <div className="status" aria-label="Current Phase 10 status">
           <span className="statusDot" aria-hidden="true" />
-          Visual editor controls and synced export preview
+          Settings, runtime planning, and mock prompt pipeline
         </div>
       </div>
       <div className="toolbarMeta" aria-label="Project metadata">

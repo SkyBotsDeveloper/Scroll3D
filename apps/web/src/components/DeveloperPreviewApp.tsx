@@ -9,6 +9,8 @@ import { JsonSyncPanel } from "./JsonSyncPanel";
 import { PhaseStatus } from "./PhaseStatus";
 import { PreviewPane } from "./PreviewPane";
 import { ProjectJsonEditor } from "./ProjectJsonEditor";
+import { PromptWorkflowPanel } from "./PromptWorkflowPanel";
+import { SettingsPanel } from "./SettingsPanel";
 import { VisualEditor } from "./VisualEditor";
 import { createProjectZipBlob } from "../lib/browser-zip";
 import type { EditorTab } from "../lib/editor-state";
@@ -21,12 +23,17 @@ import {
   getDefaultSelectedFile
 } from "../lib/export-client";
 import { downloadBlob } from "../lib/download";
+import type { MockPipelineResult } from "../lib/mock-pipeline-client";
 import {
   formatProjectJson,
   sampleProject,
   sampleProjectJson
 } from "../lib/sample-project";
 import { getVisibleSectionCount } from "../lib/section-utils";
+import {
+  createPlaceholderSystemScan,
+  createBrowserSystemScan
+} from "../lib/system-scan-client";
 import {
   appendExportHistory,
   clearProjectStorage,
@@ -37,6 +44,12 @@ import {
   writeStorageValue,
   type ExportHistoryItem
 } from "../lib/storage";
+import {
+  loadSettings,
+  saveSettings,
+  type Scroll3DSettings
+} from "../lib/settings-state";
+import type { SystemScanResult } from "../lib/model-recommendations";
 import { validateProjectJson, type ProjectValidationResult } from "../lib/validation";
 
 export function DeveloperPreviewApp() {
@@ -51,6 +64,14 @@ export function DeveloperPreviewApp() {
     "Export runs entirely in this browser."
   );
   const [history, setHistory] = useState<ExportHistoryItem[]>([]);
+  const [settings, setSettings] = useState<Scroll3DSettings>(() => loadSettings());
+  const [settingsMessage, setSettingsMessage] = useState(
+    "Settings are local to this browser. Use secretRef values, not raw API keys."
+  );
+  const [systemScan, setSystemScan] = useState<SystemScanResult>(() =>
+    createPlaceholderSystemScan()
+  );
+  const [pipelineResult, setPipelineResult] = useState<MockPipelineResult | null>(null);
 
   const exportResult = useMemo(
     () => exportProjectToBundle(appliedProject),
@@ -83,6 +104,8 @@ export function DeveloperPreviewApp() {
 
       setSelectedPath(readStorageValue(selectedFileStorageKey) ?? "");
       setHistory(readExportHistory());
+      setSettings(loadSettings());
+      setSystemScan(createBrowserSystemScan());
     }, 0);
 
     return () => {
@@ -107,6 +130,10 @@ export function DeveloperPreviewApp() {
     }
   }, [selectedPath]);
 
+  useEffect(() => {
+    saveSettings(settings);
+  }, [settings]);
+
   function handleValidate() {
     setValidation(validateProjectJson(projectJson));
   }
@@ -129,6 +156,12 @@ export function DeveloperPreviewApp() {
     setProjectJson(nextJson);
     setValidation(nextValidation);
     setDownloadStatus("Visual edit applied and export refreshed.");
+  }
+
+  function handleGeneratedProject(nextProject: Scroll3DProject) {
+    handleVisualProjectChange(nextProject);
+    setActiveTab("visual");
+    setDownloadStatus("Mock pipeline project update applied.");
   }
 
   function handleReset() {
@@ -223,6 +256,25 @@ export function DeveloperPreviewApp() {
                 onClearStorage={handleClearStorage}
               />
             </>
+          ) : null}
+          {activeTab === "settings" ? (
+            <SettingsPanel
+              settings={settings}
+              scan={systemScan}
+              message={settingsMessage}
+              onSettingsChange={setSettings}
+              onScanChange={setSystemScan}
+              onMessage={setSettingsMessage}
+            />
+          ) : null}
+          {activeTab === "prompt" ? (
+            <PromptWorkflowPanel
+              project={appliedProject}
+              settings={settings}
+              result={pipelineResult}
+              onResult={setPipelineResult}
+              onApply={handleGeneratedProject}
+            />
           ) : null}
         </aside>
 

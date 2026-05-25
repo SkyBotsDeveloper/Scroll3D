@@ -3,7 +3,9 @@ import type { EditorTab } from "../lib/editor-state";
 const tabs: Array<{ id: EditorTab; label: string }> = [
   { id: "visual", label: "Visual" },
   { id: "json", label: "JSON" },
-  { id: "export", label: "Export" }
+  { id: "export", label: "Export" },
+  { id: "settings", label: "Settings" },
+  { id: "prompt", label: "Prompt" }
 ];
 
 interface EditorTabsProps {
