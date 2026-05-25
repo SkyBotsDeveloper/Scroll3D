@@ -7,8 +7,9 @@ interface PipelineStepListProps {
 export function PipelineStepList({ steps }: PipelineStepListProps) {
   return (
     <div className="pipelineStepList" aria-label="Pipeline steps">
-      {steps.map((step) => (
+      {steps.map((step, index) => (
         <div key={step.id} className={`pipelineStep ${step.status}`}>
+          <span className="stepIndex">{String(index + 1)}</span>
           <div>
             <strong>{step.name}</strong>
             <span>{step.providerMode} provider</span>

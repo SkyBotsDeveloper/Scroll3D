@@ -7,21 +7,29 @@ interface ModeSettingsProps {
   onChange: (settings: Scroll3DSettings) => void;
 }
 
-const modes: Array<{ value: ProjectMode; label: string; description: string }> = [
+const modes: Array<{
+  value: ProjectMode;
+  label: string;
+  headline: string;
+  description: string;
+}> = [
   {
     value: "api",
-    label: "API",
+    label: "API Mode",
+    headline: "Use your provider keys",
     description: "Prefer configured API providers with mock fallback."
   },
   {
     value: "local",
-    label: "Local",
+    label: "Local Mode",
+    headline: "Run models on your machine",
     description: "Prefer local runtime providers when connected."
   },
   {
     value: "hybrid",
-    label: "Hybrid",
-    description: "Mix local/API preferences by pipeline stage."
+    label: "Hybrid Mode",
+    headline: "Mix local and API per stage",
+    description: "Choose a different provider path for each pipeline step."
   }
 ];
 
@@ -30,7 +38,11 @@ export function ModeSettings({ settings, onChange }: ModeSettingsProps) {
     <section className="editorSection" aria-labelledby="mode-settings-title">
       <div className="sectionHeader">
         <p className="eyebrow">Mode</p>
-        <h3 id="mode-settings-title">Provider execution mode</h3>
+        <h3 id="mode-settings-title">Choose how Scroll3D should run providers</h3>
+        <p className="statusText">
+          Mock fallback keeps the developer preview useful until real provider
+          connections and model downloads are enabled.
+        </p>
       </div>
 
       <div className="segmentedGrid">
@@ -51,12 +63,13 @@ export function ModeSettings({ settings, onChange }: ModeSettingsProps) {
             }}
           >
             <strong>{mode.label}</strong>
+            <em>{mode.headline}</em>
             <span>{mode.description}</span>
           </button>
         ))}
       </div>
 
-      <label className="toggleField">
+      <label className="toggleField mockFallbackCard">
         <input
           type="checkbox"
           checked={settings.allowMockFallback}
@@ -69,7 +82,7 @@ export function ModeSettings({ settings, onChange }: ModeSettingsProps) {
             );
           }}
         />
-        <span>Allow mock fallback for unavailable providers</span>
+        <span>Mock Mode / mock fallback for safe developer preview</span>
       </label>
     </section>
   );

@@ -21,6 +21,9 @@ export function ScrollSceneEditor({ project, onChange }: ScrollSceneEditorProps)
       <div className="sectionHeader">
         <p className="eyebrow">Scroll scene</p>
         <h3 id="scene-editor-title">Playback and frame sets</h3>
+        <p className="statusText">
+          Tune scroll length and playback behavior without adding real frames yet.
+        </p>
       </div>
 
       <div className="twoColumnFields">

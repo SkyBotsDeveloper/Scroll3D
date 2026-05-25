@@ -20,7 +20,11 @@ export function ExportActions({
       <div className="panelHeader">
         <div>
           <p className="eyebrow">Local export</p>
-          <h2 id="actions-title">Download and persistence</h2>
+          <h2 id="actions-title">Download a self-hostable website</h2>
+          <p className="statusText">
+            Exported ZIPs include static HTML, CSS, JavaScript, project JSON, and frame
+            manifest files. No backend is required.
+          </p>
         </div>
         <div className="buttonRow">
           <button
@@ -29,7 +33,7 @@ export function ExportActions({
             onClick={onDownloadZip}
             disabled={disabled}
           >
-            Download ZIP
+            Download self-hostable ZIP
           </button>
           <button type="button" className="secondaryButton" onClick={onClearStorage}>
             Clear local data
@@ -47,12 +51,14 @@ export function ExportActions({
           <ul>
             {history.map((item) => (
               <li key={item.id}>
-                {item.fileCount} files · {new Date(item.createdAt).toLocaleString()}
+                {item.fileCount} files - {new Date(item.createdAt).toLocaleString()}
               </li>
             ))}
           </ul>
         </div>
-      ) : null}
+      ) : (
+        <p className="emptyState">No ZIP downloads in this browser session yet.</p>
+      )}
     </section>
   );
 }

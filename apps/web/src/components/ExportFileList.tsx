@@ -18,8 +18,11 @@ export function ExportFileList({
     <section className="toolPanel filePanel" aria-labelledby="file-list-title">
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Bundle files</p>
-          <h2 id="file-list-title">Generated output</h2>
+          <p className="eyebrow">Export files</p>
+          <h2 id="file-list-title">Generated static bundle</h2>
+          <p className="statusText">
+            Click a file to inspect the text output before downloading the ZIP.
+          </p>
         </div>
       </div>
 
@@ -36,7 +39,7 @@ export function ExportFileList({
             >
               <span>{file.path}</span>
               <small>
-                {file.mimeType} · {file.size ?? file.content.length} B
+                {file.mimeType} - {file.size ?? file.content.length} B
               </small>
             </button>
           )) ?? <p className="emptyState">No export files available.</p>}
@@ -48,7 +51,7 @@ export function ExportFileList({
               <div className="filePreviewMeta">
                 <strong>{preview.path}</strong>
                 <span>
-                  {preview.mimeType} · {preview.size} B
+                  {preview.mimeType} - {preview.size} B
                 </span>
               </div>
               <pre>{preview.text}</pre>

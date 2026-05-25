@@ -18,8 +18,20 @@ export function LocalRuntimeSettings({
     <section className="editorSection" aria-labelledby="runtime-settings-title">
       <div className="sectionHeader">
         <p className="eyebrow">Local runtime</p>
-        <h3 id="runtime-settings-title">Connection foundation</h3>
+        <h3 id="runtime-settings-title">Future local model connection</h3>
+        <p className="statusText">
+          Local mode will load only the model needed for the current stage and run one
+          heavy model job at a time.
+        </p>
       </div>
+
+      <ol className="setupSteps" aria-label="Future local runtime setup flow">
+        <li>Stop the web server.</li>
+        <li>Run pnpm setup:local.</li>
+        <li>Restart with pnpm dev.</li>
+        <li>Connect the local runtime from Settings.</li>
+        <li>Prompt execution runs one required model at a time.</li>
+      </ol>
 
       <div className="readonlyGrid">
         <div>
@@ -92,8 +104,7 @@ export function LocalRuntimeSettings({
       </label>
 
       <p className="statusText">
-        Local runtime will run one heavy model job at a time. This phase does not start
-        model servers or download models.
+        This phase does not start model servers or download models.
       </p>
 
       <button

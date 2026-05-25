@@ -29,7 +29,11 @@ export function SettingsPanel({
       <div className="panelHeader">
         <div>
           <p className="eyebrow">Settings</p>
-          <h2 id="settings-title">Providers and local runtime</h2>
+          <h2 id="settings-title">Connect the future AI runtime</h2>
+          <p className="statusText">
+            Pick API, Local, or Hybrid mode, set stage preferences, and plan local
+            runtime setup without storing raw secrets.
+          </p>
         </div>
         <button
           type="button"

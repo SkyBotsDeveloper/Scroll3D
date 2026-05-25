@@ -14,8 +14,12 @@ export function VisualEditor({ project, onChange }: VisualEditorProps) {
     <section className="toolPanel visualEditor" aria-labelledby="visual-editor-title">
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Visual</p>
-          <h2 id="visual-editor-title">Structured project controls</h2>
+          <p className="eyebrow">Visual Editor</p>
+          <h2 id="visual-editor-title">Shape the generated website</h2>
+          <p className="statusText">
+            Changes sync to JSON, preview, generated files, and ZIP export
+            automatically.
+          </p>
         </div>
       </div>
 

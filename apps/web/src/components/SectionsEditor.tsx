@@ -15,7 +15,11 @@ export function SectionsEditor({ project, onChange }: SectionsEditorProps) {
       <div className="sectionHeader splitHeader">
         <div>
           <p className="eyebrow">Sections</p>
-          <h3 id="sections-editor-title">Content and order</h3>
+          <h3 id="sections-editor-title">Content, order, and visibility</h3>
+          <p className="statusText">
+            Edit common copy fields directly. Complex nested content stays editable as
+            JSON text.
+          </p>
         </div>
         <span className="inlineStat">
           {String(getVisibleSectionCount(project))} / {String(sections.length)} visible

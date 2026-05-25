@@ -11,6 +11,7 @@ corepack pnpm --filter @scroll3d/web dev
 ## Current Workflow
 
 - Loads the sample project from `@scroll3d/core`.
+- Opens on a prompt-first Generate tab with example prompts and a mock pipeline.
 - Edits project basics, theme values, sections, and scroll scene settings with
   structured visual controls.
 - Edits project JSON locally in the browser.
@@ -34,6 +35,19 @@ calls, backend persistence, and heavy generated assets in this phase.
 - Section reordering uses simple up/down buttons.
 - Nested section content is edited as JSON text.
 - No drag/drop editor or no-code canvas exists yet.
+
+## Dashboard Structure
+
+The app is organized as a polished local dashboard:
+
+- `Generate`: prompt input, example chips, mode summary, mock pipeline progress,
+  and apply generated project action.
+- `Visual Editor`: project basics, theme, sections, and scroll scene controls.
+- `Preview & Export`: sandboxed static preview, export status, ZIP download, and
+  generated file inspection.
+- `JSON`: power-user project JSON editor with validation.
+- `Settings`: API/local/hybrid mode, provider preferences, local runtime setup
+  planning, and model recommendation foundation.
 
 ## Settings And Prompt Workflow
 

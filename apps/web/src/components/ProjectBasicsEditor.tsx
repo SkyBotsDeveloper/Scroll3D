@@ -14,6 +14,9 @@ export function ProjectBasicsEditor({ project, onChange }: ProjectBasicsEditorPr
       <div className="sectionHeader">
         <p className="eyebrow">Project</p>
         <h3 id="project-basics-title">Basics</h3>
+        <p className="statusText">
+          Update the exported site name and project mode. Timestamps are read-only.
+        </p>
       </div>
 
       <label className="field">

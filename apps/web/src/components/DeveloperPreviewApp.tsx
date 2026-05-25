@@ -53,7 +53,7 @@ import type { SystemScanResult } from "../lib/model-recommendations";
 import { validateProjectJson, type ProjectValidationResult } from "../lib/validation";
 
 export function DeveloperPreviewApp() {
-  const [activeTab, setActiveTab] = useState<EditorTab>("visual");
+  const [activeTab, setActiveTab] = useState<EditorTab>("prompt");
   const [projectJson, setProjectJson] = useState(sampleProjectJson);
   const [appliedProject, setAppliedProject] = useState<Scroll3DProject>(sampleProject);
   const [validation, setValidation] = useState<ProjectValidationResult>(() =>
@@ -203,6 +203,7 @@ export function DeveloperPreviewApp() {
     <main className="page appPage">
       <EditorToolbar
         project={appliedProject}
+        settings={settings}
         validation={validation}
         dirty={dirty}
         fileCount={bundle?.files.length ?? 0}
@@ -210,13 +211,15 @@ export function DeveloperPreviewApp() {
       />
 
       <section className="flow" aria-label="Developer preview workflow">
-        <span>Visual controls</span>
+        <span>Prompt</span>
         <span aria-hidden="true">-&gt;</span>
-        <span>Synced JSON</span>
+        <span>Mock pipeline</span>
         <span aria-hidden="true">-&gt;</span>
-        <span>Static export</span>
+        <span>Visual edit</span>
         <span aria-hidden="true">-&gt;</span>
-        <span>Preview and ZIP</span>
+        <span>Preview files</span>
+        <span aria-hidden="true">-&gt;</span>
+        <span>ZIP export</span>
       </section>
 
       <section className="appShell" aria-label="Scroll3D developer preview">

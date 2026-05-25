@@ -1,11 +1,11 @@
 import type { EditorTab } from "../lib/editor-state";
 
 const tabs: Array<{ id: EditorTab; label: string }> = [
-  { id: "visual", label: "Visual" },
+  { id: "prompt", label: "Generate" },
+  { id: "visual", label: "Visual Editor" },
+  { id: "export", label: "Preview & Export" },
   { id: "json", label: "JSON" },
-  { id: "export", label: "Export" },
-  { id: "settings", label: "Settings" },
-  { id: "prompt", label: "Prompt" }
+  { id: "settings", label: "Settings" }
 ];
 
 interface EditorTabsProps {

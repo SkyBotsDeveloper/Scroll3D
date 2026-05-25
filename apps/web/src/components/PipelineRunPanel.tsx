@@ -12,10 +12,11 @@ export function PipelineRunPanel({ result, onApply }: PipelineRunPanelProps) {
       <section className="editorSection" aria-labelledby="pipeline-run-title">
         <div className="sectionHeader">
           <p className="eyebrow">Pipeline</p>
-          <h3 id="pipeline-run-title">No run yet</h3>
+          <h3 id="pipeline-run-title">Ready for a mock run</h3>
         </div>
         <p className="statusText">
-          Run the mock prompt pipeline to see stage results and generated artifacts.
+          Pipeline progress appears here as five sequential cards. No external calls are
+          made in this phase.
         </p>
       </section>
     );

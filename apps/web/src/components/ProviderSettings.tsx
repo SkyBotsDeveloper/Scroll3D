@@ -61,7 +61,11 @@ export function ProviderSettings({
       <div className="sectionHeader splitHeader">
         <div>
           <p className="eyebrow">Providers</p>
-          <h3 id="provider-settings-title">Stage preferences</h3>
+          <h3 id="provider-settings-title">Pipeline stage preferences</h3>
+          <p className="statusText">
+            Choose Auto, Local, API, or Mock per stage. Secret references are kept
+            outside project exports.
+          </p>
         </div>
         <button
           type="button"

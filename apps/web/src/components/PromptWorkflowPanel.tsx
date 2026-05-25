@@ -6,7 +6,9 @@ import {
   runMockPromptPipeline
 } from "../lib/mock-pipeline-client";
 import type { Scroll3DSettings } from "../lib/settings-state";
+import { AlertBox } from "./AlertBox";
 import { PipelineRunPanel } from "./PipelineRunPanel";
+import { StatusBadge } from "./StatusBadge";
 
 interface PromptWorkflowPanelProps {
   project: Scroll3DProject;
@@ -27,6 +29,11 @@ export function PromptWorkflowPanel({
     "A cinematic SaaS launch page for an analytics product"
   );
   const [running, setRunning] = useState(false);
+  const examples = [
+    "Create a cinematic SaaS landing page for an AI analytics tool",
+    "Build a luxury real estate 3D scroll website",
+    "Make a futuristic portfolio with glowing motion sections"
+  ];
   const displayedResult =
     result ??
     ({
@@ -46,12 +53,20 @@ export function PromptWorkflowPanel({
   }
 
   return (
-    <section className="toolPanel promptPanel" aria-labelledby="prompt-title">
+    <section
+      className="toolPanel promptPanel heroPromptCard"
+      aria-labelledby="prompt-title"
+    >
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Prompt</p>
-          <h2 id="prompt-title">Generate with mock pipeline</h2>
+          <p className="eyebrow">Generate</p>
+          <h2 id="prompt-title">Describe the cinematic website you want</h2>
+          <p className="statusText">
+            The developer preview runs deterministic mock providers, then applies a
+            valid project update you can edit and export.
+          </p>
         </div>
+        <StatusBadge tone="warning">Mock providers</StatusBadge>
       </div>
 
       <label className="field">
@@ -65,7 +80,22 @@ export function PromptWorkflowPanel({
         />
       </label>
 
-      <div className="readonlyGrid">
+      <div className="promptChipList" aria-label="Example prompts">
+        {examples.map((example) => (
+          <button
+            key={example}
+            type="button"
+            className="promptChip"
+            onClick={() => {
+              setPrompt(example);
+            }}
+          >
+            {example}
+          </button>
+        ))}
+      </div>
+
+      <div className="readonlyGrid compactSummary">
         <div>
           <span>Mode</span>
           <strong>{settings.mode}</strong>
@@ -82,15 +112,22 @@ export function PromptWorkflowPanel({
         </div>
       </div>
 
+      <AlertBox title="Developer preview note" tone="info">
+        <p>
+          Real API providers, local model downloads, local model execution, and frame
+          extraction are planned for later phases.
+        </p>
+      </AlertBox>
+
       <button
         type="button"
-        className="primaryButton"
+        className="primaryButton primaryCta"
         disabled={running}
         onClick={() => {
           handleRun();
         }}
       >
-        {running ? "Generating..." : "Generate with mock pipeline"}
+        {running ? "Generating mock website..." : "Generate mock website"}
       </button>
 
       <PipelineRunPanel

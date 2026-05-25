@@ -26,11 +26,11 @@ export interface MockPipelineResult {
 }
 
 const stepNames: Record<PipelineStage, string> = {
-  prompt: "Prompt Understanding",
-  image: "Image Generation",
-  video: "Video Generation",
-  frame: "Frame Extraction",
-  code: "Website Compilation"
+  prompt: "Understand prompt",
+  image: "Create image concept",
+  video: "Create motion plan",
+  frame: "Build frame manifest",
+  code: "Compile website"
 };
 
 export function createInitialMockPipelineSteps(): MockPipelineStep[] {

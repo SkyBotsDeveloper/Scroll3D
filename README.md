@@ -74,6 +74,8 @@ that can be hosted on static infrastructure.
 - **Phase 10:** Settings, provider preferences, API/local/hybrid mode controls,
   local runtime setup planning commands, system scan/model recommendation
   foundation, and deterministic mock prompt pipeline completed.
+- **Phase 11:** premium prompt-first dashboard UI/UX polish, clearer Generate,
+  Visual Editor, Preview & Export, JSON, and Settings workflows completed.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -215,6 +217,23 @@ Phase 10 adds the first settings and prompt workflow layer to `@scroll3d/web`:
    generated project update back into the visual editor, JSON, preview, and ZIP
    export workflow.
 
+## Phase 11 Architecture
+
+Phase 11 improves the web app experience without changing the core data model:
+
+1. The app opens on a Generate-first dashboard with a polished header, mode
+   badges, current project metrics, prompt examples, and a clear primary CTA.
+2. The tab structure is clearer: Generate, Visual Editor, Preview & Export,
+   JSON, and Settings.
+3. Visual editing panels now explain what they control and use section badges
+   for type, order, and visibility.
+4. Preview & Export explains the self-hostable static bundle and keeps generated
+   file inspection next to the sandboxed preview.
+5. Settings presents API, Local, Hybrid, and Mock fallback behavior in more
+   approachable mode cards and documents the future local runtime setup flow.
+6. The UI remains original to Scroll3D and does not copy proprietary branding,
+   copy, assets, layouts, or templates from other products.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -232,7 +251,8 @@ Phase 10 adds the first settings and prompt workflow layer to `@scroll3d/web`:
 - Phase 9: first visual editor controls and JSON sync.
 - Phase 10: settings, runtime setup planning, provider preferences, and mock
   prompt workflow.
-- Phase 11: plugin provider system and self-hosting documentation.
+- Phase 11: polished prompt-first web dashboard and improved UX.
+- Phase 12: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 

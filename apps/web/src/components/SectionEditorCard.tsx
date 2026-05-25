@@ -30,9 +30,14 @@ export function SectionEditorCard({
       <div className="sectionCardHeader">
         <div>
           <strong>{section.name}</strong>
-          <span>
-            {section.type} - {section.id} - order {String(section.order)}
-          </span>
+          <div className="badgeRow" aria-label="Section metadata">
+            <span className="miniBadge">{section.type}</span>
+            <span className="miniBadge">order {String(section.order)}</span>
+            <span className={visible ? "miniBadge ok" : "miniBadge muted"}>
+              {visible ? "visible" : "hidden"}
+            </span>
+          </div>
+          <span>{section.id}</span>
         </div>
         <div className="iconButtonRow">
           <button

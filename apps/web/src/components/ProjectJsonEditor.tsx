@@ -22,15 +22,18 @@ export function ProjectJsonEditor({
     <section className="toolPanel editorPanel" aria-labelledby="json-editor-title">
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Project JSON</p>
-          <h2 id="json-editor-title">Edit project data</h2>
+          <p className="eyebrow">Power user JSON</p>
+          <h2 id="json-editor-title">Inspect and edit project data</h2>
+          <p className="statusText">
+            Visual edits keep this JSON synced. Apply only when the schema is valid.
+          </p>
         </div>
         <div className="buttonRow">
           <button type="button" className="secondaryButton" onClick={onReset}>
-            Reset sample
+            Restore sample
           </button>
           <button type="button" className="secondaryButton" onClick={onValidate}>
-            Validate
+            Check JSON
           </button>
           <button
             type="button"
@@ -38,7 +41,7 @@ export function ProjectJsonEditor({
             onClick={onApply}
             disabled={!validation.ok}
           >
-            Apply valid JSON
+            Apply to editor
           </button>
         </div>
       </div>
