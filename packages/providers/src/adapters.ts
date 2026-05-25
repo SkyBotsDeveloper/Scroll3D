@@ -11,10 +11,16 @@ import type {
   ImageGenerationOutput,
   ImageProvider,
   LLMProvider,
+  ProviderConnectionCheck,
+  ProviderConnectionContext,
+  ProviderConnectionStatus,
+  ProviderDiscoveryInfo,
   ProviderArtifact,
   ProviderCapability,
   ProviderContext,
   ProviderMode,
+  ProviderRequestDebugShape,
+  ProviderRequestShape,
   ProviderRunResult,
   ProviderSecretRef,
   StructuredOutputInput,
@@ -24,6 +30,7 @@ import type {
   VideoGenerationOutput,
   VideoProvider
 } from "./types";
+import { hasSecret } from "./connection";
 import { failedResult } from "./utils";
 
 export interface ProviderAdapterConfig {
@@ -56,6 +63,103 @@ abstract class ProviderAdapterBase {
     this.config = config;
   }
 
+  getAdapterConfig(): ProviderAdapterConfig {
+    return { ...this.config };
+  }
+
+  checkConnection(context: ProviderConnectionContext = {}): ProviderConnectionCheck {
+    const startedAt = Date.now();
+    const validation = this.validateConnectionConfig(context);
+
+    return {
+      providerId: this.id,
+      status: validation.status,
+      message: validation.message,
+      checkedAt: new Date().toISOString(),
+      latencyMs: Date.now() - startedAt,
+      capabilities: this.capabilities,
+      warnings: validation.warnings,
+      metadata: this.getSafeConnectionMetadata()
+    };
+  }
+
+  getDiscoveryInfo(): ProviderDiscoveryInfo {
+    return {
+      providerId: this.id,
+      expectedEndpoint: this.config.baseUrl ?? this.config.endpoint ?? null,
+      expectedPath: this.config.localPath ?? null,
+      installHint: `${this.name} integration is scaffolded. Install and configure the provider before enabling it.`,
+      connectHint: "Use Settings to check connection after configuring the endpoint.",
+      modelListPlaceholder: this.config.model ? [this.config.model] : []
+    };
+  }
+
+  validateConnectionConfig(context: ProviderConnectionContext = {}): {
+    status: ProviderConnectionStatus;
+    message: string;
+    warnings: string[];
+  } {
+    if (this.mode === "api") {
+      const missing = getMissingApiConfig(this.config);
+
+      if (missing.length > 0) {
+        return {
+          status: "missing-config",
+          message: `Missing API provider config: ${missing.join(", ")}.`,
+          warnings: ["No network call was made."]
+        };
+      }
+
+      if (!this.config.secretRef) {
+        return {
+          status: "missing-secret",
+          message: "API provider requires a secretRef.",
+          warnings: ["Raw API keys must stay outside project files."]
+        };
+      }
+
+      if (!hasSecret(this.config.secretRef, context.secrets)) {
+        return {
+          status: "missing-secret",
+          message: `Secret reference '${this.config.secretRef.id}' is not available to the checker.`,
+          warnings: ["No raw secret value was logged or serialized."]
+        };
+      }
+
+      return {
+        status: context.allowNetwork === true ? "configured" : "configured",
+        message:
+          "API provider is configured. Real network connection checks are disabled in this phase.",
+        warnings: ["No external network call was made."]
+      };
+    }
+
+    const endpoint = this.getConfiguredLocalEndpoint();
+
+    if (!endpoint) {
+      return {
+        status: "missing-config",
+        message: "Local provider requires an endpoint, command, path, or model.",
+        warnings: ["No local process was started."]
+      };
+    }
+
+    if (isLocalhostUrl(endpoint) && context.allowLocalhost === false) {
+      return {
+        status: "unavailable",
+        message: "Localhost checks are disabled for this connection context.",
+        warnings: ["No local endpoint probe was made."]
+      };
+    }
+
+    return {
+      status: "configured",
+      message:
+        "Local provider config is present. Runtime probing is shallow and disabled-by-default.",
+      warnings: ["No model execution or service startup occurred."]
+    };
+  }
+
   isAvailable(context?: ProviderContext): boolean {
     if (this.mode === "api") {
       return Boolean(
@@ -74,6 +178,75 @@ abstract class ProviderAdapterBase {
     );
 
     return failedResult(error.message);
+  }
+
+  protected buildApiRequestShape(
+    path: string,
+    body: Record<string, unknown>,
+    context: ProviderConnectionContext = {}
+  ): ProviderRequestShape {
+    return {
+      url: this.resolveEndpointPath(path),
+      method: "POST",
+      headers: this.buildSafeHeaders(context),
+      body
+    };
+  }
+
+  protected buildRequestDebugShape(
+    request: ProviderRequestShape
+  ): ProviderRequestDebugShape {
+    return {
+      ...request,
+      headers: Object.fromEntries(
+        Object.entries(request.headers).map(([key, value]) => [
+          key,
+          key.toLowerCase() === "authorization" ? "[redacted]" : value
+        ])
+      )
+    };
+  }
+
+  protected buildSafeHeaders(
+    context: ProviderConnectionContext = {}
+  ): Record<string, string> {
+    const headers: Record<string, string> = {
+      "content-type": "application/json"
+    };
+
+    if (this.config.secretRef && hasSecret(this.config.secretRef, context.secrets)) {
+      headers.authorization = `Bearer [secretRef:${this.config.secretRef.id}]`;
+    }
+
+    return headers;
+  }
+
+  protected resolveEndpointPath(path: string): string {
+    const baseUrl = this.config.baseUrl ?? this.config.endpoint ?? "";
+    const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+    const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+    return `${normalizedBase}${normalizedPath}`;
+  }
+
+  protected getConfiguredLocalEndpoint(): string | undefined {
+    return (
+      this.config.baseUrl ??
+      this.config.endpoint ??
+      this.config.localPath ??
+      this.config.model
+    );
+  }
+
+  protected getSafeConnectionMetadata(): Record<string, unknown> {
+    return {
+      mode: this.mode,
+      model: this.config.model ?? null,
+      baseUrl: this.config.baseUrl ?? null,
+      endpoint: this.config.endpoint ?? null,
+      localPath: this.config.localPath ?? null,
+      secretRef: this.config.secretRef ? { id: this.config.secretRef.id } : null
+    };
   }
 }
 
@@ -113,6 +286,34 @@ export class OpenAICompatibleLLMProvider
     return Promise.resolve(this.unavailableResult("text generation"));
   }
 
+  buildTextRequestShape(
+    input: TextGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestShape {
+    return this.buildApiRequestShape(
+      "chat/completions",
+      {
+        model: this.config.model,
+        messages: [
+          ...(input.systemPrompt
+            ? [{ role: "system", content: input.systemPrompt }]
+            : []),
+          { role: "user", content: input.prompt }
+        ],
+        temperature: input.temperature,
+        max_tokens: input.maxTokens
+      },
+      context
+    );
+  }
+
+  buildDebugTextRequestShape(
+    input: TextGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestDebugShape {
+    return this.buildRequestDebugShape(this.buildTextRequestShape(input, context));
+  }
+
   generateStructuredOutput<TOutput>(
     input: StructuredOutputInput,
     schema: z.ZodType<TOutput>,
@@ -127,7 +328,7 @@ export class OllamaLLMProvider extends ProviderAdapterBase implements LLMProvide
   readonly type = "llm" as const;
 
   constructor(config: ProviderAdapterConfig) {
-    super({ ...config, mode: "local" }, [
+    super({ baseUrl: "http://127.0.0.1:11434", ...config, mode: "local" }, [
       {
         id: "local-llm-text",
         description: "Future Ollama text generation.",
@@ -164,6 +365,19 @@ export class OllamaLLMProvider extends ProviderAdapterBase implements LLMProvide
     markScaffoldInputsUnused(input, schema, context);
     return Promise.resolve(this.unavailableResult("structured output generation"));
   }
+
+  override getDiscoveryInfo(): ProviderDiscoveryInfo {
+    return {
+      providerId: this.id,
+      expectedEndpoint: this.config.baseUrl ?? "http://127.0.0.1:11434",
+      expectedPath: null,
+      installHint:
+        "Install Ollama and pull a compatible local LLM in a later setup phase.",
+      connectHint:
+        "Start Ollama, then connect to http://127.0.0.1:11434 from Settings.",
+      modelListPlaceholder: this.config.model ? [this.config.model] : ["not-installed"]
+    };
+  }
 }
 
 export class OpenAICompatibleImageProvider
@@ -196,13 +410,37 @@ export class OpenAICompatibleImageProvider
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("image generation"));
   }
+
+  buildImageRequestShape(
+    input: ImageGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestShape {
+    return this.buildApiRequestShape(
+      "images/generations",
+      {
+        model: this.config.model,
+        prompt: input.prompt,
+        size: input.aspectRatio ?? "16:9",
+        seed: input.seed,
+        style: input.style
+      },
+      context
+    );
+  }
+
+  buildDebugImageRequestShape(
+    input: ImageGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestDebugShape {
+    return this.buildRequestDebugShape(this.buildImageRequestShape(input, context));
+  }
 }
 
 export class ComfyUIImageProvider extends ProviderAdapterBase implements ImageProvider {
   readonly type = "image" as const;
 
   constructor(config: ProviderAdapterConfig) {
-    super({ ...config, mode: "local" }, [
+    super({ baseUrl: "http://127.0.0.1:8188", ...config, mode: "local" }, [
       {
         id: "comfyui-image-generation",
         description: "Future ComfyUI image workflow execution.",
@@ -224,6 +462,18 @@ export class ComfyUIImageProvider extends ProviderAdapterBase implements ImagePr
   ): Promise<ProviderRunResult<ImageGenerationOutput>> {
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("image generation"));
+  }
+
+  override getDiscoveryInfo(): ProviderDiscoveryInfo {
+    return {
+      providerId: this.id,
+      expectedEndpoint: this.config.baseUrl ?? "http://127.0.0.1:8188",
+      expectedPath: null,
+      installHint: "Install ComfyUI and configure image workflows in a later phase.",
+      connectHint:
+        "Start ComfyUI, then connect to http://127.0.0.1:8188 from Settings.",
+      modelListPlaceholder: ["not-installed"]
+    };
   }
 }
 
@@ -257,13 +507,36 @@ export class GenericAPIVideoProvider
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("video generation"));
   }
+
+  buildVideoRequestShape(
+    input: VideoGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestShape {
+    return this.buildApiRequestShape(
+      "videos/generations",
+      {
+        model: this.config.model,
+        prompt: input.prompt,
+        duration_seconds: input.durationSeconds,
+        source_image: input.sourceImage?.id
+      },
+      context
+    );
+  }
+
+  buildDebugVideoRequestShape(
+    input: VideoGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestDebugShape {
+    return this.buildRequestDebugShape(this.buildVideoRequestShape(input, context));
+  }
 }
 
 export class ComfyUIVideoProvider extends ProviderAdapterBase implements VideoProvider {
   readonly type = "video" as const;
 
   constructor(config: ProviderAdapterConfig) {
-    super({ ...config, mode: "local" }, [
+    super({ baseUrl: "http://127.0.0.1:8188", ...config, mode: "local" }, [
       {
         id: "comfyui-video-generation",
         description: "Future ComfyUI video workflow execution.",
@@ -286,13 +559,25 @@ export class ComfyUIVideoProvider extends ProviderAdapterBase implements VideoPr
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("video generation"));
   }
+
+  override getDiscoveryInfo(): ProviderDiscoveryInfo {
+    return {
+      providerId: this.id,
+      expectedEndpoint: this.config.baseUrl ?? "http://127.0.0.1:8188",
+      expectedPath: null,
+      installHint: "Install ComfyUI and configure video workflows in a later phase.",
+      connectHint:
+        "Start ComfyUI, then connect to http://127.0.0.1:8188 from Settings.",
+      modelListPlaceholder: ["not-installed"]
+    };
+  }
 }
 
 export class FFmpegFrameProvider extends ProviderAdapterBase implements FrameProvider {
   readonly type = "frame" as const;
 
   constructor(config: ProviderAdapterConfig) {
-    super({ ...config, mode: "local" }, [
+    super({ localPath: "ffmpeg", ...config, mode: "local" }, [
       {
         id: "ffmpeg-frame-extraction",
         description: "Future FFmpeg frame extraction.",
@@ -318,6 +603,18 @@ export class FFmpegFrameProvider extends ProviderAdapterBase implements FramePro
   ): Promise<ProviderRunResult<FrameExtractionOutput>> {
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("frame extraction"));
+  }
+
+  override getDiscoveryInfo(): ProviderDiscoveryInfo {
+    return {
+      providerId: this.id,
+      expectedEndpoint: null,
+      expectedPath: this.config.localPath ?? "ffmpeg",
+      installHint: "Install FFmpeg and ensure the ffmpeg command is available on PATH.",
+      connectHint:
+        "Frame extraction will use FFmpeg in a later phase; no command runs now.",
+      modelListPlaceholder: ["ffmpeg-command"]
+    };
   }
 }
 
@@ -351,13 +648,42 @@ export class OpenAICompatibleCodeProvider
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("code generation"));
   }
+
+  buildCodeRequestShape(
+    input: CodeGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestShape {
+    return this.buildApiRequestShape(
+      "chat/completions",
+      {
+        model: this.config.model,
+        messages: [
+          {
+            role: "user",
+            content: input.prompt
+          }
+        ],
+        metadata: {
+          artifactCount: input.artifacts.length
+        }
+      },
+      context
+    );
+  }
+
+  buildDebugCodeRequestShape(
+    input: CodeGenerationInput,
+    context?: ProviderConnectionContext
+  ): ProviderRequestDebugShape {
+    return this.buildRequestDebugShape(this.buildCodeRequestShape(input, context));
+  }
 }
 
 export class LocalCodeLLMProvider extends ProviderAdapterBase implements CodeProvider {
   readonly type = "code" as const;
 
   constructor(config: ProviderAdapterConfig) {
-    super({ ...config, mode: "local" }, [
+    super({ baseUrl: "http://127.0.0.1:4317", ...config, mode: "local" }, [
       {
         id: "local-code-generation",
         description: "Future local code LLM website generation.",
@@ -380,6 +706,17 @@ export class LocalCodeLLMProvider extends ProviderAdapterBase implements CodePro
     markScaffoldInputsUnused(input, context);
     return Promise.resolve(this.unavailableResult("code generation"));
   }
+
+  override getDiscoveryInfo(): ProviderDiscoveryInfo {
+    return {
+      providerId: this.id,
+      expectedEndpoint: this.config.baseUrl ?? "http://127.0.0.1:4317",
+      expectedPath: null,
+      installHint: "Configure a local code LLM through the future Scroll3D runtime.",
+      connectHint: "Connect the Scroll3D local runtime at http://127.0.0.1:4317.",
+      modelListPlaceholder: this.config.model ? [this.config.model] : ["not-installed"]
+    };
+  }
 }
 
 export function createScaffoldArtifact(
@@ -396,4 +733,12 @@ export function createScaffoldArtifact(
 
 function markScaffoldInputsUnused(...values: unknown[]): void {
   void values;
+}
+
+function getMissingApiConfig(config: ProviderAdapterConfig): string[] {
+  return [...(config.baseUrl ? [] : ["baseUrl"]), ...(config.model ? [] : ["model"])];
+}
+
+function isLocalhostUrl(value: string): boolean {
+  return value.includes("127.0.0.1") || value.includes("localhost");
 }

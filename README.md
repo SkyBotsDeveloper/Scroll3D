@@ -76,6 +76,9 @@ that can be hosted on static infrastructure.
   foundation, and deterministic mock prompt pipeline completed.
 - **Phase 11:** premium prompt-first dashboard UI/UX polish, clearer Generate,
   Visual Editor, Preview & Export, JSON, and Settings workflows completed.
+- **Phase 12:** provider connection status contracts, safe API request-shape
+  scaffolds, local provider discovery hints, local runtime config planning,
+  model catalog, and setup-local config generation completed.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -234,6 +237,26 @@ Phase 11 improves the web app experience without changing the core data model:
 6. The UI remains original to Scroll3D and does not copy proprietary branding,
    copy, assets, layouts, or templates from other products.
 
+## Phase 12 Architecture
+
+Phase 12 makes Settings more realistic while keeping execution disabled:
+
+1. `@scroll3d/providers` exposes connection status contracts and a safe
+   connection checker that reports configured, mock, unavailable, missing-secret,
+   and missing-config states without external network calls by default.
+2. API adapter scaffolds build future request shapes and redacted debug headers
+   without sending requests or exposing raw secret values.
+3. Local provider scaffolds expose expected Ollama, ComfyUI, FFmpeg, and
+   Scroll3D runtime endpoints plus install/connect hints.
+4. `@scroll3d/local-runtime` tracks local runtime config plans, selected model
+   pack, model registry, provider bindings, and model statuses without secrets.
+5. The model catalog describes Lite, Balanced, Pro, and Custom packs with stage
+   coverage and not-installed planning entries.
+6. `pnpm setup:local` writes `.scroll3d/local-runtime.config.json` as an ignored
+   machine-local plan; it downloads nothing and runs no models.
+7. The web Settings and mock prompt pipeline show provider decision summaries
+   while continuing to use deterministic mock output.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -252,7 +275,8 @@ Phase 11 improves the web app experience without changing the core data model:
 - Phase 10: settings, runtime setup planning, provider preferences, and mock
   prompt workflow.
 - Phase 11: polished prompt-first web dashboard and improved UX.
-- Phase 12: plugin provider system and self-hosting documentation.
+- Phase 12: provider connection and local runtime discovery foundation.
+- Phase 13: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 
@@ -285,6 +309,11 @@ pnpm setup:local
 These commands do not download models or run models. They only print local
 system information, prerequisite notes, known model packs, and setup
 recommendations for future local runtime phases.
+
+`pnpm setup:local` writes a safe ignored local plan at
+`.scroll3d/local-runtime.config.json`. Stop the dev server before running setup,
+restart with `pnpm dev`, and open Settings to inspect the runtime plan. Future
+download commands will install models only after explicit user action.
 
 Run verification:
 

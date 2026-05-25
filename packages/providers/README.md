@@ -32,6 +32,10 @@ Provider contracts and deterministic mock providers for Scroll3D.
 - `ProviderResolver`
 - `ProviderSecretRef`
 - `ProviderSecretStore`
+- `ProviderConnectionChecker`
+- `ProviderConnectionCheck`
+- `ProviderConnectionStatus`
+- `ProviderConnectionContext`
 - `InMemorySecretStore`
 - `ProviderPreset`
 - `MockLLMProvider`
@@ -75,6 +79,14 @@ The real-provider classes are non-networking scaffolds in this phase. They
 define IDs, modes, provider types, capability metadata, availability checks, and
 clear not-implemented responses. Later phases can activate the adapters without
 changing agent contracts.
+
+Phase 12 adds safe connection and request-shape helpers:
+
+- API adapters validate base URL, model, and `secretRef`.
+- Request shape builders create future payloads without sending them.
+- Debug request shapes redact authorization headers.
+- Local adapters expose endpoint/path discovery hints.
+- Default connection checks do not make external network calls.
 
 ## BYO API Key Foundation
 

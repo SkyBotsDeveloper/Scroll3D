@@ -1,5 +1,7 @@
 import os from "node:os";
 import { execFileSync } from "node:child_process";
+import { mkdirSync, writeFileSync } from "node:fs";
+import { dirname } from "node:path";
 
 export const modelPacks = [
   {
@@ -57,6 +59,54 @@ export const modelPacks = [
   }
 ];
 
+export const modelCatalog = [
+  {
+    id: "lite-prompt-llm",
+    name: "Lite Prompt Planner",
+    stage: "prompt",
+    providerType: "llm",
+    runtime: "ollama",
+    status: "not-installed",
+    sizeGB: 4
+  },
+  {
+    id: "lite-code-llm",
+    name: "Lite Code Planner",
+    stage: "code",
+    providerType: "code",
+    runtime: "scroll3d-runtime",
+    status: "not-installed",
+    sizeGB: 5
+  },
+  {
+    id: "balanced-image-model",
+    name: "Balanced Image Concept Model",
+    stage: "image",
+    providerType: "image",
+    runtime: "comfyui",
+    status: "not-installed",
+    sizeGB: 16
+  },
+  {
+    id: "balanced-frame-tool",
+    name: "Balanced Frame Tool",
+    stage: "frame",
+    providerType: "frame",
+    runtime: "ffmpeg",
+    status: "not-installed",
+    sizeGB: 1
+  },
+  {
+    id: "pro-video-model",
+    name: "Pro Motion Model",
+    stage: "video",
+    providerType: "video",
+    runtime: "comfyui",
+    status: "not-installed",
+    sizeGB: 80
+  }
+];
+
 export function scanSystemSpecs() {
   return {
     os: `${os.type()} ${os.release()}`,
@@ -90,6 +140,47 @@ export function recommendModelPack(specs) {
       ...(recommended?.warnings ?? [])
     ]
   };
+}
+
+export function createLocalRuntimeConfigPlan(specs, selectedPackId) {
+  const recommendation = recommendModelPack(specs);
+  const selectedPack = selectedPackId
+    ? modelPacks.find((pack) => pack.id === selectedPackId)
+    : recommendation.recommendedPack;
+  const pack = selectedPack ?? recommendation.recommendedPack;
+  const now = new Date().toISOString();
+  const models = getModelsForPack(pack.id);
+
+  return {
+    version: "0.1",
+    runtime: {
+      id: "scroll3d-local-runtime",
+      name: "Scroll3D Local Runtime",
+      url: "http://127.0.0.1:4317",
+      status: "configured"
+    },
+    modelCacheDir: ".scroll3d/models",
+    selectedModelPack: pack.id,
+    installedModels: {
+      models
+    },
+    providerBindings: Object.fromEntries(
+      models.map((model) => [model.stage, model.id])
+    ),
+    maxConcurrentHeavyJobs: 1,
+    allowMockFallback: true,
+    createdAt: now,
+    updatedAt: now
+  };
+}
+
+export function writeLocalRuntimeConfigPlan(filePath, config) {
+  if (!filePath.endsWith(".json") || filePath.includes("..")) {
+    throw new Error("Unsafe local runtime config path.");
+  }
+
+  mkdirSync(dirname(filePath), { recursive: true });
+  writeFileSync(filePath, `${JSON.stringify(config, null, 2)}\n`, "utf8");
 }
 
 export function isPackCompatible(specs, pack) {
@@ -139,10 +230,48 @@ export function checkDoctor() {
       status: "info",
       message: "Use Corepack with pnpm 11 for this repo."
     },
-    checkOptionalBinary("ffmpeg", ["-version"], "FFmpeg")
+    checkOptionalBinary("ffmpeg", ["-version"], "FFmpeg"),
+    {
+      name: "Local runtime config",
+      status: "info",
+      message: "Run pnpm setup:local to create .scroll3d/local-runtime.config.json."
+    },
+    {
+      name: "Local runtime endpoint",
+      status: "info",
+      message:
+        "Expected future runtime endpoint is http://127.0.0.1:4317; no probe was made."
+    }
   ];
 
   return checks;
+}
+
+function getModelsForPack(packId) {
+  if (packId === "custom") {
+    return [];
+  }
+
+  const idsByPack = {
+    lite: ["lite-prompt-llm", "lite-code-llm"],
+    balanced: [
+      "lite-prompt-llm",
+      "lite-code-llm",
+      "balanced-image-model",
+      "balanced-frame-tool"
+    ],
+    pro: [
+      "lite-prompt-llm",
+      "lite-code-llm",
+      "balanced-image-model",
+      "balanced-frame-tool",
+      "pro-video-model"
+    ]
+  };
+
+  return modelCatalog
+    .filter((model) => idsByPack[packId]?.includes(model.id))
+    .map((model) => ({ ...model, notes: ["Planning entry only. No download."] }));
 }
 
 function checkOptionalBinary(binary, args, name) {

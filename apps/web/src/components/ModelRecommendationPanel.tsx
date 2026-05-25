@@ -1,4 +1,5 @@
 import {
+  listModelCatalog,
   listModelPacks,
   recommendModelPack,
   type SystemScanResult
@@ -31,7 +32,11 @@ export function ModelRecommendationPanel({
     <section className="editorSection" aria-labelledby="model-recommendation-title">
       <div className="sectionHeader">
         <p className="eyebrow">Model packs</p>
-        <h3 id="model-recommendation-title">Recommendation foundation</h3>
+        <h3 id="model-recommendation-title">Recommendation and catalog foundation</h3>
+        <p className="statusText">
+          Models are tracked as not-installed planning entries. Downloads require a
+          future explicit command.
+        </p>
       </div>
 
       <label className="field">
@@ -75,6 +80,22 @@ export function ModelRecommendationPanel({
           </div>
         ))}
       </div>
+
+      <div className="modelPackGrid" aria-label="Model catalog summary">
+        {listModelCatalog().map((model) => (
+          <div key={model.id} className="frameSetItem">
+            <strong>{model.name}</strong>
+            <span>
+              {model.stage} - {model.runtime} - approx {String(model.sizeGB)} GB
+            </span>
+            <small>{model.status}</small>
+          </div>
+        ))}
+      </div>
+
+      <button type="button" className="secondaryButton" disabled>
+        Future model downloads disabled
+      </button>
 
       <ul className="messageList">
         {recommendation.reasons.map((reason) => (

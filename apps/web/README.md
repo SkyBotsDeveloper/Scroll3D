@@ -54,9 +54,15 @@ The app is organized as a polished local dashboard:
 - `Settings` configures local/API/hybrid mode and provider preferences per
   prompt, image, video, frame, and code stage.
 - API provider entries use `secretRef` values only. Raw API keys are not stored.
+- API provider connection checks validate local config only; real network calls
+  are disabled in developer preview.
 - Local runtime controls are placeholders for future runtime connection and
   model manager work.
+- Local runtime status distinguishes missing config, missing runtime, model
+  not-installed, configured, connected, unavailable, and mock fallback states.
 - The system scan panel uses browser-safe information only; run
   `corepack pnpm runtime:scan` from the repo root for a fuller local setup
   planning scan.
 - The `Prompt` tab runs mock providers only and does not make network calls.
+- Prompt runs show provider decision summaries for each stage before applying
+  deterministic mock project updates.

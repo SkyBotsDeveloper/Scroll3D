@@ -46,6 +46,18 @@ export function LocalRuntimeSettings({
           <span>Setup command</span>
           <strong>pnpm setup:local</strong>
         </div>
+        <div>
+          <span>Config path</span>
+          <strong>.scroll3d/local-runtime.config.json</strong>
+        </div>
+        <div>
+          <span>Selected pack</span>
+          <strong>{settings.modelPackPreference}</strong>
+        </div>
+        <div>
+          <span>Model state</span>
+          <strong>not installed</strong>
+        </div>
       </div>
 
       <div className="twoColumnFields">

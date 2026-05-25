@@ -1,4 +1,7 @@
-import { resolveProviderStatuses } from "../lib/provider-preferences";
+import {
+  checkApiProviderConnection,
+  resolveProviderStatuses
+} from "../lib/provider-preferences";
 import {
   createApiProvider,
   updateSettingsTimestamp,
@@ -97,9 +100,7 @@ export function ProviderSettings({
             onChange={updateProvider}
             onRemove={removeProvider}
             onTest={(candidate) => {
-              onMessage(
-                `${candidate.name || "Provider"} connection test is a placeholder. Real API calls will be enabled in a later phase.`
-              );
+              onMessage(checkApiProviderConnection(candidate).message);
             }}
           />
         ))}

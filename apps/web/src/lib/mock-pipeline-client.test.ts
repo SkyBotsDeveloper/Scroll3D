@@ -26,6 +26,8 @@ describe("mock pipeline client", () => {
 
     expect(result.status).toBe("completed");
     expect(result.steps.every((step) => step.status === "completed")).toBe(true);
+    expect(result.providerDecisions).toHaveLength(5);
+    expect(result.providerDecisions[0]).toContain("Mock provider");
     expect(result.project?.name).toBe("A cinematic logistics dashboard");
     expect(result.project ? validateProject(result.project) : false).toBe(true);
   });

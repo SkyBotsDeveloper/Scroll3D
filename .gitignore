@@ -5,6 +5,7 @@ coverage/
 .turbo/
 .vercel/
 .dev-server/
+.scroll3d/
 out/
 *.tsbuildinfo
 .env

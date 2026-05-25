@@ -42,6 +42,7 @@ export function PromptWorkflowPanel({
       status: "completed",
       steps: createInitialMockPipelineSteps(),
       artifacts: {},
+      providerDecisions: [],
       warnings: []
     } satisfies MockPipelineResult);
 
@@ -117,6 +118,19 @@ export function PromptWorkflowPanel({
           Real API providers, local model downloads, local model execution, and frame
           extraction are planned for later phases.
         </p>
+      </AlertBox>
+
+      <AlertBox title="Provider decisions" tone="warning">
+        <ul className="messageList">
+          {(result?.providerDecisions ?? displayedResult.providerDecisions).map(
+            (decision) => (
+              <li key={decision}>{decision}</li>
+            )
+          )}
+          {!result ? (
+            <li>Real provider execution is disabled in developer preview.</li>
+          ) : null}
+        </ul>
       </AlertBox>
 
       <button

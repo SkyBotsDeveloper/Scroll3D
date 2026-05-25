@@ -681,6 +681,8 @@ h1 {
 
 .providerBadge.available,
 .providerBadge.completed,
+.providerBadge.configured,
+.providerBadge.connected,
 .statusPill.ok {
   border-color: rgba(75, 227, 176, 0.5);
   background: rgba(75, 227, 176, 0.12);
@@ -697,6 +699,10 @@ h1 {
 
 .providerBadge.unavailable,
 .providerBadge.failed,
+.providerBadge.missing-config,
+.providerBadge.missing-secret,
+.providerBadge.missing-runtime,
+.providerBadge.model-not-installed,
 .statusPill.error {
   border-color: rgba(255, 107, 122, 0.54);
   background: rgba(255, 107, 122, 0.12);

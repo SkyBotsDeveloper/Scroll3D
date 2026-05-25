@@ -3,6 +3,7 @@ import { validateProject } from "@scroll3d/core";
 import type { Scroll3DSettings } from "./settings-state";
 import { pipelineStages, type PipelineStage } from "./settings-state";
 import { updateProjectName, updateSectionContent } from "./project-updates";
+import { summarizeProviderDecisions } from "./provider-preferences";
 
 export type MockPipelineStepStatus = "pending" | "running" | "completed" | "failed";
 
@@ -21,6 +22,7 @@ export interface MockPipelineResult {
   status: "completed" | "failed";
   steps: MockPipelineStep[];
   artifacts: Record<string, JsonValue>;
+  providerDecisions: string[];
   warnings: string[];
   project?: Scroll3DProject;
 }
@@ -56,6 +58,7 @@ export function runMockPromptPipeline(
       status: "failed",
       steps: createInitialMockPipelineSteps(),
       artifacts: {},
+      providerDecisions: summarizeProviderDecisions(settings),
       warnings: ["Prompt is required."]
     };
   }
@@ -93,6 +96,7 @@ export function runMockPromptPipeline(
     status: valid ? "completed" : "failed",
     steps,
     artifacts,
+    providerDecisions: summarizeProviderDecisions(settings),
     warnings: [
       "Mock providers were used for every stage.",
       "No network calls, model execution, downloads, or frame extraction occurred."

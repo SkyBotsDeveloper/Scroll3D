@@ -1,4 +1,4 @@
-import { modelPacks } from "./runtime-lib.mjs";
+import { modelCatalog, modelPacks } from "./runtime-lib.mjs";
 
 console.log("Scroll3D model packs");
 console.log("====================");
@@ -19,4 +19,12 @@ for (const pack of modelPacks) {
   console.log("");
 }
 
+console.log("Model catalog");
+console.log("-------------");
+for (const model of modelCatalog) {
+  console.log(
+    `${model.name} (${model.id}) - ${model.stage}/${model.runtime} - ${model.status} - approx ${model.sizeGB} GB`
+  );
+}
+console.log("");
 console.log("Real model downloads are not implemented yet.");

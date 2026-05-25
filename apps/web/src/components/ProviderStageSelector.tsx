@@ -21,6 +21,7 @@ export function ProviderStageSelector({
         <strong>{status.label}</strong>
         <span>{status.explanation}</span>
         {status.missingConfig ? <small>{status.missingConfig}</small> : null}
+        {status.modelBinding ? <small>{status.modelBinding}</small> : null}
       </div>
       <label className="field">
         <span>Preference</span>

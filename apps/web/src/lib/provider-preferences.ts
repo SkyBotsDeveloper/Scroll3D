@@ -10,10 +10,19 @@ export interface StageProviderStatus {
   stage: PipelineStage;
   label: string;
   selected: StageProviderPreference;
-  status: "available" | "unavailable" | "mock";
+  status:
+    | "configured"
+    | "connected"
+    | "unavailable"
+    | "mock"
+    | "missing-secret"
+    | "missing-config"
+    | "missing-runtime"
+    | "model-not-installed";
   providerLabel: string;
   explanation: string;
   missingConfig?: string;
+  modelBinding?: string;
 }
 
 const stageLabels: Record<PipelineStage, string> = {
@@ -52,7 +61,8 @@ export function resolveProviderStatus(
       selected: preference,
       status: "mock",
       providerLabel: "Mock provider",
-      explanation: "Developer preview uses deterministic mock providers."
+      explanation:
+        "Developer preview uses deterministic mock providers. Real provider execution is disabled."
     };
   }
 
@@ -75,6 +85,37 @@ export function updateStagePreference(
       [stage]: preference
     },
     updatedAt: new Date().toISOString()
+  };
+}
+
+export function checkApiProviderConnection(provider: ApiProviderSettings): {
+  status: StageProviderStatus["status"];
+  message: string;
+} {
+  if (!provider.baseUrl.trim()) {
+    return {
+      status: "missing-config",
+      message: `${provider.name || "Provider"} is missing base URL. No network call was made.`
+    };
+  }
+
+  if (!provider.model?.trim()) {
+    return {
+      status: "missing-config",
+      message: `${provider.name || "Provider"} is missing model name. No network call was made.`
+    };
+  }
+
+  if (!provider.secretRef.trim()) {
+    return {
+      status: "missing-secret",
+      message: `${provider.name || "Provider"} is missing secretRef. Raw API keys are not stored here.`
+    };
+  }
+
+  return {
+    status: "configured",
+    message: `${provider.name || "Provider"} is configured. Real network connection checks are disabled in developer preview.`
   };
 }
 
@@ -105,7 +146,7 @@ function resolveApiStatus(
       stage,
       label: stageLabels[stage],
       selected,
-      status: settings.allowMockFallback ? "mock" : "unavailable",
+      status: settings.allowMockFallback ? "mock" : "missing-config",
       providerLabel: settings.allowMockFallback ? "Mock fallback" : "API provider",
       explanation: settings.allowMockFallback
         ? "No enabled API provider is configured, so mock fallback is available."
@@ -114,17 +155,31 @@ function resolveApiStatus(
     };
   }
 
-  if (!provider.baseUrl.trim() || !provider.secretRef.trim()) {
+  if (!provider.baseUrl.trim()) {
     return {
       stage,
       label: stageLabels[stage],
       selected,
-      status: settings.allowMockFallback ? "mock" : "unavailable",
+      status: settings.allowMockFallback ? "mock" : "missing-config",
       providerLabel: settings.allowMockFallback ? "Mock fallback" : provider.name,
       explanation: settings.allowMockFallback
-        ? "API provider is missing config, so mock fallback is available."
-        : "API provider is missing base URL or secretRef.",
-      missingConfig: "Add base URL and secretRef. Do not store raw API keys here."
+        ? "API provider is missing base URL, so mock fallback is available."
+        : "API provider is missing base URL.",
+      missingConfig: "Add a base URL. Do not store raw API keys here."
+    };
+  }
+
+  if (!provider.secretRef.trim()) {
+    return {
+      stage,
+      label: stageLabels[stage],
+      selected,
+      status: settings.allowMockFallback ? "mock" : "missing-secret",
+      providerLabel: settings.allowMockFallback ? "Mock fallback" : provider.name,
+      explanation: settings.allowMockFallback
+        ? "API provider has no secretRef, so mock fallback is available."
+        : "API provider is missing secretRef.",
+      missingConfig: "Add a secretRef. Raw API keys stay outside project files."
     };
   }
 
@@ -132,9 +187,10 @@ function resolveApiStatus(
     stage,
     label: stageLabels[stage],
     selected,
-    status: "available",
+    status: "configured",
     providerLabel: provider.name,
-    explanation: "Configured API provider is ready for a future connection test."
+    explanation:
+      "API provider has base URL, model, and secretRef. Real network checks are disabled in developer preview."
   };
 }
 
@@ -148,10 +204,11 @@ function resolveLocalStatus(
       stage,
       label: stageLabels[stage],
       selected,
-      status: "available",
+      status: "connected",
       providerLabel: "Local runtime",
       explanation:
-        "Local runtime is marked connected. Real model execution is not implemented yet."
+        "Local runtime is marked connected. Real model execution is not implemented yet.",
+      modelBinding: "model binding pending"
     };
   }
 
@@ -159,12 +216,20 @@ function resolveLocalStatus(
     stage,
     label: stageLabels[stage],
     selected,
-    status: settings.allowMockFallback ? "mock" : "unavailable",
+    status: settings.allowMockFallback ? "mock" : "missing-runtime",
     providerLabel: settings.allowMockFallback ? "Mock fallback" : "Local runtime",
     explanation: settings.allowMockFallback
       ? "Local runtime is not connected, so mock fallback is available."
       : "Local runtime is not connected.",
     missingConfig:
-      "Run pnpm setup:local in a stopped server session, then connect runtime later."
+      "Run pnpm setup:local in a stopped server session, then connect runtime later.",
+    modelBinding: "model not installed"
   };
+}
+
+export function summarizeProviderDecisions(settings: Scroll3DSettings): string[] {
+  return resolveProviderStatuses(settings).map(
+    (status) =>
+      `${status.label}: ${status.providerLabel} (${status.status}) - ${status.explanation}`
+  );
 }

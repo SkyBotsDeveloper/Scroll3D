@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  checkApiProviderConnection,
   resolveProviderStatus,
   resolveProviderStatuses,
+  summarizeProviderDecisions,
   updateStagePreference
 } from "./provider-preferences";
 import { createDefaultSettings } from "./settings-state";
@@ -22,7 +24,7 @@ describe("provider preferences", () => {
     expect(status.missingConfig).toContain("API provider");
   });
 
-  it("marks configured API provider as available", () => {
+  it("marks configured API provider as configured", () => {
     const settings = {
       ...updateStagePreference(createDefaultSettings(), "prompt", "api"),
       apiProviders: [
@@ -39,8 +41,29 @@ describe("provider preferences", () => {
     };
     const status = resolveProviderStatus(settings, "prompt");
 
-    expect(status.status).toBe("available");
+    expect(status.status).toBe("configured");
     expect(status.providerLabel).toBe("LLM API");
+  });
+
+  it("summarizes provider decisions for prompt pipeline display", () => {
+    const summary = summarizeProviderDecisions(createDefaultSettings());
+
+    expect(summary).toHaveLength(5);
+    expect(summary[0]).toContain("Mock provider");
+  });
+
+  it("checks API provider config without network calls", () => {
+    expect(
+      checkApiProviderConnection({
+        id: "api",
+        name: "API",
+        type: "llm",
+        baseUrl: "",
+        model: "model",
+        secretRef: "secret-ref",
+        enabled: true
+      }).status
+    ).toBe("missing-config");
   });
 
   it("resolves every stage", () => {

@@ -1,4 +1,5 @@
 export * from "./adapters";
+export * from "./connection";
 export * from "./config";
 export * from "./errors";
 export * from "./mock-providers";

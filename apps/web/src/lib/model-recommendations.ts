@@ -29,9 +29,27 @@ export interface ModelPack {
   minVramGB?: number;
   recommendedVramGB?: number;
   estimatedDiskGB: number;
+  modelIds: string[];
   stagesSupported: PipelineStage[];
   providers: Array<"mock" | "local" | "api">;
   warnings: string[];
+}
+
+export interface ModelCatalogEntry {
+  id: string;
+  name: string;
+  stage: PipelineStage;
+  providerType: "llm" | "image" | "video" | "frame" | "code";
+  runtime: "ollama" | "comfyui" | "ffmpeg" | "scroll3d-runtime" | "api" | "mock";
+  sizeGB: number;
+  status:
+    | "not-installed"
+    | "installed"
+    | "downloading"
+    | "ready"
+    | "unavailable"
+    | "error";
+  notes: string[];
 }
 
 export interface IncompatibleModelPack {
@@ -57,6 +75,7 @@ const modelPacks: ModelPack[] = [
     minVramGB: 0,
     recommendedVramGB: 0,
     estimatedDiskGB: 12,
+    modelIds: ["lite-prompt-llm", "lite-code-llm"],
     stagesSupported: ["prompt", "code"],
     providers: ["mock", "local"],
     warnings: ["Image and video stages stay mock/API-assisted in this phase."]
@@ -71,6 +90,12 @@ const modelPacks: ModelPack[] = [
     minVramGB: 6,
     recommendedVramGB: 8,
     estimatedDiskGB: 48,
+    modelIds: [
+      "lite-prompt-llm",
+      "lite-code-llm",
+      "balanced-image-model",
+      "balanced-frame-tool"
+    ],
     stagesSupported: ["prompt", "image", "frame", "code"],
     providers: ["mock", "local", "api"],
     warnings: ["Real model downloads are not implemented yet."]
@@ -84,6 +109,13 @@ const modelPacks: ModelPack[] = [
     minVramGB: 12,
     recommendedVramGB: 16,
     estimatedDiskGB: 140,
+    modelIds: [
+      "lite-prompt-llm",
+      "lite-code-llm",
+      "balanced-image-model",
+      "balanced-frame-tool",
+      "pro-video-model"
+    ],
     stagesSupported: ["prompt", "image", "video", "frame", "code"],
     providers: ["mock", "local", "api"],
     warnings: ["Requires later model manager and downloads."]
@@ -97,18 +129,80 @@ const modelPacks: ModelPack[] = [
     minVramGB: 0,
     recommendedVramGB: 0,
     estimatedDiskGB: 0,
+    modelIds: [],
     stagesSupported: ["prompt", "image", "video", "frame", "code"],
     providers: ["mock", "local", "api"],
     warnings: ["Manual setup path. Real downloads are not implemented yet."]
   }
 ];
 
+const modelCatalog: ModelCatalogEntry[] = [
+  {
+    id: "lite-prompt-llm",
+    name: "Lite Prompt Planner",
+    stage: "prompt",
+    providerType: "llm",
+    runtime: "ollama",
+    sizeGB: 4,
+    status: "not-installed",
+    notes: ["Future local prompt model. No download in this phase."]
+  },
+  {
+    id: "lite-code-llm",
+    name: "Lite Code Planner",
+    stage: "code",
+    providerType: "code",
+    runtime: "scroll3d-runtime",
+    sizeGB: 5,
+    status: "not-installed",
+    notes: ["Future local code model. No execution in this phase."]
+  },
+  {
+    id: "balanced-image-model",
+    name: "Balanced Image Concept Model",
+    stage: "image",
+    providerType: "image",
+    runtime: "comfyui",
+    sizeGB: 16,
+    status: "not-installed",
+    notes: ["ComfyUI image workflow placeholder."]
+  },
+  {
+    id: "balanced-frame-tool",
+    name: "Balanced Frame Tool",
+    stage: "frame",
+    providerType: "frame",
+    runtime: "ffmpeg",
+    sizeGB: 1,
+    status: "not-installed",
+    notes: ["FFmpeg frame tooling placeholder."]
+  },
+  {
+    id: "pro-video-model",
+    name: "Pro Motion Model",
+    stage: "video",
+    providerType: "video",
+    runtime: "comfyui",
+    sizeGB: 80,
+    status: "not-installed",
+    notes: ["Future local video model placeholder."]
+  }
+];
+
 export function listModelPacks(): ModelPack[] {
   return modelPacks.map((pack) => ({
     ...pack,
+    modelIds: [...pack.modelIds],
     stagesSupported: [...pack.stagesSupported],
     providers: [...pack.providers],
     warnings: [...pack.warnings]
+  }));
+}
+
+export function listModelCatalog(): ModelCatalogEntry[] {
+  return modelCatalog.map((model) => ({
+    ...model,
+    notes: [...model.notes]
   }));
 }
 
@@ -121,10 +215,10 @@ export function recommendModelPack(specs: SystemSpecs): ModelRecommendation {
       pack,
       reasons: getIncompatibilityReasons(specs, pack)
     }));
-  const recommendedPack = hasMissingSpecs(specs)
-    ? getLitePack(packs)
-    : ([...compatiblePacks].filter((pack) => pack.id !== "custom").reverse()[0] ??
-      getLitePack(packs));
+  const recommendedPack =
+    specs.totalRamGB === undefined
+      ? getLitePack(packs)
+      : (chooseRecommendedPack(specs, compatiblePacks) ?? getLitePack(packs));
 
   return {
     recommendedPack,
@@ -138,8 +232,11 @@ export function recommendModelPack(specs: SystemSpecs): ModelRecommendation {
     ],
     warnings: [
       ...recommendedPack.warnings,
-      ...(hasMissingSpecs(specs)
+      ...(specs.totalRamGB === undefined
         ? ["Hardware details are incomplete in browser scan."]
+        : []),
+      ...(specs.vramGB === undefined
+        ? ["VRAM was not detected; hybrid/mock fallback may be needed."]
         : [])
     ]
   };
@@ -187,10 +284,6 @@ function formatGB(value: number | undefined): string {
   return typeof value === "number" ? `${String(value)} GB` : "Unknown";
 }
 
-function hasMissingSpecs(specs: SystemSpecs): boolean {
-  return specs.totalRamGB === undefined || specs.vramGB === undefined;
-}
-
 function getLitePack(packs: ModelPack[]): ModelPack {
   const lite = packs.find((pack) => pack.id === "lite") ?? packs[0];
 
@@ -199,4 +292,26 @@ function getLitePack(packs: ModelPack[]): ModelPack {
   }
 
   return lite;
+}
+
+function chooseRecommendedPack(
+  specs: SystemSpecs,
+  compatiblePacks: ModelPack[]
+): ModelPack | undefined {
+  const nonCustom = compatiblePacks.filter((pack) => pack.id !== "custom");
+
+  if (
+    typeof specs.totalRamGB === "number" &&
+    specs.totalRamGB >= 32 &&
+    typeof specs.vramGB === "number" &&
+    specs.vramGB >= 12
+  ) {
+    return nonCustom.find((pack) => pack.id === "pro");
+  }
+
+  if (typeof specs.totalRamGB === "number" && specs.totalRamGB >= 12) {
+    return nonCustom.find((pack) => pack.id === "balanced");
+  }
+
+  return nonCustom.find((pack) => pack.id === "lite");
 }

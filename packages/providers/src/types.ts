@@ -3,6 +3,15 @@ import type { z } from "zod";
 export type ProviderType = "llm" | "image" | "video" | "frame" | "code";
 export type ProviderMode = "local" | "api";
 export type ProviderRunStatus = "completed" | "failed" | "cancelled";
+export type ProviderConnectionStatus =
+  | "unknown"
+  | "configured"
+  | "connected"
+  | "unavailable"
+  | "missing-secret"
+  | "missing-config"
+  | "unsupported"
+  | "mock";
 export type ProviderImplementation =
   | "mock"
   | "openai-compatible"
@@ -80,6 +89,59 @@ export interface ProviderSecretStore {
   deleteSecret(ref: ProviderSecretRef | string): boolean;
   hasSecret(ref: ProviderSecretRef | string): boolean;
   listSecretRefs(): ProviderSecretRef[];
+}
+
+export interface ProviderConnectionContext {
+  secrets?: ProviderSecretStore | Record<string, string | undefined>;
+  timeoutMs?: number;
+  allowNetwork?: boolean;
+  allowLocalhost?: boolean;
+  logger?: ProviderLogger;
+}
+
+export interface ProviderConnectionCheck {
+  providerId: string;
+  status: ProviderConnectionStatus;
+  message: string;
+  checkedAt: string;
+  latencyMs?: number;
+  capabilities?: ProviderCapability[];
+  warnings: string[];
+  metadata: Record<string, unknown>;
+}
+
+export interface ProviderConnectionChecker {
+  checkProvider(
+    provider: AnyProvider,
+    context?: ProviderConnectionContext
+  ): Promise<ProviderConnectionCheck>;
+  checkAll(
+    providers: AnyProvider[],
+    context?: ProviderConnectionContext
+  ): Promise<ProviderConnectionCheck[]>;
+}
+
+export interface ProviderRequestShape {
+  url: string;
+  method: "GET" | "POST";
+  headers: Record<string, string>;
+  body: Record<string, unknown>;
+}
+
+export interface ProviderRequestDebugShape {
+  url: string;
+  method: "GET" | "POST";
+  headers: Record<string, string>;
+  body: Record<string, unknown>;
+}
+
+export interface ProviderDiscoveryInfo {
+  providerId: string;
+  expectedEndpoint: string | null;
+  expectedPath: string | null;
+  installHint: string;
+  connectHint: string;
+  modelListPlaceholder: string[];
 }
 
 export interface ProviderConfigBase {

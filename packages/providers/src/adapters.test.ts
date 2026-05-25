@@ -19,6 +19,7 @@ describe("provider adapter scaffolds", () => {
         id: "openai-llm",
         name: "OpenAI LLM",
         mode: "api",
+        model: "text-model",
         baseUrl: "https://api.example.invalid/v1",
         secretRef: { id: "openai-key" }
       }),
@@ -32,6 +33,7 @@ describe("provider adapter scaffolds", () => {
         id: "openai-image",
         name: "OpenAI Image",
         mode: "api",
+        model: "image-model",
         baseUrl: "https://api.example.invalid/v1",
         secretRef: { id: "openai-key" }
       }),
@@ -45,6 +47,7 @@ describe("provider adapter scaffolds", () => {
         id: "generic-video",
         name: "Generic Video",
         mode: "api",
+        model: "video-model",
         baseUrl: "https://api.example.invalid/video",
         secretRef: { id: "video-key" }
       }),
@@ -64,6 +67,7 @@ describe("provider adapter scaffolds", () => {
         id: "openai-code",
         name: "OpenAI Code",
         mode: "api",
+        model: "code-model",
         baseUrl: "https://api.example.invalid/v1",
         secretRef: { id: "openai-key" }
       }),
@@ -107,6 +111,42 @@ describe("provider adapter scaffolds", () => {
 
     expect(result.status).toBe("failed");
     expect(serialized).not.toContain("real-secret-value");
+  });
+
+  it("builds API request shapes without executing network calls", () => {
+    const provider = new OpenAICompatibleLLMProvider({
+      id: "api-llm",
+      name: "API LLM",
+      mode: "api",
+      model: "text-model",
+      baseUrl: "https://api.example.invalid/v1",
+      secretRef: { id: "api-key" }
+    });
+    const request = provider.buildTextRequestShape(
+      { prompt: "Generate a page" },
+      { secrets: { "api-key": "secret-value" } }
+    );
+    const debug = provider.buildDebugTextRequestShape(
+      { prompt: "Generate a page" },
+      { secrets: { "api-key": "secret-value" } }
+    );
+
+    expect(request.url).toBe("https://api.example.invalid/v1/chat/completions");
+    expect(request.body.model).toBe("text-model");
+    expect(debug.headers.authorization).toBe("[redacted]");
+    expect(JSON.stringify(debug)).not.toContain("secret-value");
+  });
+
+  it("reports missing model as a connection config issue", () => {
+    const provider = new OpenAICompatibleCodeProvider({
+      id: "api-code",
+      name: "API Code",
+      mode: "api",
+      baseUrl: "https://api.example.invalid/v1",
+      secretRef: { id: "api-key" }
+    });
+
+    expect(provider.checkConnection().status).toBe("missing-config");
   });
 
   it("validates the safe Scroll3D config shape", () => {

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   formatSystemSpecs,
   isPackCompatible,
+  listModelCatalog,
   listModelPacks,
   recommendModelPack,
   type SystemSpecs
@@ -39,6 +40,19 @@ describe("model recommendations", () => {
     expect(result.recommendedPack.id).toBe("lite");
     expect(result.warnings).toContain(
       "Hardware details are incomplete in browser scan."
+    );
+  });
+
+  it("recommends Balanced with warnings when VRAM is missing on 16 GB RAM", () => {
+    const result = recommendModelPack(specs({ totalRamGB: 16 }));
+
+    expect(result.recommendedPack.id).toBe("balanced");
+    expect(result.warnings.join(" ")).toContain("VRAM");
+  });
+
+  it("exposes a not-installed model catalog", () => {
+    expect(listModelCatalog().every((model) => model.status === "not-installed")).toBe(
+      true
     );
   });
 
