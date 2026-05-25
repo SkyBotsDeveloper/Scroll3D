@@ -82,6 +82,15 @@ importers:
         specifier: ^4.1.13
         version: 4.4.3
 
+  packages/exporter:
+    dependencies:
+      '@scroll3d/core':
+        specifier: workspace:*
+        version: link:../core
+      '@scroll3d/scroll-engine':
+        specifier: workspace:*
+        version: link:../scroll-engine
+
   packages/local-runtime:
     dependencies:
       zod:

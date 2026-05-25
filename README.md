@@ -60,9 +60,13 @@ that can be hosted on static infrastructure.
 - **Phase 5:** canvas scroll-frame engine, frame math, preloading, rendering,
   responsive frame sets, reduced motion, and timeline segment foundations
   completed.
+- **Phase 6:** static exporter foundation for self-hostable HTML, CSS,
+  JavaScript, project JSON, frame manifests, asset manifests, and export notes
+  completed.
 
 The visual editor, real provider integrations, model downloads, real frame
-extraction implementation, and exporter are intentionally not implemented yet.
+extraction implementation, disk writing, ZIP export, and asset copying are
+intentionally not implemented yet.
 
 ## Phase 2 Architecture
 
@@ -125,6 +129,19 @@ runtime:
 5. `Scroll3DEngine` connects scroll progress, preloading, canvas rendering,
    responsive target switching, reduced motion, lifecycle cleanup, and timeline
    segment callbacks.
+
+## Phase 6 Architecture
+
+Phase 6 implements `@scroll3d/exporter`, the self-hostable static website bundle
+foundation:
+
+1. Projects are validated through `@scroll3d/core`.
+2. Scroll scenes are converted into scroll-engine-compatible frame manifests.
+3. Static HTML, CSS, and JavaScript runtime glue are generated safely.
+4. Redacted `project.json`, `frame-manifest.json`, and `assets/manifest.json`
+   files are included in the in-memory bundle.
+5. Sanitization blocks path traversal, escapes user content, redacts
+   secret-looking values, and avoids external CDN dependencies by default.
 
 ## Roadmap
 

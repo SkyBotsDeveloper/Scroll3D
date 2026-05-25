@@ -11,3 +11,4 @@ Current docs:
 - [Phase 4 Provider Selection](./phase-4-provider-selection.md)
 - [Phase 4 Persistent Pipelines](./phase-4-persistent-pipelines.md)
 - [Phase 5 Scroll Engine](./phase-5-scroll-engine.md)
+- [Phase 6 Static Exporter](./phase-6-static-exporter.md)

@@ -1,0 +1,30 @@
+{
+  "name": "@scroll3d/exporter",
+  "version": "0.1.0",
+  "description": "Static website exporter foundation for Scroll3D projects.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Siddhartha Abhimanyu",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "lint": "eslint \"src/**/*.ts\" --max-warnings=0"
+  },
+  "dependencies": {
+    "@scroll3d/core": "workspace:*",
+    "@scroll3d/scroll-engine": "workspace:*"
+  }
+}

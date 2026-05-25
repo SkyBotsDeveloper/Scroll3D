@@ -4,6 +4,7 @@ const phaseItems = [
   "Phase 3: Provider registry and queued pipeline completed",
   "Phase 4: Provider selection and persistent checkpoints completed",
   "Phase 5: Scroll-frame engine completed",
+  "Phase 6: Static exporter completed",
   "Creator: Siddhartha Abhimanyu",
   "Telegram: @iflexelite",
   "Instagram: elite.sid"
@@ -13,12 +14,12 @@ export default function HomePage() {
   return (
     <main className="page">
       <section className="hero" aria-labelledby="home-title">
-        <p className="eyebrow">Phase 5</p>
+        <p className="eyebrow">Phase 6</p>
         <h1 id="home-title">Scroll3D</h1>
         <p className="subtitle">Open-source AI 3D website builder</p>
-        <div className="status" aria-label="Current Phase 5 status">
+        <div className="status" aria-label="Current Phase 6 status">
           <span className="statusDot" aria-hidden="true" />
-          Scroll-frame canvas playback foundation
+          Static website export bundle foundation
         </div>
       </section>
 
