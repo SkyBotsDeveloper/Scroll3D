@@ -65,6 +65,9 @@ that can be hosted on static infrastructure.
   completed.
 - **Phase 7:** disk export writer, ZIP archive packaging, safe copy planning,
   and export helper APIs completed.
+- **Phase 8:** browser developer preview for JSON editing, validation, static
+  export preview, generated file inspection, local persistence, and ZIP download
+  completed.
 
 The visual editor, real provider integrations, model downloads, real frame
 extraction implementation, and real binary asset/frame copying are intentionally
@@ -157,6 +160,20 @@ Phase 7 extends `@scroll3d/exporter` with export delivery foundations:
 5. `runStaticExport` gives future CLI and web UI code one helper for bundle,
    directory, and ZIP targets.
 
+## Phase 8 Architecture
+
+Phase 8 turns `@scroll3d/web` into an early developer preview:
+
+1. The app loads the sample project from `@scroll3d/core`.
+2. Project JSON can be edited, validated, reset, and applied in the browser.
+3. Valid projects are exported through `@scroll3d/exporter/browser`.
+4. Generated HTML is previewed in a sandboxed iframe with CSS inlined for
+   preview.
+5. Generated files can be inspected from the browser.
+6. ZIP download runs locally with a browser-safe export helper.
+7. Current JSON, selected file, and small export history metadata persist in
+   `localStorage` when available.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -169,8 +186,10 @@ Phase 7 extends `@scroll3d/exporter` with export delivery foundations:
 - Phase 5: scroll engine package for frame-sequence playback.
 - Phase 6: static exporter for clean standalone websites.
 - Phase 7: disk writing, ZIP export, and safe copy planning.
-- Phase 8: web editor with visual editing and JSON/code editing.
-- Phase 9: plugin provider system and self-hosting documentation.
+- Phase 8: web developer preview with JSON editing, export preview, and ZIP
+  download.
+- Phase 9: web editor with visual editing and JSON/code editing.
+- Phase 10: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 

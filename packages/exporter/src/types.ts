@@ -151,6 +151,22 @@ export interface ZipExportResult {
   errors: ExportWarning[];
 }
 
+export interface BrowserZipExportConfig {
+  filename: string;
+  compressionLevel?: number;
+  includeDirectoryRoot: boolean;
+  rootDirectoryName?: string;
+}
+
+export interface BrowserZipExportResult {
+  success: boolean;
+  filename: string;
+  blob?: Blob;
+  bytes: number;
+  warnings: ExportWarning[];
+  errors: ExportWarning[];
+}
+
 export interface RunStaticExportOptions {
   target: string;
   staticConfig?: Partial<StaticExporterConfig>;

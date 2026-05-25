@@ -37,6 +37,10 @@ binary assets are copied in this phase.
 - HTML, CSS, JavaScript, project JSON, frame manifest, asset, and sanitization
   helpers
 
+Browser apps should import from `@scroll3d/exporter/browser`. That entrypoint
+exposes the in-memory exporter and browser ZIP Blob helper without importing the
+Node disk writer.
+
 ## Disk Export
 
 Disk export writes bundle files into a configured output directory. The writer:

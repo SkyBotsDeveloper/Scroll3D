@@ -44,6 +44,9 @@ importers:
       '@scroll3d/core':
         specifier: workspace:*
         version: link:../../packages/core
+      '@scroll3d/exporter':
+        specifier: workspace:*
+        version: link:../../packages/exporter
       next:
         specifier: ^16.0.7
         version: 16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -60,6 +63,9 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.15)
+      vitest:
+        specifier: ^4.0.14
+        version: 4.1.7(@types/node@24.12.4)(vite@8.0.14(@types/node@24.12.4))
 
   packages/agents:
     dependencies:

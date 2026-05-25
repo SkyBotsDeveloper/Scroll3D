@@ -1,4 +1,5 @@
 export * from "./assets";
+export * from "./browser-zip";
 export * from "./copy-plan";
 export * from "./css";
 export * from "./disk";
