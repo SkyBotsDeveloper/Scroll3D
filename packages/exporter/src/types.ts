@@ -7,6 +7,16 @@ export type RuntimeMode = "inline" | "external";
 export type AssetMode = "reference" | "copy-placeholder";
 export type FrameMode = "reference" | "manifest-only";
 export type ExportWarningSeverity = "info" | "warning" | "error";
+export type CopyPlanEntryKind =
+  | "asset"
+  | "frame"
+  | "manifest"
+  | "runtime"
+  | "project"
+  | "readme"
+  | "other";
+export type CopyPlanEntryAction = "copy" | "reference" | "skip" | "warn";
+export type StaticExportTarget = "bundle" | "directory" | "zip";
 
 export interface StaticExportFile {
   path: string;
@@ -73,6 +83,92 @@ export interface ExportResult {
   bundle?: StaticExportBundle;
   errors: ExportWarning[];
   warnings: ExportWarning[];
+}
+
+export interface DiskExportConfig {
+  outputDir: string;
+  cleanOutputDir: boolean;
+  overwrite: boolean;
+  dryRun: boolean;
+  preserveExisting: boolean;
+  includeDotfiles: boolean;
+}
+
+export interface ZipExportConfig {
+  filename: string;
+  compressionLevel?: number;
+  includeDirectoryRoot: boolean;
+  rootDirectoryName?: string;
+  outputPath?: string;
+}
+
+export interface CopyPlan {
+  id: string;
+  entries: CopyPlanEntry[];
+  warnings: ExportWarning[];
+  createdAt: string;
+}
+
+export interface CopyPlanEntry {
+  sourcePath: string;
+  destinationPath: string;
+  kind: CopyPlanEntryKind;
+  required: boolean;
+  exists?: boolean;
+  size?: number;
+  action: CopyPlanEntryAction;
+}
+
+export interface CopyPlanOptions {
+  assetMode: AssetMode;
+  frameMode: FrameMode;
+  includeBundleFiles: boolean;
+}
+
+export interface WriteFileResult {
+  path: string;
+  bytesWritten: number;
+  skipped: boolean;
+  reason?: string;
+}
+
+export interface DiskExportResult {
+  success: boolean;
+  outputDir: string;
+  files: WriteFileResult[];
+  copyPlan: CopyPlan;
+  warnings: ExportWarning[];
+  errors: ExportWarning[];
+}
+
+export interface ZipExportResult {
+  success: boolean;
+  filename: string;
+  buffer?: Buffer;
+  outputPath?: string;
+  bytes: number;
+  warnings: ExportWarning[];
+  errors: ExportWarning[];
+}
+
+export interface RunStaticExportOptions {
+  target: string;
+  staticConfig?: Partial<StaticExporterConfig>;
+  diskConfig?: Partial<DiskExportConfig>;
+  zipConfig?: Partial<ZipExportConfig>;
+  outputDir?: string;
+  zipPath?: string;
+  dryRun?: boolean;
+}
+
+export interface RunStaticExportResult {
+  success: boolean;
+  target: string;
+  bundleResult?: ExportResult;
+  diskResult?: DiskExportResult;
+  zipResult?: ZipExportResult;
+  warnings: ExportWarning[];
+  errors: ExportWarning[];
 }
 
 export interface AssetManifestEntry {

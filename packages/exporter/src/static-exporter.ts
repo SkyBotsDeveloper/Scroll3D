@@ -198,7 +198,7 @@ Files:
 - project.json, when included
 - assets/manifest.json
 
-Frame and asset files are referenced by path in this phase. Binary copying and
-ZIP export are planned for a later phase.
+Frame and asset files are referenced by path in this phase. Binary copying is
+planned for a later phase. ZIP packaging can be produced by the exporter APIs.
 `;
 }

@@ -1,11 +1,17 @@
 export * from "./assets";
+export * from "./copy-plan";
 export * from "./css";
+export * from "./disk";
 export * from "./errors";
 export * from "./exporter";
+export * from "./frames";
 export * from "./frame-manifest";
+export * from "./fs-utils";
 export * from "./html";
 export * from "./javascript";
 export * from "./project-json";
+export * from "./run";
 export * from "./sanitize";
 export * from "./static-exporter";
+export * from "./zip";
 export type * from "./types";

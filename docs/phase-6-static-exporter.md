@@ -16,7 +16,8 @@ The exporter works in memory:
 7. Generate asset and frame manifest files.
 8. Return a `StaticExportBundle`.
 
-Disk writing and ZIP packaging are intentionally deferred.
+Disk writing and ZIP packaging are implemented in Phase 7 on top of this
+in-memory bundle.
 
 ## Bundle Files
 
@@ -79,8 +80,6 @@ Provider configs and raw API keys are not included in exported websites.
 ## Not Included Yet
 
 - Real frame extraction
-- Asset copying
-- ZIP export
-- Writing files to disk
+- Real binary asset/frame copying
 - Full editor integration
 - Paid API calls or model downloads

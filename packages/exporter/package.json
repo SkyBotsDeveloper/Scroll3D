@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@scroll3d/core": "workspace:*",
-    "@scroll3d/scroll-engine": "workspace:*"
+    "@scroll3d/scroll-engine": "workspace:*",
+    "jszip": "^3.10.1"
   }
 }

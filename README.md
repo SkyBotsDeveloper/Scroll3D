@@ -63,10 +63,12 @@ that can be hosted on static infrastructure.
 - **Phase 6:** static exporter foundation for self-hostable HTML, CSS,
   JavaScript, project JSON, frame manifests, asset manifests, and export notes
   completed.
+- **Phase 7:** disk export writer, ZIP archive packaging, safe copy planning,
+  and export helper APIs completed.
 
 The visual editor, real provider integrations, model downloads, real frame
-extraction implementation, disk writing, ZIP export, and asset copying are
-intentionally not implemented yet.
+extraction implementation, and real binary asset/frame copying are intentionally
+not implemented yet.
 
 ## Phase 2 Architecture
 
@@ -143,6 +145,18 @@ foundation:
 5. Sanitization blocks path traversal, escapes user content, redacts
    secret-looking values, and avoids external CDN dependencies by default.
 
+## Phase 7 Architecture
+
+Phase 7 extends `@scroll3d/exporter` with export delivery foundations:
+
+1. Static bundles can be written to a configured output directory.
+2. ZIP archives can be created in memory or written to disk.
+3. Dry-run mode reports planned writes without touching the filesystem.
+4. Copy plans describe generated files, asset references, frame references,
+   skipped local absolute paths, traversal blocks, and placeholder copy work.
+5. `runStaticExport` gives future CLI and web UI code one helper for bundle,
+   directory, and ZIP targets.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -154,8 +168,9 @@ foundation:
   persistent pipeline checkpoints.
 - Phase 5: scroll engine package for frame-sequence playback.
 - Phase 6: static exporter for clean standalone websites.
-- Phase 7: web editor with visual editing and JSON/code editing.
-- Phase 8: plugin provider system and self-hosting documentation.
+- Phase 7: disk writing, ZIP export, and safe copy planning.
+- Phase 8: web editor with visual editing and JSON/code editing.
+- Phase 9: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 
