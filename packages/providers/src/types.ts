@@ -3,6 +3,7 @@ import type { z } from "zod";
 export type ProviderType = "llm" | "image" | "video" | "frame" | "code";
 export type ProviderMode = "local" | "api";
 export type ProviderRunStatus = "completed" | "failed" | "cancelled";
+export type ProviderImplementation = "mock" | "local" | "api";
 
 export interface ProviderCapability {
   id: string;
@@ -59,6 +60,82 @@ export interface BaseProvider<TInput = unknown, TOutput = unknown> {
   capabilities: ProviderCapability[];
   isAvailable(context?: ProviderContext): boolean | Promise<boolean>;
   run(input: TInput, context: ProviderContext): Promise<ProviderRunResult<TOutput>>;
+}
+
+export interface ProviderSecretRef {
+  id: string;
+  label?: string;
+}
+
+export interface ProviderSecretStore {
+  setSecret(ref: ProviderSecretRef | string, value: string): void;
+  getSecret(ref: ProviderSecretRef | string): string | undefined;
+  deleteSecret(ref: ProviderSecretRef | string): boolean;
+  hasSecret(ref: ProviderSecretRef | string): boolean;
+  listSecretRefs(): ProviderSecretRef[];
+}
+
+export interface ProviderConfigBase {
+  id: string;
+  name: string;
+  type: ProviderType;
+  mode: ProviderMode;
+  enabled: boolean;
+  provider: ProviderImplementation;
+  model?: string;
+  baseUrl?: string;
+  secretRef?: ProviderSecretRef;
+  capabilities?: ProviderCapability[];
+}
+
+export interface LLMProviderConfig extends ProviderConfigBase {
+  type: "llm";
+}
+
+export interface ImageProviderConfig extends ProviderConfigBase {
+  type: "image";
+}
+
+export interface VideoProviderConfig extends ProviderConfigBase {
+  type: "video";
+}
+
+export interface FrameProviderConfig extends ProviderConfigBase {
+  type: "frame";
+}
+
+export interface CodeProviderConfig extends ProviderConfigBase {
+  type: "code";
+}
+
+export type AnyProviderConfig =
+  | LLMProviderConfig
+  | ImageProviderConfig
+  | VideoProviderConfig
+  | FrameProviderConfig
+  | CodeProviderConfig;
+
+export interface ProviderRegistration {
+  id: string;
+  provider: AnyProvider;
+  enabled: boolean;
+  config: AnyProviderConfig | null;
+  secretRefs: ProviderSecretRef[];
+  presetId: string | null;
+  createdAt: string;
+}
+
+export interface ProviderPreset {
+  id: string;
+  name: string;
+  description: string;
+  config: AnyProviderConfig;
+}
+
+export interface ProviderConfigValidationResult {
+  success: boolean;
+  config: AnyProviderConfig | null;
+  errors: string[];
 }
 
 export interface TextGenerationInput {

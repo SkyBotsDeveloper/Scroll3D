@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@scroll3d/core": "workspace:*",
+    "@scroll3d/local-runtime": "workspace:*",
     "@scroll3d/providers": "workspace:*",
     "zod": "^4.1.13"
   }

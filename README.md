@@ -52,6 +52,8 @@ that can be hosted on static infrastructure.
 - **Phase 1:** monorepo foundation and core schema package completed.
 - **Phase 2:** provider interfaces, mock providers, agent orchestration
   contracts, and sequential local runtime queue foundation completed.
+- **Phase 3:** provider registry, BYO API-key foundation, pipeline state, and
+  queued agent pipeline runner completed.
 
 The visual editor, real provider integrations, model downloads, frame extraction
 implementation, and exporter are intentionally not implemented yet.
@@ -71,12 +73,28 @@ Phase 2 adds three foundations:
 Provider implementations are intentionally mock-only in this phase. API keys,
 real model downloads, and real image/video generation belong in later phases.
 
+## Phase 3 Architecture
+
+Phase 3 turns the contracts into an internal pipeline foundation:
+
+1. Provider registry resolves mock, local, or API-mode providers.
+2. Provider configs reference secret IDs instead of raw API keys.
+3. Pipeline state records steps, events, artifacts, checkpoints, failures, and
+   retries.
+4. Agent steps run through the sequential local runtime queue.
+5. Heavy model jobs remain one-at-a-time.
+
+BYO API keys are represented by secret references. Raw keys should live outside
+project files, never be exported into generated websites, and never appear in
+logs or serialized pipeline/provider output.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
 - Phase 2: provider interfaces, agent job orchestration contracts, local runtime
   queue foundation.
-- Phase 3: local runtime queue with one heavy model job running at a time.
+- Phase 3: provider registry, secret-safe config loading, resumable queued
+  pipeline foundation.
 - Phase 4: scroll engine package for frame-sequence playback.
 - Phase 5: static exporter for clean standalone websites.
 - Phase 6: web editor with visual editing and JSON/code editing.

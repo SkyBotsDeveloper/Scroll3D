@@ -56,6 +56,48 @@ describe("SequentialJobRunner", () => {
     expect(runner.getJob("job-cancelled")?.status).toBe("cancelled");
   });
 
+  it("shows the active job while running", async () => {
+    const runner = new SequentialJobRunner();
+    runner.enqueue(
+      createJob("active-job", async () => {
+        await wait(15);
+        return "done";
+      })
+    );
+
+    const run = runner.runNext();
+    await wait(1);
+
+    expect(runner.getActiveJob()?.id).toBe("active-job");
+
+    await run;
+
+    expect(runner.getActiveJob()).toBeUndefined();
+  });
+
+  it("calls lifecycle hooks", async () => {
+    const calls: string[] = [];
+    const runner = new SequentialJobRunner({
+      hooks: {
+        beforeJobStart: (job) => {
+          calls.push(`before:${job.id}`);
+        },
+        afterJobComplete: (job) => {
+          calls.push(`after:${job.id}`);
+        },
+        onJobFail: (job) => {
+          calls.push(`fail:${job.id}`);
+        }
+      }
+    });
+
+    runner.enqueue(createJob("hooked-job", () => Promise.resolve("done")));
+
+    await runner.runAll();
+
+    expect(calls).toEqual(["before:hooked-job", "after:hooked-job"]);
+  });
+
   it("does not run two heavy jobs at the same time", async () => {
     const runner = new SequentialJobRunner();
     let active = 0;
@@ -105,6 +147,30 @@ describe("SequentialJobRunner", () => {
     const result = await run;
 
     expect(result?.status).toBe("cancelled");
+  });
+
+  it("runs higher priority jobs first", async () => {
+    const runner = new SequentialJobRunner();
+    const order: string[] = [];
+
+    runner.enqueue({
+      ...createJob("low-priority", () => {
+        order.push("low");
+        return Promise.resolve("low");
+      }),
+      priority: 1
+    });
+    runner.enqueue({
+      ...createJob("high-priority", () => {
+        order.push("high");
+        return Promise.resolve("high");
+      }),
+      priority: 10
+    });
+
+    await runner.runAll();
+
+    expect(order).toEqual(["high", "low"]);
   });
 });
 

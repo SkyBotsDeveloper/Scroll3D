@@ -1,21 +1,22 @@
 const phaseItems = [
   "Phase 1: Core schema completed",
-  "Phase 2: Providers, agents, and runtime contracts completed",
-  "Provider abstraction for local/API/hybrid modes",
-  "Sequential local runtime queue foundation",
-  "Mock multi-agent pipeline"
+  "Phase 2: Providers, agents, runtime foundations completed",
+  "Phase 3: Provider registry, BYO API-key foundation, and queued pipeline runner",
+  "Creator: Siddhartha Abhimanyu",
+  "Telegram: @iflexelite",
+  "Instagram: elite.sid"
 ];
 
 export default function HomePage() {
   return (
     <main className="page">
       <section className="hero" aria-labelledby="home-title">
-        <p className="eyebrow">Phase 2</p>
+        <p className="eyebrow">Phase 3</p>
         <h1 id="home-title">Scroll3D</h1>
         <p className="subtitle">Open-source AI 3D website builder</p>
-        <div className="status" aria-label="Current Phase 2 status">
+        <div className="status" aria-label="Current Phase 3 status">
           <span className="statusDot" aria-hidden="true" />
-          Providers, agents, and runtime contracts completed
+          Registry-backed queued pipeline foundation
         </div>
       </section>
 

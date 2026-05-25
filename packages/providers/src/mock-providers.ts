@@ -42,13 +42,31 @@ const heavyCapability: ProviderCapability = {
   heavy: true
 };
 
+export interface MockProviderOptions {
+  id?: string;
+  name?: string;
+  mode?: ProviderMode;
+  capabilities?: ProviderCapability[];
+}
+
 abstract class MockProviderBase {
+  readonly id: string;
+  readonly name: string;
   readonly mode: ProviderMode;
   readonly capabilities: ProviderCapability[];
 
-  protected constructor(mode: ProviderMode, capabilities: ProviderCapability[]) {
-    this.mode = mode;
-    this.capabilities = capabilities;
+  protected constructor(
+    defaults: Required<Pick<MockProviderOptions, "id" | "name" | "mode">> & {
+      capabilities: ProviderCapability[];
+    },
+    options: ProviderMode | MockProviderOptions | undefined
+  ) {
+    const resolvedOptions = resolveMockOptions(defaults, options);
+
+    this.id = resolvedOptions.id;
+    this.name = resolvedOptions.name;
+    this.mode = resolvedOptions.mode;
+    this.capabilities = resolvedOptions.capabilities;
   }
 
   isAvailable(): boolean {
@@ -61,12 +79,18 @@ abstract class MockProviderBase {
 }
 
 export class MockLLMProvider extends MockProviderBase implements LLMProvider {
-  readonly id = "mock-llm-provider";
-  readonly name = "Mock LLM Provider";
   readonly type = "llm" as const;
 
-  constructor(mode: ProviderMode = "local") {
-    super(mode, [lightCapability]);
+  constructor(options: ProviderMode | MockProviderOptions = "local") {
+    super(
+      {
+        id: "mock-llm-provider",
+        name: "Mock LLM Provider",
+        mode: "local",
+        capabilities: [lightCapability]
+      },
+      options
+    );
   }
 
   run(
@@ -149,12 +173,18 @@ export class MockLLMProvider extends MockProviderBase implements LLMProvider {
 }
 
 export class MockImageProvider extends MockProviderBase implements ImageProvider {
-  readonly id = "mock-image-provider";
-  readonly name = "Mock Image Provider";
   readonly type = "image" as const;
 
-  constructor(mode: ProviderMode = "api") {
-    super(mode, [heavyCapability]);
+  constructor(options: ProviderMode | MockProviderOptions = "api") {
+    super(
+      {
+        id: "mock-image-provider",
+        name: "Mock Image Provider",
+        mode: "api",
+        capabilities: [heavyCapability]
+      },
+      options
+    );
   }
 
   run(
@@ -200,12 +230,18 @@ export class MockImageProvider extends MockProviderBase implements ImageProvider
 }
 
 export class MockVideoProvider extends MockProviderBase implements VideoProvider {
-  readonly id = "mock-video-provider";
-  readonly name = "Mock Video Provider";
   readonly type = "video" as const;
 
-  constructor(mode: ProviderMode = "api") {
-    super(mode, [heavyCapability]);
+  constructor(options: ProviderMode | MockProviderOptions = "api") {
+    super(
+      {
+        id: "mock-video-provider",
+        name: "Mock Video Provider",
+        mode: "api",
+        capabilities: [heavyCapability]
+      },
+      options
+    );
   }
 
   run(
@@ -251,12 +287,18 @@ export class MockVideoProvider extends MockProviderBase implements VideoProvider
 }
 
 export class MockFrameProvider extends MockProviderBase implements FrameProvider {
-  readonly id = "mock-frame-provider";
-  readonly name = "Mock Frame Provider";
   readonly type = "frame" as const;
 
-  constructor(mode: ProviderMode = "local") {
-    super(mode, [heavyCapability]);
+  constructor(options: ProviderMode | MockProviderOptions = "local") {
+    super(
+      {
+        id: "mock-frame-provider",
+        name: "Mock Frame Provider",
+        mode: "local",
+        capabilities: [heavyCapability]
+      },
+      options
+    );
   }
 
   run(
@@ -333,12 +375,18 @@ export class MockFrameProvider extends MockProviderBase implements FrameProvider
 }
 
 export class MockCodeProvider extends MockProviderBase implements CodeProvider {
-  readonly id = "mock-code-provider";
-  readonly name = "Mock Code Provider";
   readonly type = "code" as const;
 
-  constructor(mode: ProviderMode = "api") {
-    super(mode, [lightCapability]);
+  constructor(options: ProviderMode | MockProviderOptions = "api") {
+    super(
+      {
+        id: "mock-code-provider",
+        name: "Mock Code Provider",
+        mode: "api",
+        capabilities: [lightCapability]
+      },
+      options
+    );
   }
 
   run(
@@ -405,4 +453,27 @@ export function createMockProviders(): [
     new MockFrameProvider(),
     new MockCodeProvider()
   ];
+}
+
+function resolveMockOptions(
+  defaults: Required<Pick<MockProviderOptions, "id" | "name" | "mode">> & {
+    capabilities: ProviderCapability[];
+  },
+  options: ProviderMode | MockProviderOptions | undefined
+): Required<MockProviderOptions> {
+  if (typeof options === "string") {
+    return {
+      id: defaults.id,
+      name: defaults.name,
+      mode: options,
+      capabilities: defaults.capabilities
+    };
+  }
+
+  return {
+    id: options?.id ?? defaults.id,
+    name: options?.name ?? defaults.name,
+    mode: options?.mode ?? defaults.mode,
+    capabilities: options?.capabilities ?? defaults.capabilities
+  };
 }

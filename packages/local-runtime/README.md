@@ -11,7 +11,11 @@ jobs. It does not download models, start a server, or run real inference yet.
 - Jobs are queued sequentially.
 - Pending and running jobs can be cancelled.
 - Job status can be inspected.
+- The active job can be inspected.
+- Optional job priority controls pending queue order.
+- Job events record queued, started, completed, failed, and cancelled states.
 - Model load/unload hooks are available for future runtime integration.
+- Job lifecycle hooks are available for future runtime integration.
 
 ## Exports
 
@@ -20,4 +24,5 @@ jobs. It does not download models, start a server, or run real inference yet.
 - `RuntimeQueue`
 - `RuntimeModelRef`
 - `ModelLoadPolicy`
+- `RuntimeJobEvent`
 - `SequentialJobRunner`

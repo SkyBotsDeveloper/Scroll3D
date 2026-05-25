@@ -40,6 +40,7 @@ export class SequentialJobRunner implements RuntimeQueue {
       id: job.id,
       name: job.name,
       heavy: job.heavy,
+      priority: job.priority ?? 0,
       model: job.model ?? null,
       status: "pending",
       createdAt: new Date().toISOString(),
@@ -48,11 +49,14 @@ export class SequentialJobRunner implements RuntimeQueue {
       output: null,
       error: null,
       metadata: job.metadata ?? {},
+      events: [],
       run: job.run
     };
 
+    addEvent(record, "queued", "Runtime job queued.");
     this.jobs.set(record.id, record);
     this.queue.push(record.id);
+    this.sortQueue();
 
     return toPublicRecord(record);
   }
@@ -67,6 +71,7 @@ export class SequentialJobRunner implements RuntimeQueue {
     if (job.status === "pending") {
       job.status = "cancelled";
       job.completedAt = new Date().toISOString();
+      addEvent(job, "cancelled", "Runtime job cancelled before start.");
       removeQueuedJob(this.queue, jobId);
       return true;
     }
@@ -74,11 +79,20 @@ export class SequentialJobRunner implements RuntimeQueue {
     if (job.status === "running") {
       job.status = "cancelled";
       job.completedAt = new Date().toISOString();
+      addEvent(job, "cancelled", "Runtime job cancellation requested.");
       this.controllers.get(jobId)?.abort();
       return true;
     }
 
     return false;
+  }
+
+  getActiveJob(): RuntimeJobRecord | undefined {
+    if (this.runningJobId === null) {
+      return undefined;
+    }
+
+    return this.getJob(this.runningJobId);
   }
 
   getJob(jobId: string): RuntimeJobRecord | undefined {
@@ -111,13 +125,17 @@ export class SequentialJobRunner implements RuntimeQueue {
     this.runningJobId = job.id;
     job.status = "running";
     job.startedAt = new Date().toISOString();
+    addEvent(job, "started", "Runtime job started.");
 
     if (job.heavy) {
       this.activeHeavyJobs += 1;
     }
 
     try {
+      await this.config.hooks?.beforeJobStart?.(toPublicRecord(job));
+
       if (job.model) {
+        addEvent(job, "model-load", "Runtime model load hook started.");
         await this.config.hooks?.beforeModelLoad?.(job.model, toPublicRecord(job));
       }
 
@@ -129,6 +147,8 @@ export class SequentialJobRunner implements RuntimeQueue {
         job.status = "completed";
         job.output = output;
         job.completedAt = new Date().toISOString();
+        addEvent(job, "completed", "Runtime job completed.");
+        await this.config.hooks?.afterJobComplete?.(toPublicRecord(job));
       }
     } catch (error) {
       if (controller.signal.aborted) {
@@ -137,10 +157,13 @@ export class SequentialJobRunner implements RuntimeQueue {
         job.status = "failed";
         job.error = toErrorMessage(error);
         job.completedAt = new Date().toISOString();
+        addEvent(job, "failed", job.error);
+        await this.config.hooks?.onJobFail?.(toPublicRecord(job));
       }
     } finally {
       if (job.model) {
         await this.config.hooks?.afterModelUnload?.(job.model, toPublicRecord(job));
+        addEvent(job, "model-unload", "Runtime model unload hook completed.");
       }
 
       if (job.heavy) {
@@ -191,6 +214,15 @@ export class SequentialJobRunner implements RuntimeQueue {
   private hasPendingJobs(): boolean {
     return Array.from(this.jobs.values()).some((job) => job.status === "pending");
   }
+
+  private sortQueue(): void {
+    this.queue.sort((leftId, rightId) => {
+      const left = this.jobs.get(leftId);
+      const right = this.jobs.get(rightId);
+
+      return (right?.priority ?? 0) - (left?.priority ?? 0);
+    });
+  }
 }
 
 function createExecutionContext(
@@ -210,6 +242,7 @@ function toPublicRecord(job: StoredRuntimeJob): RuntimeJobRecord {
     id: job.id,
     name: job.name,
     heavy: job.heavy,
+    priority: job.priority,
     model: job.model,
     status: job.status,
     createdAt: job.createdAt,
@@ -217,13 +250,18 @@ function toPublicRecord(job: StoredRuntimeJob): RuntimeJobRecord {
     completedAt: job.completedAt,
     output: job.output,
     error: job.error,
-    metadata: job.metadata
+    metadata: { ...job.metadata },
+    events: job.events.map((event) => ({
+      ...event,
+      metadata: { ...event.metadata }
+    }))
   };
 }
 
 function markCancelled(job: StoredRuntimeJob): void {
   job.status = "cancelled";
   job.completedAt = new Date().toISOString();
+  addEvent(job, "cancelled", "Runtime job cancelled.");
 }
 
 function removeQueuedJob(queue: string[], jobId: string): void {
@@ -240,4 +278,18 @@ function toErrorMessage(error: unknown): string {
   }
 
   return "Runtime job failed.";
+}
+
+function addEvent(
+  job: StoredRuntimeJob,
+  type: RuntimeJobRecord["events"][number]["type"],
+  message: string,
+  metadata: Record<string, unknown> = {}
+): void {
+  job.events.push({
+    type,
+    message,
+    createdAt: new Date().toISOString(),
+    metadata
+  });
 }

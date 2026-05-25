@@ -66,6 +66,9 @@ importers:
       '@scroll3d/core':
         specifier: workspace:*
         version: link:../core
+      '@scroll3d/local-runtime':
+        specifier: workspace:*
+        version: link:../local-runtime
       '@scroll3d/providers':
         specifier: workspace:*
         version: link:../providers
