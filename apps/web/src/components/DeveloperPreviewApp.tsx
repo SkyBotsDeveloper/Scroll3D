@@ -2,18 +2,16 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Scroll3DProject } from "@scroll3d/core";
-import { EditorTabs } from "./EditorTabs";
-import { EditorToolbar } from "./EditorToolbar";
-import { ExportActions } from "./ExportActions";
-import { JsonSyncPanel } from "./JsonSyncPanel";
-import { PhaseStatus } from "./PhaseStatus";
-import { PreviewPane } from "./PreviewPane";
-import { ProjectJsonEditor } from "./ProjectJsonEditor";
-import { PromptWorkflowPanel } from "./PromptWorkflowPanel";
-import { SettingsPanel } from "./SettingsPanel";
-import { VisualEditor } from "./VisualEditor";
+import { AdvancedToolsPanel, type AdvancedTab } from "./AdvancedToolsPanel";
+import { AdvancedDrawer } from "./AdvancedDrawer";
+import { CompactStatusBar } from "./CompactStatusBar";
+import { PrimaryPreview } from "./PrimaryPreview";
+import { PromptHero } from "./PromptHero";
+import { SimpleEditPanel } from "./SimpleEditPanel";
+import { SimpleExportPanel } from "./SimpleExportPanel";
+import { StatusBadge } from "./StatusBadge";
+import { WorkflowStepper } from "./WorkflowStepper";
 import { createProjectZipBlob } from "../lib/browser-zip";
-import type { EditorTab } from "../lib/editor-state";
 import { getDirtyState } from "../lib/editor-state";
 import {
   createFilePreview,
@@ -24,6 +22,7 @@ import {
 } from "../lib/export-client";
 import { downloadBlob } from "../lib/download";
 import type { MockPipelineResult } from "../lib/mock-pipeline-client";
+import { runMockPromptPipeline } from "../lib/mock-pipeline-client";
 import {
   formatProjectJson,
   sampleProject,
@@ -51,9 +50,15 @@ import {
 } from "../lib/settings-state";
 import type { SystemScanResult } from "../lib/model-recommendations";
 import { validateProjectJson, type ProjectValidationResult } from "../lib/validation";
+import type { ConsumerWorkflowStep } from "../lib/workflow-state";
 
 export function DeveloperPreviewApp() {
-  const [activeTab, setActiveTab] = useState<EditorTab>("prompt");
+  const [activeStep, setActiveStep] = useState<ConsumerWorkflowStep>("prompt");
+  const [advancedOpen, setAdvancedOpen] = useState(false);
+  const [advancedTab, setAdvancedTab] = useState<AdvancedTab>("settings");
+  const [prompt, setPrompt] = useState(
+    "Create a cinematic SaaS landing page for an AI analytics tool"
+  );
   const [projectJson, setProjectJson] = useState(sampleProjectJson);
   const [appliedProject, setAppliedProject] = useState<Scroll3DProject>(sampleProject);
   const [validation, setValidation] = useState<ProjectValidationResult>(() =>
@@ -61,7 +66,7 @@ export function DeveloperPreviewApp() {
   );
   const [selectedPath, setSelectedPath] = useState("");
   const [downloadStatus, setDownloadStatus] = useState(
-    "Export runs entirely in this browser."
+    "Ready to generate, edit, preview, and export in this browser."
   );
   const [history, setHistory] = useState<ExportHistoryItem[]>([]);
   const [settings, setSettings] = useState<Scroll3DSettings>(() => loadSettings());
@@ -138,13 +143,13 @@ export function DeveloperPreviewApp() {
     setValidation(validateProjectJson(projectJson));
   }
 
-  function handleApply() {
+  function handleApplyJson() {
     const nextValidation = validateProjectJson(projectJson);
     setValidation(nextValidation);
 
     if (nextValidation.ok && nextValidation.project) {
       setAppliedProject(nextValidation.project);
-      setDownloadStatus("Valid project applied and re-exported.");
+      setDownloadStatus("Valid project applied and preview refreshed.");
     }
   }
 
@@ -155,19 +160,39 @@ export function DeveloperPreviewApp() {
     setAppliedProject(nextProject);
     setProjectJson(nextJson);
     setValidation(nextValidation);
-    setDownloadStatus("Visual edit applied and export refreshed.");
+    setDownloadStatus("Changes saved. Preview and export are refreshed.");
   }
 
-  function handleGeneratedProject(nextProject: Scroll3DProject) {
-    handleVisualProjectChange(nextProject);
-    setActiveTab("visual");
-    setDownloadStatus("Mock pipeline project update applied.");
+  function handleGenerate() {
+    setActiveStep("generate");
+    const result = runMockPromptPipeline(appliedProject, prompt, settings);
+    setPipelineResult(result);
+
+    if (result.status === "completed" && result.project) {
+      applyGeneratedProject(result.project);
+      setActiveStep("edit");
+      setDownloadStatus("Website generated. Edit the content or preview it.");
+    } else {
+      setDownloadStatus(result.warnings[0] ?? "Generation failed.");
+      setActiveStep("prompt");
+    }
+  }
+
+  function applyGeneratedProject(nextProject: Scroll3DProject) {
+    const nextJson = formatProjectJson(nextProject);
+    const nextValidation = validateProjectJson(nextJson);
+
+    setAppliedProject(nextProject);
+    setProjectJson(nextJson);
+    setValidation(nextValidation);
   }
 
   function handleReset() {
     setProjectJson(sampleProjectJson);
     setAppliedProject(sampleProject);
     setValidation(validateProjectJson(sampleProjectJson));
+    setPipelineResult(null);
+    setActiveStep("prompt");
     setDownloadStatus("Sample project restored.");
   }
 
@@ -199,99 +224,186 @@ export function DeveloperPreviewApp() {
     setDownloadStatus("Local project data cleared.");
   }
 
+  function openAdvanced(tab: AdvancedTab) {
+    setAdvancedTab(tab);
+    setAdvancedOpen(true);
+  }
+
   return (
-    <main className="page appPage">
-      <EditorToolbar
-        project={appliedProject}
-        settings={settings}
-        validation={validation}
-        dirty={dirty}
-        fileCount={bundle?.files.length ?? 0}
-        visibleSectionCount={visibleSectionCount}
-      />
+    <main className="page consumerAppPage">
+      <header className="consumerTopNav" aria-label="Scroll3D header">
+        <div className="brandLockup">
+          <span className="logoMark">S3D</span>
+          <div>
+            <strong>Scroll3D</strong>
+            <span>Generate cinematic 3D websites from a prompt.</span>
+          </div>
+        </div>
+        <div className="consumerNavActions">
+          <StatusBadge tone="warning">Mock generation</StatusBadge>
+          <button
+            type="button"
+            className="secondaryButton"
+            onClick={() => {
+              setActiveStep("export");
+            }}
+          >
+            Export
+          </button>
+          <button
+            type="button"
+            className="secondaryButton"
+            aria-expanded={advancedOpen}
+            onClick={() => {
+              setAdvancedOpen((current) => !current);
+            }}
+          >
+            Advanced
+          </button>
+        </div>
+      </header>
 
-      <section className="flow" aria-label="Developer preview workflow">
-        <span>Prompt</span>
-        <span aria-hidden="true">-&gt;</span>
-        <span>Mock pipeline</span>
-        <span aria-hidden="true">-&gt;</span>
-        <span>Visual edit</span>
-        <span aria-hidden="true">-&gt;</span>
-        <span>Preview files</span>
-        <span aria-hidden="true">-&gt;</span>
-        <span>ZIP export</span>
-      </section>
+      <WorkflowStepper activeStep={activeStep} onStepChange={setActiveStep} />
 
-      <section className="appShell" aria-label="Scroll3D developer preview">
-        <aside className="leftPanel" aria-label="Editor panel">
-          <EditorTabs activeTab={activeTab} onChange={setActiveTab} />
-          {activeTab === "visual" ? (
-            <VisualEditor
+      <section className="consumerWorkspace" aria-label="Scroll3D normal workflow">
+        <div className="consumerControlColumn">
+          {activeStep === "prompt" || activeStep === "generate" ? (
+            <PromptHero
+              prompt={prompt}
+              result={pipelineResult}
+              onPromptChange={setPrompt}
+              onGenerate={handleGenerate}
+              onEdit={() => {
+                setActiveStep("edit");
+              }}
+              onPreview={() => {
+                setActiveStep("preview");
+              }}
+            />
+          ) : null}
+
+          {activeStep === "edit" ? (
+            <SimpleEditPanel
               project={appliedProject}
               onChange={handleVisualProjectChange}
+              onPreview={() => {
+                setActiveStep("preview");
+              }}
             />
           ) : null}
-          {activeTab === "json" ? (
-            <ProjectJsonEditor
-              value={projectJson}
-              validation={validation}
-              onChange={setProjectJson}
-              onValidate={handleValidate}
-              onApply={handleApply}
-              onReset={handleReset}
-            />
-          ) : null}
-          {activeTab === "export" ? (
-            <>
-              <JsonSyncPanel
-                dirty={dirty}
-                validation={validation}
-                visibleSectionCount={visibleSectionCount}
-                exportedFileCount={bundle?.files.length ?? 0}
-              />
-              <ExportActions
-                disabled={!exportResult.success}
-                status={downloadStatus}
-                history={history}
-                onDownloadZip={() => {
-                  void handleDownloadZip();
-                }}
-                onClearStorage={handleClearStorage}
-              />
-            </>
-          ) : null}
-          {activeTab === "settings" ? (
-            <SettingsPanel
-              settings={settings}
-              scan={systemScan}
-              message={settingsMessage}
-              onSettingsChange={setSettings}
-              onScanChange={setSystemScan}
-              onMessage={setSettingsMessage}
-            />
-          ) : null}
-          {activeTab === "prompt" ? (
-            <PromptWorkflowPanel
-              project={appliedProject}
-              settings={settings}
-              result={pipelineResult}
-              onResult={setPipelineResult}
-              onApply={handleGeneratedProject}
-            />
-          ) : null}
-        </aside>
 
-        <PreviewPane
+          {activeStep === "preview" ? (
+            <section className="consumerPanel" aria-labelledby="preview-step-title">
+              <div className="panelHeader">
+                <div>
+                  <p className="eyebrow">Preview</p>
+                  <h2 id="preview-step-title">Review the website</h2>
+                  <p className="statusText">
+                    The preview is sandboxed for safety. Generated file details are
+                    available in Advanced.
+                  </p>
+                </div>
+              </div>
+              <div className="consumerActionRow">
+                <button
+                  type="button"
+                  className="primaryButton"
+                  onClick={() => {
+                    setActiveStep("export");
+                  }}
+                >
+                  Continue to export
+                </button>
+                <button
+                  type="button"
+                  className="secondaryButton"
+                  onClick={() => {
+                    setActiveStep("edit");
+                  }}
+                >
+                  Edit more
+                </button>
+              </div>
+            </section>
+          ) : null}
+
+          {activeStep === "export" ? (
+            <SimpleExportPanel
+              exportResult={exportResult}
+              bundle={bundle}
+              status={downloadStatus}
+              onDownloadZip={() => {
+                void handleDownloadZip();
+              }}
+              onViewFiles={() => {
+                openAdvanced("files");
+              }}
+            />
+          ) : null}
+        </div>
+
+        <PrimaryPreview
           exportResult={exportResult}
-          srcDoc={previewSrcDoc}
           bundle={bundle}
-          selectedPath={displaySelectedPath}
-          filePreview={filePreview}
-          onSelectFile={setSelectedPath}
+          srcDoc={previewSrcDoc}
+          onViewFiles={() => {
+            openAdvanced("files");
+          }}
         />
       </section>
 
-      <PhaseStatus />
+      <CompactStatusBar
+        validation={validation}
+        fileCount={bundle?.files.length ?? 0}
+        status={downloadStatus}
+      />
+
+      <AdvancedDrawer
+        open={advancedOpen}
+        onToggle={() => {
+          setAdvancedOpen((current) => !current);
+        }}
+      >
+        <AdvancedToolsPanel
+          project={appliedProject}
+          projectJson={projectJson}
+          validation={validation}
+          dirty={dirty}
+          visibleSectionCount={visibleSectionCount}
+          exportedFileCount={bundle?.files.length ?? 0}
+          bundle={bundle}
+          selectedPath={displaySelectedPath}
+          filePreview={filePreview}
+          settings={settings}
+          scan={systemScan}
+          settingsMessage={settingsMessage}
+          pipelineResult={pipelineResult}
+          downloadStatus={downloadStatus}
+          history={history}
+          exportReady={exportResult.success}
+          activeTab={advancedTab}
+          onTabChange={setAdvancedTab}
+          onProjectChange={handleVisualProjectChange}
+          onJsonChange={setProjectJson}
+          onValidate={handleValidate}
+          onApplyJson={handleApplyJson}
+          onResetProject={handleReset}
+          onSelectFile={setSelectedPath}
+          onSettingsChange={setSettings}
+          onScanChange={setSystemScan}
+          onSettingsMessage={setSettingsMessage}
+          onApplyPipelineProject={() => {
+            if (pipelineResult?.project) {
+              applyGeneratedProject(pipelineResult.project);
+              setDownloadStatus("Generated project update applied.");
+            }
+          }}
+          onDownloadZip={() => {
+            void handleDownloadZip();
+          }}
+          onClearStorage={handleClearStorage}
+        />
+      </AdvancedDrawer>
     </main>
   );
 }

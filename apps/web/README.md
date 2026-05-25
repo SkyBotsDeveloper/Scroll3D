@@ -11,14 +11,13 @@ corepack pnpm --filter @scroll3d/web dev
 ## Current Workflow
 
 - Loads the sample project from `@scroll3d/core`.
-- Opens on a prompt-first Generate tab with example prompts and a mock pipeline.
-- Edits project basics, theme values, sections, and scroll scene settings with
-  structured visual controls.
-- Edits project JSON locally in the browser.
-- Keeps visual changes and JSON text synchronized.
+- Opens in Normal Mode with a prompt-first Generate screen.
+- Guides users through Prompt, Generate, Edit, Preview, and Export.
+- Edits common project basics, theme values, sections, and scroll feel without
+  showing raw provider/model/runtime details.
 - Validates JSON and the `Scroll3DProject` schema.
 - Generates an in-memory static export through `@scroll3d/exporter/browser`.
-- Shows a sandboxed static preview and generated file list.
+- Shows a large sandboxed static preview.
 - Downloads the current static export as a ZIP.
 - Stores Settings for API/local/hybrid mode, provider preferences, and mock
   fallback locally in the browser.
@@ -38,16 +37,23 @@ calls, backend persistence, and heavy generated assets in this phase.
 
 ## Dashboard Structure
 
-The app is organized as a polished local dashboard:
+The app is organized into two layers.
 
-- `Generate`: prompt input, example chips, mode summary, mock pipeline progress,
-  and apply generated project action.
-- `Visual Editor`: project basics, theme, sections, and scroll scene controls.
-- `Preview & Export`: sandboxed static preview, export status, ZIP download, and
-  generated file inspection.
-- `JSON`: power-user project JSON editor with validation.
+Normal Mode is the default path:
+
+- `Generate`: prompt box, example prompts, friendly mock generation progress.
+- `Edit`: project name, theme basics, section text/order/visibility, scroll feel.
+- `Preview`: sandboxed generated website preview and compact export status.
+- `Export`: ZIP download with a simple self-hostable website checklist.
+
+Advanced Mode is hidden behind the Advanced drawer:
+
 - `Settings`: API/local/hybrid mode, provider preferences, local runtime setup
   planning, and model recommendation foundation.
+- `JSON`: power-user project JSON editor with validation.
+- `Files`: generated file list and text preview.
+- `Pipeline`: mock pipeline details and full visual editor.
+- `Diagnostics`: sync/export status, recent downloads, commands, and phase notes.
 
 ## Settings And Prompt Workflow
 
@@ -71,6 +77,10 @@ The app is organized as a polished local dashboard:
 - The `Prompt` tab runs mock providers only and does not make network calls.
 - Prompt runs show provider decision summaries for each stage before applying
   deterministic mock project updates.
+
+Normal Mode intentionally hides provider tables, model catalogs, runtime
+handshake details, JSON, and generated file internals until the user opens
+Advanced tools.
 
 ## Local Runtime Planning Commands
 

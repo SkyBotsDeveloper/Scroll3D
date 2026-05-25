@@ -82,6 +82,9 @@ that can be hosted on static infrastructure.
 - **Phase 13:** explicit model download planning, model manager summaries,
   offline runtime handshake contracts, and CLI guidance for future local runtime
   connection completed.
+- **Phase 14:** consumer-first web app workflow with Normal Mode, hidden
+  Advanced tools, guided prompt-to-export steps, simplified editing, preview, and
+  ZIP export completed.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -281,6 +284,23 @@ execution disabled:
    models per stage, size estimates, risk badges, command hints, and a disabled
    download button.
 
+## Phase 14 Architecture
+
+Phase 14 rebuilds the web app around a normal-user workflow:
+
+1. The default app is Normal Mode: Generate, Edit, Preview, Export.
+2. The first screen focuses on a large prompt box, example prompts, a clear
+   Generate website button, and a dominant preview.
+3. A guided stepper explains Prompt, Generate, Edit, Preview, and Export.
+4. Normal Edit exposes only common controls: project name, theme basics, section
+   text/order/visibility, scroll length, and playback mode.
+5. Preview and Export hide generated file internals by default.
+6. Advanced tools are still available in a drawer for Settings, Providers,
+   Models, JSON, generated files, pipeline details, diagnostics, and runtime
+   command help.
+7. The UI keeps mock generation and local-only browser export behavior while
+   reducing visible technical complexity for first-time users.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -302,7 +322,8 @@ execution disabled:
 - Phase 12: provider connection and local runtime discovery foundation.
 - Phase 13: explicit model manager/download planning and runtime handshake
   foundation.
-- Phase 14: plugin provider system and self-hosting documentation.
+- Phase 14: consumer-first web app workflow rebuild.
+- Phase 15: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 
