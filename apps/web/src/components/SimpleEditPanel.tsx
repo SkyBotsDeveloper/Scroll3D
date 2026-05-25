@@ -46,7 +46,7 @@ export function SimpleEditPanel({
   const sections = getOrderedSections(project);
 
   return (
-    <section className="consumerPanel simpleEditPanel" aria-labelledby="edit-title">
+    <section className="simpleEditPanel" aria-labelledby="edit-title">
       <div className="panelHeader">
         <div>
           <p className="eyebrow">Edit</p>

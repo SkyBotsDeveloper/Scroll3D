@@ -28,7 +28,7 @@ export function SimpleExportPanel({
   const paths = new Set(bundle?.files.map((file) => file.path) ?? []);
 
   return (
-    <section className="consumerPanel exportFocusPanel" aria-labelledby="export-title">
+    <section className="exportFocusPanel" aria-labelledby="export-title">
       <div className="panelHeader">
         <div>
           <p className="eyebrow">Export</p>

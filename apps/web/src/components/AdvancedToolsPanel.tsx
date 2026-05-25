@@ -15,7 +15,13 @@ import { ProjectJsonEditor } from "./ProjectJsonEditor";
 import { SettingsPanel } from "./SettingsPanel";
 import { VisualEditor } from "./VisualEditor";
 
-export type AdvancedTab = "settings" | "json" | "files" | "pipeline" | "diagnostics";
+export type AdvancedTab =
+  | "json"
+  | "files"
+  | "providers"
+  | "models"
+  | "runtime"
+  | "diagnostics";
 
 interface AdvancedToolsPanelProps {
   project: Scroll3DProject;
@@ -51,10 +57,11 @@ interface AdvancedToolsPanelProps {
 }
 
 const tabs: Array<{ id: AdvancedTab; label: string }> = [
-  { id: "settings", label: "Settings" },
   { id: "json", label: "JSON" },
-  { id: "files", label: "Files" },
-  { id: "pipeline", label: "Pipeline" },
+  { id: "files", label: "Generated Files" },
+  { id: "providers", label: "Providers" },
+  { id: "models", label: "Local Models" },
+  { id: "runtime", label: "Runtime" },
   { id: "diagnostics", label: "Diagnostics" }
 ];
 
@@ -118,17 +125,6 @@ export function AdvancedToolsPanel({
         ))}
       </div>
 
-      {activeTab === "settings" ? (
-        <SettingsPanel
-          settings={settings}
-          scan={scan}
-          message={settingsMessage}
-          onSettingsChange={onSettingsChange}
-          onScanChange={onScanChange}
-          onMessage={onSettingsMessage}
-        />
-      ) : null}
-
       {activeTab === "json" ? (
         <ProjectJsonEditor
           value={projectJson}
@@ -149,15 +145,70 @@ export function AdvancedToolsPanel({
         />
       ) : null}
 
-      {activeTab === "pipeline" ? (
-        <section className="toolPanel" aria-label="Pipeline and full editor tools">
-          <PipelineRunPanel result={pipelineResult} onApply={onApplyPipelineProject} />
-          <VisualEditor project={project} onChange={onProjectChange} />
+      {activeTab === "providers" ? (
+        <section className="toolPanel" aria-label="Provider configuration tools">
+          <div className="advancedToolIntro">
+            <strong>Providers</strong>
+            <span>
+              Configure API, local, hybrid, and mock provider preferences here. Normal
+              mode keeps these details hidden.
+            </span>
+          </div>
+          <SettingsPanel
+            settings={settings}
+            scan={scan}
+            message={settingsMessage}
+            onSettingsChange={onSettingsChange}
+            onScanChange={onScanChange}
+            onMessage={onSettingsMessage}
+          />
+        </section>
+      ) : null}
+
+      {activeTab === "models" ? (
+        <section className="toolPanel" aria-label="Local model manager tools">
+          <div className="advancedToolIntro">
+            <strong>Local Models</strong>
+            <span>
+              Review model packs, planned downloads, and per-stage model readiness.
+              Downloads remain disabled until a later phase.
+            </span>
+          </div>
+          <SettingsPanel
+            settings={settings}
+            scan={scan}
+            message={settingsMessage}
+            onSettingsChange={onSettingsChange}
+            onScanChange={onScanChange}
+            onMessage={onSettingsMessage}
+          />
+        </section>
+      ) : null}
+
+      {activeTab === "runtime" ? (
+        <section className="toolPanel" aria-label="Local runtime tools">
+          <div className="advancedToolIntro">
+            <strong>Runtime</strong>
+            <span>
+              Inspect local runtime setup, connection placeholders, and the
+              one-model-at-a-time execution plan.
+            </span>
+          </div>
+          <SettingsPanel
+            settings={settings}
+            scan={scan}
+            message={settingsMessage}
+            onSettingsChange={onSettingsChange}
+            onScanChange={onScanChange}
+            onMessage={onSettingsMessage}
+          />
         </section>
       ) : null}
 
       {activeTab === "diagnostics" ? (
         <section className="toolPanel diagnosticsPanel" aria-label="Diagnostics">
+          <PipelineRunPanel result={pipelineResult} onApply={onApplyPipelineProject} />
+          <VisualEditor project={project} onChange={onProjectChange} />
           <JsonSyncPanel
             dirty={dirty}
             validation={validation}

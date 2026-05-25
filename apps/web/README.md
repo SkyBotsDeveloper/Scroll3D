@@ -11,8 +11,10 @@ corepack pnpm --filter @scroll3d/web dev
 ## Current Workflow
 
 - Loads the sample project from `@scroll3d/core`.
-- Opens in Normal Mode with a prompt-first Generate screen.
-- Guides users through Prompt, Generate, Edit, Preview, and Export.
+- Opens in a three-panel AI builder workspace: prompt controls, live preview,
+  and edit/export inspector.
+- Guides users through Prompt, Generate, Edit, Preview, and Export while keeping
+  Advanced tools hidden by default.
 - Edits common project basics, theme values, sections, and scroll feel without
   showing raw provider/model/runtime details.
 - Validates JSON and the `Scroll3DProject` schema.
@@ -41,19 +43,27 @@ The app is organized into two layers.
 
 Normal Mode is the default path:
 
-- `Generate`: prompt box, example prompts, friendly mock generation progress.
-- `Edit`: project name, theme basics, section text/order/visibility, scroll feel.
-- `Preview`: sandboxed generated website preview and compact export status.
-- `Export`: ZIP download with a simple self-hostable website checklist.
+- Left: prompt composer, example prompts, quick website type chips, and friendly
+  generation progress.
+- Center: browser-style preview with an empty state before generation and a
+  sandboxed website preview after generation.
+- Right: simple Edit and Export controls for project name, theme basics,
+  section text/order/visibility, scroll feel, and ZIP download.
 
 Advanced Mode is hidden behind the Advanced drawer:
 
-- `Settings`: API/local/hybrid mode, provider preferences, local runtime setup
-  planning, and model recommendation foundation.
 - `JSON`: power-user project JSON editor with validation.
-- `Files`: generated file list and text preview.
-- `Pipeline`: mock pipeline details and full visual editor.
-- `Diagnostics`: sync/export status, recent downloads, commands, and phase notes.
+- `Generated Files`: generated file list and text preview.
+- `Providers`: API/local/hybrid mode and provider preferences.
+- `Local Models`: local model planning and download-plan summaries.
+- `Runtime`: local runtime setup and one-model-at-a-time execution guidance.
+- `Diagnostics`: mock pipeline details, full visual editor, sync/export status,
+  recent downloads, commands, and phase notes.
+
+The Phase 15 layout was inspired only by broad open-source AI builder UX
+patterns: prompt-first generation, preview-dominant workspaces, concise status
+chips, and advanced tools hidden from the default path. No third-party code,
+assets, branding, templates, colors, or copy were reused.
 
 ## Settings And Prompt Workflow
 

@@ -9,12 +9,23 @@ interface PromptHeroProps {
   onGenerate: () => void;
   onEdit: () => void;
   onPreview: () => void;
+  onExport: () => void;
 }
 
 const examples = [
-  "Create a cinematic SaaS landing page for an AI analytics tool",
+  "Create a cinematic SaaS landing page for an AI analytics platform",
   "Build a luxury real estate website with 3D scroll sections",
-  "Make a futuristic portfolio with glowing motion scenes"
+  "Make a futuristic portfolio with glowing motion scenes",
+  "Create a product launch page with cinematic scroll storytelling"
+];
+
+const quickTypes = [
+  "SaaS",
+  "Portfolio",
+  "Real estate",
+  "Product launch",
+  "Agency",
+  "Luxury brand"
 ];
 
 export function PromptHero({
@@ -23,7 +34,8 @@ export function PromptHero({
   onPromptChange,
   onGenerate,
   onEdit,
-  onPreview
+  onPreview,
+  onExport
 }: PromptHeroProps) {
   const complete = result?.status === "completed";
 
@@ -50,9 +62,24 @@ export function PromptHero({
             onChange={(event) => {
               onPromptChange(event.target.value);
             }}
-            placeholder="Describe a cinematic website..."
+            placeholder="Describe the 3D website you want to build..."
           />
         </label>
+
+        <div className="quickTypeList" aria-label="Quick website types">
+          {quickTypes.map((type) => (
+            <button
+              key={type}
+              type="button"
+              className="quickTypeChip"
+              onClick={() => {
+                onPromptChange(`Create a cinematic ${type.toLowerCase()} website`);
+              }}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
 
         <div className="consumerActionRow">
           <button
@@ -89,7 +116,8 @@ export function PromptHero({
         </div>
 
         <p className="statusText">
-          Export clean static HTML/CSS/JS. Local/API/Hybrid modes live in Advanced.
+          Developer preview uses mock generation. Real providers can be configured
+          later.
         </p>
       </div>
 
@@ -97,7 +125,7 @@ export function PromptHero({
         <div className="panelHeader">
           <div>
             <p className="eyebrow">Generation</p>
-            <h2>{complete ? "Website ready" : "Ready when you are"}</h2>
+            <h2>{complete ? "Website draft ready" : "Ready when you are"}</h2>
           </div>
           <StatusBadge tone={complete ? "ok" : "neutral"}>
             {complete ? "Generated" : "Waiting"}
@@ -111,6 +139,9 @@ export function PromptHero({
             </button>
             <button type="button" className="secondaryButton" onClick={onPreview}>
               Preview website
+            </button>
+            <button type="button" className="secondaryButton" onClick={onExport}>
+              Export ZIP
             </button>
           </div>
         ) : null}

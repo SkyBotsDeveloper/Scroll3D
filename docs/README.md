@@ -20,3 +20,4 @@ Current docs:
 - [Phase 12 Provider Connection And Local Runtime Discovery](./phase-12-provider-runtime-discovery.md)
 - [Phase 13 Model Manager And Runtime Handshake](./phase-13-model-manager-handshake.md)
 - [Phase 14 Consumer UX Rebuild](./phase-14-consumer-ux-rebuild.md)
+- [Phase 15 AI Builder UX Polish](./phase-15-ai-builder-ux.md)

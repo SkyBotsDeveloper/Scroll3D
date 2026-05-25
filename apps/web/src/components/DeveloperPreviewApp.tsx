@@ -7,8 +7,7 @@ import { AdvancedDrawer } from "./AdvancedDrawer";
 import { CompactStatusBar } from "./CompactStatusBar";
 import { PrimaryPreview } from "./PrimaryPreview";
 import { PromptHero } from "./PromptHero";
-import { SimpleEditPanel } from "./SimpleEditPanel";
-import { SimpleExportPanel } from "./SimpleExportPanel";
+import { RightInspector, type InspectorPanel } from "./RightInspector";
 import { StatusBadge } from "./StatusBadge";
 import { WorkflowStepper } from "./WorkflowStepper";
 import { createProjectZipBlob } from "../lib/browser-zip";
@@ -55,7 +54,9 @@ import type { ConsumerWorkflowStep } from "../lib/workflow-state";
 export function DeveloperPreviewApp() {
   const [activeStep, setActiveStep] = useState<ConsumerWorkflowStep>("prompt");
   const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [advancedTab, setAdvancedTab] = useState<AdvancedTab>("settings");
+  const [advancedTab, setAdvancedTab] = useState<AdvancedTab>("providers");
+  const [inspectorPanel, setInspectorPanel] = useState<InspectorPanel>("edit");
+  const [draftReady, setDraftReady] = useState(false);
   const [prompt, setPrompt] = useState(
     "Create a cinematic SaaS landing page for an AI analytics tool"
   );
@@ -92,6 +93,9 @@ export function DeveloperPreviewApp() {
   const previewSrcDoc = useMemo(() => createPreviewSrcDoc(bundle), [bundle]);
   const selectedFile = getBundleFile(bundle, displaySelectedPath);
   const filePreview = createFilePreview(selectedFile);
+  const hasGeneratedDraft = draftReady || pipelineResult?.status === "completed";
+  const modeLabel =
+    settings.mode === "api" ? "API" : settings.mode === "hybrid" ? "Hybrid" : "Local";
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
@@ -104,6 +108,7 @@ export function DeveloperPreviewApp() {
 
         if (storedValidation.ok && storedValidation.project) {
           setAppliedProject(storedValidation.project);
+          setDraftReady(storedJson !== sampleProjectJson);
         }
       }
 
@@ -149,6 +154,7 @@ export function DeveloperPreviewApp() {
 
     if (nextValidation.ok && nextValidation.project) {
       setAppliedProject(nextValidation.project);
+      setDraftReady(true);
       setDownloadStatus("Valid project applied and preview refreshed.");
     }
   }
@@ -160,6 +166,7 @@ export function DeveloperPreviewApp() {
     setAppliedProject(nextProject);
     setProjectJson(nextJson);
     setValidation(nextValidation);
+    setDraftReady(true);
     setDownloadStatus("Changes saved. Preview and export are refreshed.");
   }
 
@@ -170,8 +177,10 @@ export function DeveloperPreviewApp() {
 
     if (result.status === "completed" && result.project) {
       applyGeneratedProject(result.project);
-      setActiveStep("edit");
-      setDownloadStatus("Website generated. Edit the content or preview it.");
+      setDraftReady(true);
+      setInspectorPanel("edit");
+      setActiveStep("preview");
+      setDownloadStatus("Website draft ready. Edit sections or download your ZIP.");
     } else {
       setDownloadStatus(result.warnings[0] ?? "Generation failed.");
       setActiveStep("prompt");
@@ -192,6 +201,8 @@ export function DeveloperPreviewApp() {
     setAppliedProject(sampleProject);
     setValidation(validateProjectJson(sampleProjectJson));
     setPipelineResult(null);
+    setDraftReady(false);
+    setInspectorPanel("edit");
     setActiveStep("prompt");
     setDownloadStatus("Sample project restored.");
   }
@@ -236,16 +247,20 @@ export function DeveloperPreviewApp() {
           <span className="logoMark">S3D</span>
           <div>
             <strong>Scroll3D</strong>
-            <span>Generate cinematic 3D websites from a prompt.</span>
+            <span>{appliedProject.name}</span>
           </div>
         </div>
         <div className="consumerNavActions">
-          <StatusBadge tone="warning">Mock generation</StatusBadge>
+          <StatusBadge tone="accent">Developer Preview</StatusBadge>
+          <StatusBadge tone="warning">
+            {settings.allowMockFallback ? `${modeLabel} + mock` : modeLabel}
+          </StatusBadge>
           <button
             type="button"
             className="secondaryButton"
             onClick={() => {
               setActiveStep("export");
+              setInspectorPanel("export");
             }}
           >
             Export
@@ -265,87 +280,57 @@ export function DeveloperPreviewApp() {
 
       <WorkflowStepper activeStep={activeStep} onStepChange={setActiveStep} />
 
-      <section className="consumerWorkspace" aria-label="Scroll3D normal workflow">
-        <div className="consumerControlColumn">
-          {activeStep === "prompt" || activeStep === "generate" ? (
-            <PromptHero
-              prompt={prompt}
-              result={pipelineResult}
-              onPromptChange={setPrompt}
-              onGenerate={handleGenerate}
-              onEdit={() => {
-                setActiveStep("edit");
-              }}
-              onPreview={() => {
-                setActiveStep("preview");
-              }}
-            />
-          ) : null}
-
-          {activeStep === "edit" ? (
-            <SimpleEditPanel
-              project={appliedProject}
-              onChange={handleVisualProjectChange}
-              onPreview={() => {
-                setActiveStep("preview");
-              }}
-            />
-          ) : null}
-
-          {activeStep === "preview" ? (
-            <section className="consumerPanel" aria-labelledby="preview-step-title">
-              <div className="panelHeader">
-                <div>
-                  <p className="eyebrow">Preview</p>
-                  <h2 id="preview-step-title">Review the website</h2>
-                  <p className="statusText">
-                    The preview is sandboxed for safety. Generated file details are
-                    available in Advanced.
-                  </p>
-                </div>
-              </div>
-              <div className="consumerActionRow">
-                <button
-                  type="button"
-                  className="primaryButton"
-                  onClick={() => {
-                    setActiveStep("export");
-                  }}
-                >
-                  Continue to export
-                </button>
-                <button
-                  type="button"
-                  className="secondaryButton"
-                  onClick={() => {
-                    setActiveStep("edit");
-                  }}
-                >
-                  Edit more
-                </button>
-              </div>
-            </section>
-          ) : null}
-
-          {activeStep === "export" ? (
-            <SimpleExportPanel
-              exportResult={exportResult}
-              bundle={bundle}
-              status={downloadStatus}
-              onDownloadZip={() => {
-                void handleDownloadZip();
-              }}
-              onViewFiles={() => {
-                openAdvanced("files");
-              }}
-            />
-          ) : null}
-        </div>
+      <section
+        className="aiBuilderWorkspace"
+        aria-label="Scroll3D AI builder workspace"
+      >
+        <PromptHero
+          prompt={prompt}
+          result={pipelineResult}
+          onPromptChange={setPrompt}
+          onGenerate={handleGenerate}
+          onEdit={() => {
+            setActiveStep("edit");
+            setInspectorPanel("edit");
+          }}
+          onPreview={() => {
+            setActiveStep("preview");
+          }}
+          onExport={() => {
+            setActiveStep("export");
+            setInspectorPanel("export");
+          }}
+        />
 
         <PrimaryPreview
           exportResult={exportResult}
           bundle={bundle}
           srcDoc={previewSrcDoc}
+          projectName={appliedProject.name}
+          hasGenerated={hasGeneratedDraft}
+          onViewFiles={() => {
+            openAdvanced("files");
+          }}
+        />
+
+        <RightInspector
+          project={appliedProject}
+          hasGenerated={hasGeneratedDraft}
+          activePanel={inspectorPanel}
+          exportResult={exportResult}
+          bundle={bundle}
+          status={downloadStatus}
+          onPanelChange={(panel) => {
+            setInspectorPanel(panel);
+            setActiveStep(panel === "edit" ? "edit" : "export");
+          }}
+          onProjectChange={handleVisualProjectChange}
+          onPreview={() => {
+            setActiveStep("preview");
+          }}
+          onDownloadZip={() => {
+            void handleDownloadZip();
+          }}
           onViewFiles={() => {
             openAdvanced("files");
           }}
@@ -354,7 +339,7 @@ export function DeveloperPreviewApp() {
 
       <CompactStatusBar
         validation={validation}
-        fileCount={bundle?.files.length ?? 0}
+        fileCount={hasGeneratedDraft ? (bundle?.files.length ?? 0) : 0}
         status={downloadStatus}
       />
 

@@ -85,6 +85,9 @@ that can be hosted on static infrastructure.
 - **Phase 14:** consumer-first web app workflow with Normal Mode, hidden
   Advanced tools, guided prompt-to-export steps, simplified editing, preview, and
   ZIP export completed.
+- **Phase 15:** AI builder workspace polish completed with a prompt composer,
+  dominant browser-style preview, right-side edit/export inspector, categorized
+  Advanced tools, clearer empty states, and friendlier normal-mode copy.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -301,6 +304,25 @@ Phase 14 rebuilds the web app around a normal-user workflow:
 7. The UI keeps mock generation and local-only browser export behavior while
    reducing visible technical complexity for first-time users.
 
+## Phase 15 Architecture
+
+Phase 15 polishes the web app into a cleaner AI builder workspace:
+
+1. The default layout is prompt, preview, and edit/export instead of a dense
+   developer dashboard.
+2. The prompt composer is the main entry point with examples, quick website
+   type chips, and a primary Generate website action.
+3. Generation progress uses friendly labels: Understand prompt, Design concept,
+   Plan motion, Build scroll scene, and Compile website.
+4. The preview is the largest visual surface and uses a browser-like frame with
+   a clear empty state before generation.
+5. Normal editing stays focused on section text, theme basics, scroll feel, and
+   ZIP export.
+6. Advanced tools are organized as JSON, Generated Files, Providers, Local
+   Models, Runtime, and Diagnostics.
+7. Open-source AI builder repos were inspected for broad UX patterns only. No
+   third-party code, assets, branding, colors, templates, or copy were reused.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -323,7 +345,8 @@ Phase 14 rebuilds the web app around a normal-user workflow:
 - Phase 13: explicit model manager/download planning and runtime handshake
   foundation.
 - Phase 14: consumer-first web app workflow rebuild.
-- Phase 15: plugin provider system and self-hosting documentation.
+- Phase 15: polished AI builder workspace for normal users.
+- Phase 16: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 

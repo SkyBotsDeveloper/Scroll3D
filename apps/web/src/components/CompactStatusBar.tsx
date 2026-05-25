@@ -16,8 +16,8 @@ export function CompactStatusBar({
       <span className={`statusPill ${validation.ok ? "ok" : "error"}`}>
         {validation.ok ? "Valid project" : "Needs fixes"}
       </span>
-      <span className="statusPill accent">{String(fileCount)} export files</span>
-      <span className="statusPill warning">Mock frames referenced</span>
+      <span className="statusPill accent">{String(fileCount)} website files</span>
+      <span className="statusPill warning">Developer preview</span>
       <p aria-live="polite">{status}</p>
     </section>
   );
