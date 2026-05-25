@@ -1,4 +1,5 @@
 export * from "./contracts";
+export * from "./file-pipeline-store";
 export * from "./mock-agents";
 export * from "./orchestrator";
 export * from "./pipeline-state";

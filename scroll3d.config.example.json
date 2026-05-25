@@ -1,0 +1,74 @@
+{
+  "project": {
+    "defaultMode": "hybrid"
+  },
+  "providers": [
+    {
+      "id": "local-ollama-llm",
+      "name": "Local Ollama LLM",
+      "type": "llm",
+      "mode": "local",
+      "enabled": false,
+      "provider": "ollama",
+      "model": "llama3.1",
+      "baseUrl": "http://127.0.0.1:11434"
+    },
+    {
+      "id": "openai-compatible-image",
+      "name": "OpenAI-Compatible Image API",
+      "type": "image",
+      "mode": "api",
+      "enabled": false,
+      "provider": "openai-compatible",
+      "model": "image-model-name",
+      "baseUrl": "https://api.example.invalid/v1",
+      "secretRef": {
+        "id": "openai-api-key",
+        "label": "OpenAI-compatible API key"
+      }
+    },
+    {
+      "id": "local-ffmpeg-frame",
+      "name": "Local FFmpeg Frame Extractor",
+      "type": "frame",
+      "mode": "local",
+      "enabled": false,
+      "provider": "ffmpeg",
+      "localPath": "ffmpeg"
+    }
+  ],
+  "providerPreferences": {
+    "llm": {
+      "modeOrder": ["local", "mock"]
+    },
+    "image": {
+      "modeOrder": ["api", "mock"]
+    },
+    "video": {
+      "modeOrder": ["api", "mock"]
+    },
+    "frame": {
+      "modeOrder": ["local", "mock"]
+    },
+    "code": {
+      "modeOrder": ["api", "local", "mock"]
+    }
+  },
+  "fallbackRules": [
+    {
+      "type": "llm",
+      "order": ["local", "mock"]
+    },
+    {
+      "type": "image",
+      "order": ["api", "mock"]
+    }
+  ],
+  "localRuntime": {
+    "tempDir": ".scroll3d/tmp",
+    "storageDir": ".scroll3d/runs",
+    "modelCacheDir": ".scroll3d/models",
+    "allowMockFallback": true,
+    "defaultTimeoutMs": 120000
+  }
+}

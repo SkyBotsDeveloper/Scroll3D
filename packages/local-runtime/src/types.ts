@@ -81,6 +81,10 @@ export interface LocalRuntimeConfig {
   modelLoadPolicy: ModelLoadPolicy;
   maxConcurrentHeavyJobs: 1;
   tempDir?: string;
+  storageDir?: string;
+  modelCacheDir?: string;
+  allowMockFallback?: boolean;
+  defaultTimeoutMs?: number;
   hooks?: RuntimeModelHooks;
 }
 

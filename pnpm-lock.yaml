@@ -82,7 +82,11 @@ importers:
         specifier: ^4.1.13
         version: 4.4.3
 
-  packages/local-runtime: {}
+  packages/local-runtime:
+    dependencies:
+      zod:
+        specifier: ^4.1.13
+        version: 4.4.3
 
   packages/providers:
     dependencies:

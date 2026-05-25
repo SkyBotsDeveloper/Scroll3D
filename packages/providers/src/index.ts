@@ -1,7 +1,11 @@
+export * from "./adapters";
 export * from "./config";
+export * from "./errors";
 export * from "./mock-providers";
 export * from "./presets";
 export * from "./registry";
+export * from "./scroll3d-config";
+export * from "./selection";
 export * from "./secrets";
 export type * from "./types";
 export * from "./utils";

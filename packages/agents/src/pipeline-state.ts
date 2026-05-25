@@ -73,6 +73,12 @@ export interface PipelineRunStore {
   delete(runId: string): boolean;
 }
 
+export interface ResumePipelineOptions {
+  retryFailed?: boolean;
+  rerunCompletedFromStep?: boolean;
+  allowCancelled?: boolean;
+}
+
 export class InMemoryPipelineRunStore implements PipelineRunStore {
   private readonly runs = new Map<string, PipelineRun>();
 
@@ -300,6 +306,90 @@ export function serializePipelineRun(run: PipelineRun): PipelineRun {
   return redactSecrets(clonePipelineRun(run)) as PipelineRun;
 }
 
+export function getNextRunnableStepIndex(
+  run: PipelineRun,
+  options: ResumePipelineOptions = {}
+): number {
+  if (run.status === "completed") {
+    return -1;
+  }
+
+  if (run.status === "cancelled" && options.allowCancelled !== true) {
+    return -1;
+  }
+
+  const failedStepIndex = run.steps.findIndex((step) => step.status === "failed");
+
+  if (failedStepIndex >= 0) {
+    return options.retryFailed === true ? failedStepIndex : -1;
+  }
+
+  const cancelledStepIndex = run.steps.findIndex((step) => step.status === "cancelled");
+
+  if (cancelledStepIndex >= 0) {
+    return options.allowCancelled === true ? cancelledStepIndex : -1;
+  }
+
+  const runningStepIndex = run.steps.findIndex((step) => step.status === "running");
+
+  if (runningStepIndex >= 0) {
+    return runningStepIndex;
+  }
+
+  return run.steps.findIndex((step) => step.status === "pending");
+}
+
+export function preparePipelineRunForResume(
+  run: PipelineRun,
+  startIndex: number,
+  options: ResumePipelineOptions = {}
+): PipelineRun {
+  const startStep = run.steps[startIndex];
+
+  if (!startStep) {
+    return run;
+  }
+
+  if (startStep.status === "completed" && options.rerunCompletedFromStep !== true) {
+    return run;
+  }
+
+  const resetStepIds = new Set<string>();
+
+  for (let index = startIndex; index < run.steps.length; index += 1) {
+    const step = run.steps[index];
+
+    if (!step) {
+      continue;
+    }
+
+    resetStepIds.add(step.id);
+    resetStepForResume(step, {
+      incrementRetry: index === startIndex && startStep.status === "failed"
+    });
+  }
+
+  run.artifacts = Object.fromEntries(
+    Object.entries(run.artifacts).filter(
+      ([, artifact]) => !resetStepIds.has(artifact.sourceStepId)
+    )
+  );
+
+  run.status = "pending";
+  run.updatedAt = new Date().toISOString();
+  appendEvent(run, {
+    type: "pipeline-resume-prepared",
+    message: `Pipeline run prepared to resume from ${startStep.id}.`,
+    stepId: startStep.id,
+    metadata: {
+      retryFailed: options.retryFailed === true,
+      rerunCompletedFromStep: options.rerunCompletedFromStep === true
+    }
+  });
+
+  return run;
+}
+
 export function toProviderArtifact(artifact: PipelineArtifact): ProviderArtifact {
   return {
     id: artifact.id,
@@ -321,6 +411,23 @@ function getStepOrThrow(run: PipelineRun, stepId: string): PipelineStep {
 
 function clonePipelineRun(run: PipelineRun): PipelineRun {
   return structuredClone(run);
+}
+
+function resetStepForResume(
+  step: PipelineStep,
+  options: { incrementRetry: boolean }
+): void {
+  step.status = "pending";
+  step.input = null;
+  step.output = null;
+  step.artifacts = {};
+  step.error = null;
+  step.startedAt = null;
+  step.completedAt = null;
+
+  if (options.incrementRetry) {
+    step.retryCount += 1;
+  }
 }
 
 function createPipelineRunId(projectId: string, prompt: string): string {

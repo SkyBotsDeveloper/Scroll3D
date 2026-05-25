@@ -16,10 +16,18 @@ jobs. It does not download models, start a server, or run real inference yet.
 - Job events record queued, started, completed, failed, and cancelled states.
 - Model load/unload hooks are available for future runtime integration.
 - Job lifecycle hooks are available for future runtime integration.
+- Runtime config validation applies defaults for temp, storage, model cache, and
+  mock fallback settings.
+- `maxConcurrentHeavyJobs` remains fixed at `1` until explicit multi-model
+  scheduling is supported later.
 
 ## Exports
 
 - `LocalRuntimeConfig`
+- `LocalRuntimeConfigSchema`
+- `parseLocalRuntimeConfig`
+- `safeParseLocalRuntimeConfig`
+- `createLocalRuntimeConfig`
 - `RuntimeJob`
 - `RuntimeQueue`
 - `RuntimeModelRef`

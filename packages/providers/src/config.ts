@@ -1,5 +1,17 @@
 import { z } from "zod";
 import {
+  ComfyUIImageProvider,
+  ComfyUIVideoProvider,
+  FFmpegFrameProvider,
+  GenericAPIVideoProvider,
+  LocalCodeLLMProvider,
+  OllamaLLMProvider,
+  OpenAICompatibleCodeProvider,
+  OpenAICompatibleImageProvider,
+  OpenAICompatibleLLMProvider,
+  type ProviderAdapterConfig
+} from "./adapters";
+import {
   MockCodeProvider,
   MockFrameProvider,
   MockImageProvider,
@@ -42,9 +54,19 @@ export const ProviderConfigSchema = z
     type: z.enum(["llm", "image", "video", "frame", "code"]),
     mode: z.enum(["local", "api"]),
     enabled: z.boolean(),
-    provider: z.enum(["mock", "local", "api"]),
+    provider: z.enum([
+      "mock",
+      "openai-compatible",
+      "ollama",
+      "comfyui",
+      "generic-api",
+      "ffmpeg",
+      "local-code-llm"
+    ]),
     model: z.string().trim().min(1).optional(),
     baseUrl: z.string().trim().min(1).optional(),
+    endpoint: z.string().trim().min(1).optional(),
+    localPath: z.string().trim().min(1).optional(),
     secretRef: ProviderSecretRefSchema.optional(),
     capabilities: z.array(ProviderCapabilitySchema).optional()
   })
@@ -116,26 +138,78 @@ export function createRegistrationFromConfig(
 }
 
 export function createProviderFromConfig(config: AnyProviderConfig): AnyProvider {
-  if (config.provider !== "mock") {
-    throw new Error(
-      `Provider implementation '${config.provider}' is not implemented yet.`
-    );
-  }
-
   const options = createMockProviderOptions(config);
+  const adapterConfig = createAdapterConfig(config);
 
-  switch (config.type) {
-    case "llm":
-      return new MockLLMProvider(options);
-    case "image":
-      return new MockImageProvider(options);
-    case "video":
-      return new MockVideoProvider(options);
-    case "frame":
-      return new MockFrameProvider(options);
-    case "code":
-      return new MockCodeProvider(options);
+  if (config.provider === "mock") {
+    switch (config.type) {
+      case "llm":
+        return new MockLLMProvider(options);
+      case "image":
+        return new MockImageProvider(options);
+      case "video":
+        return new MockVideoProvider(options);
+      case "frame":
+        return new MockFrameProvider(options);
+      case "code":
+        return new MockCodeProvider(options);
+    }
   }
+
+  switch (config.provider) {
+    case "openai-compatible":
+      if (config.type === "llm") {
+        return new OpenAICompatibleLLMProvider(adapterConfig);
+      }
+
+      if (config.type === "image") {
+        return new OpenAICompatibleImageProvider(adapterConfig);
+      }
+
+      if (config.type === "code") {
+        return new OpenAICompatibleCodeProvider(adapterConfig);
+      }
+
+      break;
+    case "ollama":
+      if (config.type === "llm") {
+        return new OllamaLLMProvider(adapterConfig);
+      }
+
+      break;
+    case "comfyui":
+      if (config.type === "image") {
+        return new ComfyUIImageProvider(adapterConfig);
+      }
+
+      if (config.type === "video") {
+        return new ComfyUIVideoProvider(adapterConfig);
+      }
+
+      break;
+    case "generic-api":
+      if (config.type === "video") {
+        return new GenericAPIVideoProvider(adapterConfig);
+      }
+
+      break;
+    case "ffmpeg":
+      if (config.type === "frame") {
+        return new FFmpegFrameProvider(adapterConfig);
+      }
+
+      break;
+    case "local-code-llm":
+      if (config.type === "code") {
+        return new LocalCodeLLMProvider(adapterConfig);
+      }
+
+      break;
+  }
+
+  throw new Error(
+    `Provider implementation '${config.provider}' does not support type '${config.type}'.`
+  );
 }
 
 export function sanitizeProviderConfig(config: unknown): unknown {
@@ -174,6 +248,20 @@ function createMockProviderOptions(config: AnyProviderConfig): MockProviderOptio
     id: config.id,
     name: config.name,
     mode: config.mode,
+    ...(config.capabilities ? { capabilities: config.capabilities } : {})
+  };
+}
+
+function createAdapterConfig(config: AnyProviderConfig): ProviderAdapterConfig {
+  return {
+    id: config.id,
+    name: config.name,
+    mode: config.mode,
+    ...(config.model ? { model: config.model } : {}),
+    ...(config.baseUrl ? { baseUrl: config.baseUrl } : {}),
+    ...(config.endpoint ? { endpoint: config.endpoint } : {}),
+    ...(config.localPath ? { localPath: config.localPath } : {}),
+    ...(config.secretRef ? { secretRef: config.secretRef } : {}),
     ...(config.capabilities ? { capabilities: config.capabilities } : {})
   };
 }

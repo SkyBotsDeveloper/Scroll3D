@@ -54,6 +54,9 @@ that can be hosted on static infrastructure.
   contracts, and sequential local runtime queue foundation completed.
 - **Phase 3:** provider registry, BYO API-key foundation, pipeline state, and
   queued agent pipeline runner completed.
+- **Phase 4:** provider selection policy, real provider adapter scaffolds, safe
+  config format, file-backed pipeline storage, and checkpoint/resume helpers
+  completed.
 
 The visual editor, real provider integrations, model downloads, frame extraction
 implementation, and exporter are intentionally not implemented yet.
@@ -88,6 +91,22 @@ BYO API keys are represented by secret references. Raw keys should live outside
 project files, never be exported into generated websites, and never appear in
 logs or serialized pipeline/provider output.
 
+## Phase 4 Architecture
+
+Phase 4 makes the queued pipeline ready for real providers without requiring
+paid API calls or model downloads:
+
+1. `ProviderSelectionPolicy` chooses providers by project mode, provider type,
+   availability, capabilities, secret presence, preferences, and fallback rules.
+2. Real adapter scaffolds define future Ollama, OpenAI-compatible, ComfyUI,
+   FFmpeg, generic API, and local code-provider integration points.
+3. `scroll3d.config.example.json` documents safe local config with secret
+   references instead of raw API keys.
+4. `FilePipelineRunStore` persists pipeline runs, artifacts, events, and
+   checkpoints as redacted JSON.
+5. Resume helpers retry failed steps, preserve completed artifacts, and avoid
+   rerunning completed steps by default.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -95,10 +114,12 @@ logs or serialized pipeline/provider output.
   queue foundation.
 - Phase 3: provider registry, secret-safe config loading, resumable queued
   pipeline foundation.
-- Phase 4: scroll engine package for frame-sequence playback.
-- Phase 5: static exporter for clean standalone websites.
-- Phase 6: web editor with visual editing and JSON/code editing.
-- Phase 7: plugin provider system and self-hosting documentation.
+- Phase 4: provider selection policy, adapter scaffolds, safe local config, and
+  persistent pipeline checkpoints.
+- Phase 5: scroll engine package for frame-sequence playback.
+- Phase 6: static exporter for clean standalone websites.
+- Phase 7: web editor with visual editing and JSON/code editing.
+- Phase 8: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 

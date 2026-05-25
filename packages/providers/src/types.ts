@@ -3,7 +3,14 @@ import type { z } from "zod";
 export type ProviderType = "llm" | "image" | "video" | "frame" | "code";
 export type ProviderMode = "local" | "api";
 export type ProviderRunStatus = "completed" | "failed" | "cancelled";
-export type ProviderImplementation = "mock" | "local" | "api";
+export type ProviderImplementation =
+  | "mock"
+  | "openai-compatible"
+  | "ollama"
+  | "comfyui"
+  | "generic-api"
+  | "ffmpeg"
+  | "local-code-llm";
 
 export interface ProviderCapability {
   id: string;
@@ -84,6 +91,8 @@ export interface ProviderConfigBase {
   provider: ProviderImplementation;
   model?: string;
   baseUrl?: string;
+  endpoint?: string;
+  localPath?: string;
   secretRef?: ProviderSecretRef;
   capabilities?: ProviderCapability[];
 }

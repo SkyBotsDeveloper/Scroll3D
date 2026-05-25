@@ -8,3 +8,5 @@ Current docs:
 - [Phase 2 Architecture](./phase-2-architecture.md)
 - [Phase 3 Provider Registry](./phase-3-provider-registry.md)
 - [Phase 3 Queued Pipeline](./phase-3-queued-pipeline.md)
+- [Phase 4 Provider Selection](./phase-4-provider-selection.md)
+- [Phase 4 Persistent Pipelines](./phase-4-persistent-pipelines.md)

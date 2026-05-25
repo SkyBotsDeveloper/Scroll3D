@@ -5,12 +5,18 @@ import {
   type RuntimeJobRecord
 } from "@scroll3d/local-runtime";
 import {
+  ProviderSelectionPolicy,
   createDefaultProviderRegistry,
   mockProviderPresets,
   type AnyProvider,
   type ProviderArtifact,
+  type ProviderFallbackRule,
   type ProviderLogger,
-  type ProviderRegistry
+  type ProviderMode,
+  type ProviderRegistry,
+  type ProviderSecretStore,
+  type ProviderSelectionResult,
+  type ProviderType
 } from "@scroll3d/providers";
 import {
   FrameAgentOutputSchema,
@@ -29,15 +35,19 @@ import {
   InMemoryPipelineRunStore,
   appendArtifact,
   appendCheckpoint,
+  appendEvent,
   createPipelineRun,
+  getNextRunnableStepIndex,
   markPipelineCancelled,
   markPipelineCompleted,
   markPipelineFailed,
+  preparePipelineRunForResume,
   toProviderArtifact,
   updateStepStatus,
   type PipelineRun,
   type PipelineRunStore,
-  type PipelineStep
+  type PipelineStep,
+  type ResumePipelineOptions
 } from "./pipeline-state";
 import type { Agent, AgentRunResult } from "./types";
 
@@ -52,16 +62,30 @@ interface QueuedPipelineState {
 export interface QueuedAgentPipelineRunnerOptions {
   agents?: readonly Agent[];
   registry?: ProviderRegistry;
+  selectionPolicy?: ProviderSelectionPolicy;
   runtime?: SequentialJobRunner;
   store?: PipelineRunStore;
+  secretStore?: ProviderSecretStore;
+  preferredProviderIds?: Partial<Record<ProviderType, string>>;
+  preferredModes?: Partial<Record<ProviderType, Array<ProviderMode | "mock">>>;
+  fallbackRules?: ProviderFallbackRule[];
+  allowMockFallback?: boolean;
   logger?: ProviderLogger;
 }
 
 export class QueuedAgentPipelineRunner {
   private readonly agents: readonly Agent[];
   private readonly registry: ProviderRegistry;
+  private readonly selectionPolicy: ProviderSelectionPolicy;
   private readonly runtime: SequentialJobRunner;
   private readonly store: PipelineRunStore;
+  private readonly secretStore: ProviderSecretStore | undefined;
+  private readonly preferredProviderIds: Partial<Record<ProviderType, string>>;
+  private readonly preferredModes: Partial<
+    Record<ProviderType, Array<ProviderMode | "mock">>
+  >;
+  private readonly fallbackRules: ProviderFallbackRule[];
+  private readonly allowMockFallback: boolean;
   private readonly logger: ProviderLogger | undefined;
   private readonly runRuntimeJobs = new Map<string, string[]>();
 
@@ -69,8 +93,15 @@ export class QueuedAgentPipelineRunner {
     this.agents = options.agents ?? createDefaultAgents();
     this.registry =
       options.registry ?? createDefaultProviderRegistry(mockProviderPresets);
+    this.selectionPolicy =
+      options.selectionPolicy ?? new ProviderSelectionPolicy(this.registry);
     this.runtime = options.runtime ?? new SequentialJobRunner();
     this.store = options.store ?? new InMemoryPipelineRunStore();
+    this.secretStore = options.secretStore;
+    this.preferredProviderIds = options.preferredProviderIds ?? {};
+    this.preferredModes = options.preferredModes ?? {};
+    this.fallbackRules = options.fallbackRules ?? [];
+    this.allowMockFallback = options.allowMockFallback ?? true;
     this.logger = options.logger;
   }
 
@@ -81,25 +112,30 @@ export class QueuedAgentPipelineRunner {
     return this.executeFromStep(project, pipelineRun, 0);
   }
 
-  async retryFailedStep(runId: string, project: Scroll3DProject): Promise<PipelineRun> {
+  async resumeRun(
+    runId: string,
+    project: Scroll3DProject,
+    options: ResumePipelineOptions = {}
+  ): Promise<PipelineRun> {
     const run = this.getRunOrThrow(runId);
-    const failedStepIndex = run.steps.findIndex((step) => step.status === "failed");
+    const resumeOptions: ResumePipelineOptions = {
+      retryFailed: true,
+      ...options
+    };
+    const startIndex = getNextRunnableStepIndex(run, resumeOptions);
 
-    if (failedStepIndex < 0) {
+    if (startIndex < 0) {
       return run;
     }
 
-    const failedStep = run.steps[failedStepIndex];
-
-    if (!failedStep) {
-      return run;
-    }
-
-    resetStepForRetry(failedStep);
-    run.status = "pending";
+    preparePipelineRunForResume(run, startIndex, resumeOptions);
     this.store.save(run);
 
-    return this.executeFromStep(project, run, failedStepIndex);
+    return this.executeFromStep(project, run, startIndex);
+  }
+
+  async retryFailedStep(runId: string, project: Scroll3DProject): Promise<PipelineRun> {
+    return this.resumeRun(runId, project, { retryFailed: true });
   }
 
   getRun(runId: string): PipelineRun | undefined {
@@ -148,6 +184,12 @@ export class QueuedAgentPipelineRunner {
     this.store.save(run);
 
     for (let index = startIndex; index < this.agents.length; index += 1) {
+      const latestRun = this.store.get(run.id);
+
+      if (latestRun?.status === "cancelled") {
+        return latestRun;
+      }
+
       const agent = this.agents[index];
       const step = run.steps[index];
 
@@ -155,10 +197,11 @@ export class QueuedAgentPipelineRunner {
         break;
       }
 
-      const provider = this.resolveProviderForStep(run, step);
+      const selection = await this.selectProviderForStep(project, step);
+      appendProviderDecisionEvent(run, step, selection);
 
-      if (!provider) {
-        const error = `No enabled provider registered for type '${step.requiredProviderType}'.`;
+      if (!selection.selectedProvider) {
+        const error = selection.explanation;
         updateStepStatus(run, step.id, "failed", { error });
         markPipelineFailed(run, step.id, error);
         this.store.save(run);
@@ -171,7 +214,7 @@ export class QueuedAgentPipelineRunner {
         run,
         step,
         agent,
-        provider,
+        provider: selection.selectedProvider,
         project: currentProject,
         input,
         artifacts,
@@ -237,20 +280,21 @@ export class QueuedAgentPipelineRunner {
     return run;
   }
 
-  private resolveProviderForStep(
-    run: PipelineRun,
+  private async selectProviderForStep(
+    project: Scroll3DProject,
     step: PipelineStep
-  ): AnyProvider | null {
-    try {
-      return this.registry.resolveRequiredProvider(step.requiredProviderType);
-    } catch (error) {
-      this.logger?.warn?.("Provider resolution failed.", {
-        runId: run.id,
-        stepId: step.id,
-        error: error instanceof Error ? error.message : "Unknown provider error."
-      });
-      return null;
-    }
+  ): Promise<ProviderSelectionResult> {
+    const preferredProviderId = this.preferredProviderIds[step.requiredProviderType];
+
+    return this.selectionPolicy.selectProvider({
+      projectMode: project.mode,
+      requiredProviderType: step.requiredProviderType,
+      allowMockFallback: this.allowMockFallback,
+      preferredModes: this.preferredModes,
+      fallbackRules: this.fallbackRules,
+      ...(preferredProviderId ? { preferredProviderId } : {}),
+      ...(this.secretStore ? { secretStore: this.secretStore } : {})
+    });
   }
 
   private createRuntimeJob(options: {
@@ -450,12 +494,21 @@ function applyRuntimeResultToRun(
   };
 }
 
-function resetStepForRetry(step: PipelineStep): void {
-  step.status = "pending";
-  step.error = null;
-  step.startedAt = null;
-  step.completedAt = null;
-  step.retryCount += 1;
+function appendProviderDecisionEvent(
+  run: PipelineRun,
+  step: PipelineStep,
+  selection: ProviderSelectionResult
+): void {
+  appendEvent(run, {
+    type: "provider-selection",
+    message: selection.explanation,
+    stepId: step.id,
+    metadata: {
+      selectedProviderId: selection.selectedProviderId,
+      rejected: selection.rejected,
+      health: selection.health
+    }
+  });
 }
 
 function createRuntimeJobId(run: PipelineRun, step: PipelineStep): string {
