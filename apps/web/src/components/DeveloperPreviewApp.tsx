@@ -2,12 +2,17 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { Scroll3DProject } from "@scroll3d/core";
+import { EditorTabs } from "./EditorTabs";
+import { EditorToolbar } from "./EditorToolbar";
 import { ExportActions } from "./ExportActions";
-import { ExportFileList } from "./ExportFileList";
-import { ExportPreview } from "./ExportPreview";
+import { JsonSyncPanel } from "./JsonSyncPanel";
 import { PhaseStatus } from "./PhaseStatus";
+import { PreviewPane } from "./PreviewPane";
 import { ProjectJsonEditor } from "./ProjectJsonEditor";
+import { VisualEditor } from "./VisualEditor";
 import { createProjectZipBlob } from "../lib/browser-zip";
+import type { EditorTab } from "../lib/editor-state";
+import { getDirtyState } from "../lib/editor-state";
 import {
   createFilePreview,
   createPreviewSrcDoc,
@@ -16,7 +21,12 @@ import {
   getDefaultSelectedFile
 } from "../lib/export-client";
 import { downloadBlob } from "../lib/download";
-import { sampleProject, sampleProjectJson } from "../lib/sample-project";
+import {
+  formatProjectJson,
+  sampleProject,
+  sampleProjectJson
+} from "../lib/sample-project";
+import { getVisibleSectionCount } from "../lib/section-utils";
 import {
   appendExportHistory,
   clearProjectStorage,
@@ -30,6 +40,7 @@ import {
 import { validateProjectJson, type ProjectValidationResult } from "../lib/validation";
 
 export function DeveloperPreviewApp() {
+  const [activeTab, setActiveTab] = useState<EditorTab>("visual");
   const [projectJson, setProjectJson] = useState(sampleProjectJson);
   const [appliedProject, setAppliedProject] = useState<Scroll3DProject>(sampleProject);
   const [validation, setValidation] = useState<ProjectValidationResult>(() =>
@@ -46,6 +57,8 @@ export function DeveloperPreviewApp() {
     [appliedProject]
   );
   const bundle = exportResult.bundle;
+  const dirty = getDirtyState(projectJson, appliedProject);
+  const visibleSectionCount = getVisibleSectionCount(appliedProject);
   const displaySelectedPath =
     selectedPath && getBundleFile(bundle, selectedPath)
       ? selectedPath
@@ -108,6 +121,16 @@ export function DeveloperPreviewApp() {
     }
   }
 
+  function handleVisualProjectChange(nextProject: Scroll3DProject) {
+    const nextJson = formatProjectJson(nextProject);
+    const nextValidation = validateProjectJson(nextJson);
+
+    setAppliedProject(nextProject);
+    setProjectJson(nextJson);
+    setValidation(nextValidation);
+    setDownloadStatus("Visual edit applied and export refreshed.");
+  }
+
   function handleReset() {
     setProjectJson(sampleProjectJson);
     setAppliedProject(sampleProject);
@@ -145,55 +168,73 @@ export function DeveloperPreviewApp() {
 
   return (
     <main className="page appPage">
-      <section className="hero appHero" aria-labelledby="home-title">
-        <p className="eyebrow">Developer Preview</p>
-        <h1 id="home-title">Scroll3D</h1>
-        <p className="subtitle">Open-source AI 3D website builder</p>
-        <div className="status" aria-label="Current Phase 8 status">
-          <span className="statusDot" aria-hidden="true" />
-          Web export preview and ZIP download workflow
-        </div>
-      </section>
+      <EditorToolbar
+        project={appliedProject}
+        validation={validation}
+        dirty={dirty}
+        fileCount={bundle?.files.length ?? 0}
+        visibleSectionCount={visibleSectionCount}
+      />
 
       <section className="flow" aria-label="Developer preview workflow">
-        <span>Project JSON</span>
+        <span>Visual controls</span>
         <span aria-hidden="true">-&gt;</span>
-        <span>Validate</span>
+        <span>Synced JSON</span>
         <span aria-hidden="true">-&gt;</span>
         <span>Static export</span>
         <span aria-hidden="true">-&gt;</span>
         <span>Preview and ZIP</span>
       </section>
 
-      <section className="workspaceGrid" aria-label="Scroll3D developer preview">
-        <ProjectJsonEditor
-          value={projectJson}
-          validation={validation}
-          onChange={setProjectJson}
-          onValidate={handleValidate}
-          onApply={handleApply}
-          onReset={handleReset}
-        />
-        <div className="rightColumn">
-          <ExportPreview exportResult={exportResult} srcDoc={previewSrcDoc} />
-          <ExportActions
-            disabled={!exportResult.success}
-            status={downloadStatus}
-            history={history}
-            onDownloadZip={() => {
-              void handleDownloadZip();
-            }}
-            onClearStorage={handleClearStorage}
-          />
-        </div>
-      </section>
+      <section className="appShell" aria-label="Scroll3D developer preview">
+        <aside className="leftPanel" aria-label="Editor panel">
+          <EditorTabs activeTab={activeTab} onChange={setActiveTab} />
+          {activeTab === "visual" ? (
+            <VisualEditor
+              project={appliedProject}
+              onChange={handleVisualProjectChange}
+            />
+          ) : null}
+          {activeTab === "json" ? (
+            <ProjectJsonEditor
+              value={projectJson}
+              validation={validation}
+              onChange={setProjectJson}
+              onValidate={handleValidate}
+              onApply={handleApply}
+              onReset={handleReset}
+            />
+          ) : null}
+          {activeTab === "export" ? (
+            <>
+              <JsonSyncPanel
+                dirty={dirty}
+                validation={validation}
+                visibleSectionCount={visibleSectionCount}
+                exportedFileCount={bundle?.files.length ?? 0}
+              />
+              <ExportActions
+                disabled={!exportResult.success}
+                status={downloadStatus}
+                history={history}
+                onDownloadZip={() => {
+                  void handleDownloadZip();
+                }}
+                onClearStorage={handleClearStorage}
+              />
+            </>
+          ) : null}
+        </aside>
 
-      <ExportFileList
-        bundle={bundle}
-        selectedPath={displaySelectedPath}
-        preview={filePreview}
-        onSelect={setSelectedPath}
-      />
+        <PreviewPane
+          exportResult={exportResult}
+          srcDoc={previewSrcDoc}
+          bundle={bundle}
+          selectedPath={displaySelectedPath}
+          filePreview={filePreview}
+          onSelectFile={setSelectedPath}
+        />
+      </section>
 
       <PhaseStatus />
     </main>

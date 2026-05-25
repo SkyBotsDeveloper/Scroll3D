@@ -6,7 +6,8 @@ const phaseItems = [
   "Phase 5: Scroll-frame engine completed",
   "Phase 6: Static exporter completed",
   "Phase 7: Disk and ZIP export completed",
-  "Phase 8: Web export preview and download UI completed/in progress",
+  "Phase 8: Web export preview and download UI completed",
+  "Phase 9: Visual editor controls completed/in progress",
   "Creator: Siddhartha Abhimanyu",
   "Telegram: @iflexelite",
   "Instagram: elite.sid"

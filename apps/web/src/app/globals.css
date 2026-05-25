@@ -72,6 +72,8 @@ a {
 .hero,
 .flow,
 .panel,
+.editorToolbar,
+.appShell,
 .workspaceGrid,
 .filePanel {
   width: min(100%, 1180px);
@@ -122,6 +124,12 @@ h3 {
   line-height: 1.3;
 }
 
+.projectSubtitle {
+  margin: 0;
+  color: #d9deea;
+  font-size: 1rem;
+}
+
 .status {
   display: inline-flex;
   width: fit-content;
@@ -169,6 +177,75 @@ h3 {
   align-items: start;
 }
 
+.appShell {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.72fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.leftPanel,
+.previewPane {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.editorToolbar {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.editorToolbar > div:first-child {
+  display: grid;
+  gap: 14px;
+}
+
+.toolbarMeta {
+  display: flex;
+  max-width: 460px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.toolbarMeta > span:not(.statusPill) {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(18, 21, 29, 0.68);
+  padding: 7px 10px;
+}
+
+.editorTabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(18, 21, 29, 0.78);
+  padding: 8px;
+}
+
+.tabButton {
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.tabButton.active,
+.tabButton:hover {
+  border-color: rgba(66, 214, 164, 0.46);
+  background: rgba(66, 214, 164, 0.12);
+  color: var(--foreground);
+}
+
 .rightColumn {
   display: grid;
   gap: 18px;
@@ -201,6 +278,209 @@ h3 {
 .panelHeader h2 {
   margin-top: 4px;
   font-size: 1.1rem;
+}
+
+.visualEditor {
+  align-content: start;
+}
+
+.editorSection {
+  display: grid;
+  gap: 14px;
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+
+.editorSection:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 4px;
+}
+
+.splitHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.inlineStat {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.field span,
+.toggleField span,
+.readonlyGrid span {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.field input,
+.field select,
+.field textarea,
+.compactTextarea {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 9, 13, 0.72);
+  color: var(--foreground);
+  padding: 8px 10px;
+}
+
+.field input[type="color"] {
+  width: 44px;
+  min-width: 44px;
+  padding: 3px;
+}
+
+.colorGrid,
+.twoColumnFields,
+.threeColumnFields,
+.contentFieldGrid,
+.readonlyGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.colorGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.twoColumnFields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.threeColumnFields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.contentFieldGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.readonlyGrid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.readonlyGrid div {
+  display: grid;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 9, 13, 0.42);
+  padding: 10px;
+}
+
+.readonlyGrid strong {
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.colorField > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 8px;
+}
+
+.toggleField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.inlineToggle {
+  align-self: end;
+  min-height: 38px;
+}
+
+.highlightedField input,
+.highlightedField textarea {
+  border-color: rgba(66, 214, 164, 0.52);
+}
+
+.sectionList,
+.frameSetList {
+  display: grid;
+  gap: 12px;
+}
+
+.sectionCard {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 9, 13, 0.42);
+  padding: 14px;
+}
+
+.mutedCard {
+  opacity: 0.68;
+}
+
+.sectionCardHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sectionCardHeader > div:first-child {
+  display: grid;
+  gap: 4px;
+}
+
+.sectionCardHeader span,
+.frameSetItem span,
+.frameSetItem small {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.iconButtonRow {
+  display: flex;
+  gap: 6px;
+}
+
+.iconButton {
+  min-height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: rgba(246, 247, 251, 0.04);
+  color: var(--foreground);
+  padding: 6px 8px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.compactTextarea {
+  min-height: 96px;
+  resize: vertical;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.84rem;
+}
+
+.frameSetItem {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 9, 13, 0.42);
+  padding: 10px;
 }
 
 .buttonRow {
@@ -311,6 +591,16 @@ h3 {
   color: #ffc4c4;
 }
 
+.statusPill.warning {
+  background: rgba(255, 181, 77, 0.16);
+  color: #ffe0ad;
+}
+
+.statusPill.neutral {
+  background: rgba(163, 168, 184, 0.14);
+  color: #d9deea;
+}
+
 .metricsGrid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -357,6 +647,11 @@ h3 {
   display: grid;
   grid-template-columns: minmax(220px, 0.32fr) minmax(0, 1fr);
   gap: 14px;
+}
+
+.previewPane .filePanel {
+  width: 100%;
+  margin: 0;
 }
 
 .fileList {
@@ -433,8 +728,17 @@ h3 {
 
 @media (max-width: 980px) {
   .workspaceGrid,
+  .appShell,
   .fileWorkspace {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .editorToolbar {
+    display: grid;
+  }
+
+  .toolbarMeta {
+    justify-content: start;
   }
 
   .jsonEditor {
@@ -456,6 +760,14 @@ h3 {
   }
 
   .metricsGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .colorGrid,
+  .twoColumnFields,
+  .threeColumnFields,
+  .contentFieldGrid,
+  .readonlyGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 

@@ -68,10 +68,13 @@ that can be hosted on static infrastructure.
 - **Phase 8:** browser developer preview for JSON editing, validation, static
   export preview, generated file inspection, local persistence, and ZIP download
   completed.
+- **Phase 9:** first visual editor controls for project basics, theme values,
+  section content/order/visibility, scroll scene settings, JSON sync, and export
+  refresh completed.
 
-The visual editor, real provider integrations, model downloads, real frame
-extraction implementation, and real binary asset/frame copying are intentionally
-not implemented yet.
+The full visual drag/drop editor, real provider integrations, model downloads,
+real frame extraction implementation, and real binary asset/frame copying are
+intentionally not implemented yet.
 
 ## Phase 2 Architecture
 
@@ -174,6 +177,20 @@ Phase 8 turns `@scroll3d/web` into an early developer preview:
 7. Current JSON, selected file, and small export history metadata persist in
    `localStorage` when available.
 
+## Phase 9 Architecture
+
+Phase 9 adds the first visual editor controls to `@scroll3d/web`:
+
+1. Structured controls update project basics, mode, theme colors, typography,
+   radius, spacing, section text, CTA-like fields, section order, section
+   visibility, and scroll scene playback settings.
+2. Visual edits regenerate formatted project JSON and validation state.
+3. Applying valid raw JSON updates the visual editor from the latest project.
+4. Hidden sections use a UI-level `settings.visible === false` flag and are
+   filtered from web preview/export output.
+5. Static preview, generated file list, and browser ZIP download refresh from
+   the latest valid project.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -188,8 +205,9 @@ Phase 8 turns `@scroll3d/web` into an early developer preview:
 - Phase 7: disk writing, ZIP export, and safe copy planning.
 - Phase 8: web developer preview with JSON editing, export preview, and ZIP
   download.
-- Phase 9: web editor with visual editing and JSON/code editing.
-- Phase 10: plugin provider system and self-hosting documentation.
+- Phase 9: first visual editor controls and JSON sync.
+- Phase 10: AI prompt workflow connected to the queued mock pipeline.
+- Phase 11: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 

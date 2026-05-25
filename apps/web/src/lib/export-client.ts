@@ -5,6 +5,7 @@ import {
   type StaticExportBundle,
   type StaticExportFile
 } from "@scroll3d/exporter/browser";
+import { createExportableProject } from "./editor-state";
 
 const textMimePrefixes = ["text/", "application/json"];
 const previewLimit = 16000;
@@ -19,7 +20,7 @@ export interface FilePreview {
 }
 
 export function exportProjectToBundle(project: Scroll3DProject): ExportResult {
-  return exportStaticProjectToBundle(project, {
+  return exportStaticProjectToBundle(createExportableProject(project), {
     includeProjectJson: true,
     includeReadme: true,
     minify: false,

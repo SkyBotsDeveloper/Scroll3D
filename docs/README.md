@@ -14,3 +14,4 @@ Current docs:
 - [Phase 6 Static Exporter](./phase-6-static-exporter.md)
 - [Phase 7 Disk And ZIP Export](./phase-7-disk-zip-export.md)
 - [Phase 8 Web Preview And Export](./phase-8-web-preview-export.md)
+- [Phase 9 Visual Editor](./phase-9-visual-editor.md)

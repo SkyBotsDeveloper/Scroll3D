@@ -6,6 +6,7 @@ import {
   exportProjectToBundle,
   getBundleFile
 } from "./export-client";
+import { setSectionVisibility } from "./project-updates";
 
 describe("export client helpers", () => {
   it("exports the sample project into a static bundle", () => {
@@ -32,6 +33,15 @@ describe("export client helpers", () => {
     expect(preview?.supported).toBe(true);
     expect(preview?.text).toContain("project_saas_cinematic");
     expect(preview?.truncated).toBe(true);
+  });
+
+  it("filters hidden sections from web export output", () => {
+    const hidden = setSectionVisibility(sampleProject, "section_pricing", false);
+    const result = exportProjectToBundle(hidden);
+    const html = getBundleFile(result.bundle, "index.html")?.content ?? "";
+
+    expect(result.success).toBe(true);
+    expect(html).not.toContain("Start with a local-first workflow");
   });
 });
 
