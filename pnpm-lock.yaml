@@ -94,6 +94,8 @@ importers:
         specifier: ^4.1.13
         version: 4.4.3
 
+  packages/scroll-engine: {}
+
 packages:
 
   '@babel/code-frame@7.29.0':

@@ -10,3 +10,4 @@ Current docs:
 - [Phase 3 Queued Pipeline](./phase-3-queued-pipeline.md)
 - [Phase 4 Provider Selection](./phase-4-provider-selection.md)
 - [Phase 4 Persistent Pipelines](./phase-4-persistent-pipelines.md)
+- [Phase 5 Scroll Engine](./phase-5-scroll-engine.md)

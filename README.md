@@ -57,9 +57,12 @@ that can be hosted on static infrastructure.
 - **Phase 4:** provider selection policy, real provider adapter scaffolds, safe
   config format, file-backed pipeline storage, and checkpoint/resume helpers
   completed.
+- **Phase 5:** canvas scroll-frame engine, frame math, preloading, rendering,
+  responsive frame sets, reduced motion, and timeline segment foundations
+  completed.
 
-The visual editor, real provider integrations, model downloads, frame extraction
-implementation, and exporter are intentionally not implemented yet.
+The visual editor, real provider integrations, model downloads, real frame
+extraction implementation, and exporter are intentionally not implemented yet.
 
 ## Phase 2 Architecture
 
@@ -106,6 +109,22 @@ paid API calls or model downloads:
    checkpoints as redacted JSON.
 5. Resume helpers retry failed steps, preserve completed artifacts, and avoid
    rerunning completed steps by default.
+
+## Phase 5 Architecture
+
+Phase 5 implements `@scroll3d/scroll-engine`, the static-export-friendly visual
+runtime:
+
+1. Pure frame math maps scroll progress to deterministic frame indices.
+2. Frame manifests describe desktop, tablet, and mobile image sequences without
+   storing heavy assets in the repository.
+3. `FramePreloader` loads first, nearby, or all frames with concurrency limits,
+   retries, and an in-memory cache.
+4. `CanvasFrameRenderer` renders loaded frames with cover, contain, or fill
+   behavior and device-pixel-ratio handling.
+5. `Scroll3DEngine` connects scroll progress, preloading, canvas rendering,
+   responsive target switching, reduced motion, lifecycle cleanup, and timeline
+   segment callbacks.
 
 ## Roadmap
 
