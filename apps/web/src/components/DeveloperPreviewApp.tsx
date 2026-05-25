@@ -311,6 +311,9 @@ export function DeveloperPreviewApp() {
           onViewFiles={() => {
             openAdvanced("files");
           }}
+          onDownloadZip={() => {
+            void handleDownloadZip();
+          }}
         />
 
         <RightInspector

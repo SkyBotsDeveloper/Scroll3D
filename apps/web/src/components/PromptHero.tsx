@@ -43,28 +43,37 @@ export function PromptHero({
     <section className="consumerHero" aria-labelledby="consumer-hero-title">
       <div className="consumerHeroCopy">
         <div className="inlineCluster">
-          <StatusBadge tone="warning">Developer preview: mock generation</StatusBadge>
-          <span className="miniBadge">Local/API/Hybrid in Advanced</span>
+          <StatusBadge tone="warning">Mock generation</StatusBadge>
+          <span className="miniBadge">Developer preview</span>
         </div>
         <h1 id="consumer-hero-title">Generate cinematic 3D websites from a prompt.</h1>
         <p className="subtitle">
-          Type the website you want, preview the generated site, edit the copy and
-          theme, then export clean static HTML, CSS, and JavaScript.
+          Describe the site, review the draft, make quick edits, and download a ZIP when
+          it looks right.
         </p>
       </div>
 
       <div className="promptComposer">
-        <label className="field">
-          <span>What should Scroll3D create?</span>
-          <textarea
-            className="compactTextarea promptTextarea"
-            value={prompt}
-            onChange={(event) => {
-              onPromptChange(event.target.value);
-            }}
-            placeholder="Describe the 3D website you want to build..."
-          />
-        </label>
+        <div className="promptInputShell">
+          <label className="field promptField">
+            <span>What should Scroll3D create?</span>
+            <textarea
+              className="compactTextarea promptTextarea"
+              value={prompt}
+              onChange={(event) => {
+                onPromptChange(event.target.value);
+              }}
+              placeholder="Describe the 3D website you want to build…"
+            />
+          </label>
+          <button
+            type="button"
+            className="primaryButton primaryCta promptGenerateButton"
+            onClick={onGenerate}
+          >
+            Generate website
+          </button>
+        </div>
 
         <div className="quickTypeList" aria-label="Quick website types">
           {quickTypes.map((type) => (
@@ -81,14 +90,7 @@ export function PromptHero({
           ))}
         </div>
 
-        <div className="consumerActionRow">
-          <button
-            type="button"
-            className="primaryButton primaryCta"
-            onClick={onGenerate}
-          >
-            Generate website
-          </button>
+        <div className="consumerActionRow compactActionRow">
           <button
             type="button"
             className="secondaryButton"
@@ -116,8 +118,8 @@ export function PromptHero({
         </div>
 
         <p className="statusText">
-          Developer preview uses mock generation. Real providers can be configured
-          later.
+          Developer preview uses safe mock generation. Real providers can be configured
+          later in Advanced tools.
         </p>
       </div>
 

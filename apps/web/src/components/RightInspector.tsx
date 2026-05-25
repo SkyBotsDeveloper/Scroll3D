@@ -36,8 +36,8 @@ export function RightInspector({
     <aside className="rightInspector" aria-labelledby="inspector-title">
       <div className="inspectorHeader">
         <div>
-          <p className="eyebrow">Workspace</p>
-          <h2 id="inspector-title">Edit and export</h2>
+          <p className="eyebrow">Inspector</p>
+          <h2 id="inspector-title">Quick controls</h2>
         </div>
         <div className="inspectorTabs" role="tablist" aria-label="Inspector tools">
           <button

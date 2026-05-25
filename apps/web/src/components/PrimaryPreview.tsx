@@ -9,6 +9,7 @@ interface PrimaryPreviewProps {
   projectName: string;
   hasGenerated: boolean;
   onViewFiles: () => void;
+  onDownloadZip: () => void;
 }
 
 export function PrimaryPreview({
@@ -17,7 +18,8 @@ export function PrimaryPreview({
   srcDoc,
   projectName,
   hasGenerated,
-  onViewFiles
+  onViewFiles,
+  onDownloadZip
 }: PrimaryPreviewProps) {
   return (
     <section className="primaryPreview" aria-labelledby="primary-preview-title">
@@ -26,11 +28,11 @@ export function PrimaryPreview({
           <p className="eyebrow">Preview</p>
           <h2 id="primary-preview-title">Live website preview</h2>
           <p className="statusText">
-            The generated website appears here as a sandboxed static preview.
+            Review your website draft here before editing or exporting.
           </p>
         </div>
         <StatusBadge tone={hasGenerated && exportResult.success ? "ok" : "neutral"}>
-          {hasGenerated && exportResult.success ? "Export ready" : "Waiting"}
+          {hasGenerated && exportResult.success ? "Website draft ready" : "Waiting"}
         </StatusBadge>
       </div>
 
@@ -81,14 +83,26 @@ export function PrimaryPreview({
       ) : null}
 
       <div className="previewFooter">
-        <span>{hasGenerated ? "Valid project" : "Prompt first"}</span>
-        <span>{hasGenerated ? "Export ready" : "Generate to preview"}</span>
+        <span>{hasGenerated ? "Website draft ready" : "Prompt first"}</span>
+        <span>{hasGenerated ? "Ready to export" : "Generate to preview"}</span>
         <span>
-          {String(hasGenerated ? (bundle?.files.length ?? 0) : 0)} generated files
+          {String(hasGenerated ? (bundle?.files.length ?? 0) : 0)} website files
         </span>
-        <button type="button" className="secondaryButton" onClick={onViewFiles}>
-          View generated files
-        </button>
+        {hasGenerated ? (
+          <div className="previewFooterActions">
+            <button
+              type="button"
+              className="primaryButton"
+              disabled={!exportResult.success}
+              onClick={onDownloadZip}
+            >
+              Download ZIP
+            </button>
+            <button type="button" className="secondaryButton" onClick={onViewFiles}>
+              View files
+            </button>
+          </div>
+        ) : null}
       </div>
     </section>
   );

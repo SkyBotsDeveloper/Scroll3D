@@ -5,11 +5,11 @@ interface PipelineProgressSimpleProps {
 }
 
 const friendlyStepNames: Record<string, string> = {
-  prompt: "Understand prompt",
-  image: "Design concept",
-  video: "Plan motion",
-  frame: "Build scroll scene",
-  code: "Compile website"
+  prompt: "Understanding your idea",
+  image: "Designing the website concept",
+  video: "Planning the cinematic motion",
+  frame: "Preparing scroll scenes",
+  code: "Building your website draft"
 };
 
 export function PipelineProgressSimple({ result }: PipelineProgressSimpleProps) {
@@ -18,11 +18,11 @@ export function PipelineProgressSimple({ result }: PipelineProgressSimpleProps) 
     name: friendlyStepNames[step.id] ?? step.name,
     status: step.status
   })) ?? [
-    { id: "prompt", name: "Understand prompt", status: "pending" },
-    { id: "image", name: "Design concept", status: "pending" },
-    { id: "video", name: "Plan motion", status: "pending" },
-    { id: "frame", name: "Build scroll scene", status: "pending" },
-    { id: "code", name: "Compile website", status: "pending" }
+    { id: "prompt", name: "Understanding your idea", status: "pending" },
+    { id: "image", name: "Designing the website concept", status: "pending" },
+    { id: "video", name: "Planning the cinematic motion", status: "pending" },
+    { id: "frame", name: "Preparing scroll scenes", status: "pending" },
+    { id: "code", name: "Building your website draft", status: "pending" }
   ];
 
   return (

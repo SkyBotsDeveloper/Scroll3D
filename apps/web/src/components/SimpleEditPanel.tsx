@@ -49,11 +49,11 @@ export function SimpleEditPanel({
     <section className="simpleEditPanel" aria-labelledby="edit-title">
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Edit</p>
-          <h2 id="edit-title">Fine-tune the website</h2>
+          <p className="eyebrow">Quick edit</p>
+          <h2 id="edit-title">Shape the website</h2>
           <p className="statusText">
-            Change the name, theme, section text, and scroll feel. Everything syncs to
-            preview and export.
+            Edit the common pieces here. Deeper JSON and provider tools stay in
+            Advanced.
           </p>
         </div>
         <span className="inlineStat">
@@ -62,21 +62,32 @@ export function SimpleEditPanel({
         </span>
       </div>
 
-      <label className="field highlightedField">
-        <span>Project name</span>
-        <input
-          value={project.name}
-          onChange={(event) => {
-            onChange(updateProjectName(project, event.target.value));
-          }}
-        />
-      </label>
-
-      <section className="simpleEditGroup" aria-labelledby="theme-title">
+      <section
+        className="simpleEditGroup alwaysOpenGroup"
+        aria-labelledby="quick-edit-title"
+      >
         <div className="sectionHeader">
-          <h3 id="theme-title">Theme</h3>
-          <p className="statusText">Keep the look polished with a few core controls.</p>
+          <h3 id="quick-edit-title">Quick edit</h3>
+          <p className="statusText">Rename the draft and keep the preview in sync.</p>
         </div>
+        <label className="field highlightedField">
+          <span>Project name</span>
+          <input
+            value={project.name}
+            onChange={(event) => {
+              onChange(updateProjectName(project, event.target.value));
+            }}
+          />
+        </label>
+      </section>
+
+      <details className="simpleEditGroup collapsibleEditGroup" open>
+        <summary>
+          <span>
+            <strong>Theme</strong>
+            <small>Background, accent, text, font, and radius</small>
+          </span>
+        </summary>
         <div className="colorGrid">
           {colorKeys.map(([key, label]) => {
             const value = getThemeColor(project, key);
@@ -132,13 +143,15 @@ export function SimpleEditPanel({
             />
           </label>
         </div>
-      </section>
+      </details>
 
-      <section className="simpleEditGroup" aria-labelledby="sections-title">
-        <div className="sectionHeader">
-          <h3 id="sections-title">Sections</h3>
-          <p className="statusText">Edit the visible copy and reorder the story.</p>
-        </div>
+      <details className="simpleEditGroup collapsibleEditGroup" open>
+        <summary>
+          <span>
+            <strong>Sections</strong>
+            <small>Edit visible copy and reorder the story</small>
+          </span>
+        </summary>
         <div className="simpleSectionList">
           {sections.map((section, index) => {
             const visible = isSectionVisible(section);
@@ -147,30 +160,22 @@ export function SimpleEditPanel({
             );
 
             return (
-              <article
+              <details
                 key={section.id}
                 className={`simpleSectionCard ${visible ? "" : "mutedCard"}`}
               >
-                <div className="sectionCardHeader">
-                  <div>
+                <summary>
+                  <span>
                     <div className="badgeRow">
                       <span className="miniBadge">{section.type}</span>
                       <span className={visible ? "miniBadge ok" : "miniBadge muted"}>
                         {visible ? "visible" : "hidden"}
                       </span>
                     </div>
-                    <label className="field">
-                      <span>Section name</span>
-                      <input
-                        value={section.name}
-                        onChange={(event) => {
-                          onChange(
-                            updateSectionName(project, section.id, event.target.value)
-                          );
-                        }}
-                      />
-                    </label>
-                  </div>
+                    <strong>{section.name}</strong>
+                  </span>
+                </summary>
+                <div className="sectionQuickActions">
                   <div className="iconButtonRow">
                     <button
                       type="button"
@@ -203,6 +208,18 @@ export function SimpleEditPanel({
                     </button>
                   </div>
                 </div>
+
+                <label className="field">
+                  <span>Section name</span>
+                  <input
+                    value={section.name}
+                    onChange={(event) => {
+                      onChange(
+                        updateSectionName(project, section.id, event.target.value)
+                      );
+                    }}
+                  />
+                </label>
 
                 <div className="contentFieldGrid">
                   {fields.map((field) => (
@@ -246,17 +263,19 @@ export function SimpleEditPanel({
                     </label>
                   ))}
                 </div>
-              </article>
+              </details>
             );
           })}
         </div>
-      </section>
+      </details>
 
-      <section className="simpleEditGroup" aria-labelledby="scroll-feel-title">
-        <div className="sectionHeader">
-          <h3 id="scroll-feel-title">Scroll feel</h3>
-          <p className="statusText">Tune how the cinematic scene responds to scroll.</p>
-        </div>
+      <details className="simpleEditGroup collapsibleEditGroup">
+        <summary>
+          <span>
+            <strong>Scroll feel</strong>
+            <small>Scroll length and playback mode</small>
+          </span>
+        </summary>
         <div className="twoColumnFields">
           <label className="field">
             <span>Scroll length</span>
@@ -287,7 +306,7 @@ export function SimpleEditPanel({
             </select>
           </label>
         </div>
-      </section>
+      </details>
 
       <button type="button" className="primaryButton primaryCta" onClick={onPreview}>
         Preview changes

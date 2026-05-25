@@ -25,7 +25,7 @@ export const workflowStepInfo: WorkflowStepInfo[] = [
   {
     id: "generate",
     label: "Generate",
-    description: "Create a preview website."
+    description: "Build a website draft."
   },
   {
     id: "edit",
@@ -35,7 +35,7 @@ export const workflowStepInfo: WorkflowStepInfo[] = [
   {
     id: "preview",
     label: "Preview",
-    description: "Review the exported website."
+    description: "Review the draft."
   },
   {
     id: "export",

@@ -77,7 +77,7 @@ export function SimpleExportPanel({
       ) : null}
 
       <button type="button" className="secondaryButton" onClick={onViewFiles}>
-        Advanced: inspect generated files
+        View files in Advanced
       </button>
     </section>
   );

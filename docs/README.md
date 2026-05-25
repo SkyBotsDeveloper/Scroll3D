@@ -21,3 +21,4 @@ Current docs:
 - [Phase 13 Model Manager And Runtime Handshake](./phase-13-model-manager-handshake.md)
 - [Phase 14 Consumer UX Rebuild](./phase-14-consumer-ux-rebuild.md)
 - [Phase 15 AI Builder UX Polish](./phase-15-ai-builder-ux.md)
+- [Phase 16 UI Quality Pass](./phase-16-ui-quality-pass.md)

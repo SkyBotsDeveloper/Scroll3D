@@ -15,6 +15,8 @@ corepack pnpm --filter @scroll3d/web dev
   and edit/export inspector.
 - Guides users through Prompt, Generate, Edit, Preview, and Export while keeping
   Advanced tools hidden by default.
+- Keeps the first screen focused on the prompt, examples, Generate website
+  action, large preview, and compact inspector.
 - Edits common project basics, theme values, sections, and scroll feel without
   showing raw provider/model/runtime details.
 - Validates JSON and the `Scroll3DProject` schema.
@@ -44,11 +46,14 @@ The app is organized into two layers.
 Normal Mode is the default path:
 
 - Left: prompt composer, example prompts, quick website type chips, and friendly
-  generation progress.
+  generation progress. The textarea and Generate website button share one
+  primary composition surface.
 - Center: browser-style preview with an empty state before generation and a
-  sandboxed website preview after generation.
+  sandboxed website preview after generation. Once a draft is ready, Download ZIP
+  is available near the preview.
 - Right: simple Edit and Export controls for project name, theme basics,
-  section text/order/visibility, scroll feel, and ZIP download.
+  section text/order/visibility, scroll feel, and ZIP download. Edit groups are
+  collapsible to avoid showing every field at once.
 
 Advanced Mode is hidden behind the Advanced drawer:
 
@@ -64,6 +69,10 @@ The Phase 15 layout was inspired only by broad open-source AI builder UX
 patterns: prompt-first generation, preview-dominant workspaces, concise status
 chips, and advanced tools hidden from the default path. No third-party code,
 assets, branding, templates, colors, or copy were reused.
+
+The Phase 16 quality pass kept that approach and further reduced clutter. The
+open-source references were reviewed again for licensing and broad UX patterns,
+but no third-party frontend code or assets were copied.
 
 ## Settings And Prompt Workflow
 

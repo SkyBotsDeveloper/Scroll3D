@@ -88,6 +88,10 @@ that can be hosted on static infrastructure.
 - **Phase 15:** AI builder workspace polish completed with a prompt composer,
   dominant browser-style preview, right-side edit/export inspector, categorized
   Advanced tools, clearer empty states, and friendlier normal-mode copy.
+- **Phase 16:** UI quality pass completed with a cleaner prompt composer,
+  quieter workflow progress, more dominant preview, simplified collapsible
+  inspector controls, stronger export actions, and documented open-source
+  reference review.
 
 The full visual drag/drop editor, real provider integrations, model downloads,
 real frame extraction implementation, and real binary asset/frame copying are
@@ -323,6 +327,24 @@ Phase 15 polishes the web app into a cleaner AI builder workspace:
 7. Open-source AI builder repos were inspected for broad UX patterns only. No
    third-party code, assets, branding, colors, templates, or copy were reused.
 
+## Phase 16 Architecture
+
+Phase 16 tightens the same normal-user workflow after a UI audit:
+
+1. The workflow stepper is quieter so the first action remains the prompt.
+2. Prompt composition now groups the textarea and Generate website action into a
+   stronger primary surface.
+3. Generation progress uses friendlier AI-builder language and hides raw details
+   in Advanced.
+4. Preview remains the largest panel and adds a nearby Download ZIP action after
+   a draft is ready.
+5. The right inspector uses collapsible Quick edit, Theme, Sections, and Scroll
+   feel groups so the default view is less dense.
+6. Advanced remains the place for JSON, generated files, providers, local models,
+   runtime details, diagnostics, and technical output.
+7. The open-source references were used for license-aware inspiration only. No
+   third-party code, components, assets, or copy were reused.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -346,7 +368,8 @@ Phase 15 polishes the web app into a cleaner AI builder workspace:
   foundation.
 - Phase 14: consumer-first web app workflow rebuild.
 - Phase 15: polished AI builder workspace for normal users.
-- Phase 16: plugin provider system and self-hosting documentation.
+- Phase 16: serious UI quality pass for the AI builder workspace.
+- Phase 17: plugin provider system and self-hosting documentation.
 
 ## Run Locally
 
