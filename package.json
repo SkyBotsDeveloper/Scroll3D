@@ -1,0 +1,28 @@
+{
+  "name": "scroll3d",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Open-source AI 3D website builder for cinematic scroll-driven websites.",
+  "license": "MIT",
+  "packageManager": "pnpm@11.3.0",
+  "scripts": {
+    "dev": "corepack pnpm --filter @scroll3d/web dev",
+    "build": "corepack pnpm -r --if-present build",
+    "typecheck": "corepack pnpm -r --if-present typecheck",
+    "test": "corepack pnpm -r --if-present test",
+    "lint": "corepack pnpm -r --if-present lint",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@next/eslint-plugin-next": "^16.0.7",
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "prettier": "^3.7.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.4",
+    "vitest": "^4.0.14"
+  }
+}
