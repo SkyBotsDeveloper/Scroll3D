@@ -26,4 +26,5 @@ Current docs:
 - [Phase 18 AI Workspace UX Rebuild](./phase-18-ai-workspace-ux-rebuild.md)
 - [Phase 19 Cinematic Generation Experience](./phase-19-cinematic-generation-experience.md)
 - [Phase 20 Cinematic Scene Editor](./phase-20-cinematic-scene-editor.md)
+- [Phase 21 Premium Workspace Redesign](./phase-21-premium-workspace-redesign.md)
 - [Provider Manifest Spec](./provider-manifest-spec.md)

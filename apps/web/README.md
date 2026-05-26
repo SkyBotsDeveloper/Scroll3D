@@ -107,6 +107,13 @@ sequencing. The sidebar timeline now reflects real project sections, and the
 preview shows the focused scene so users can direct the story before future
 scene-specific regeneration exists.
 
+Phase 21 is a premium workspace correction pass. The shell now gives the preview
+more visual dominance, reduces nested dashboard cards, softens the sidebar and
+inspector, moves complex systems into a calmer Control Center overlay, and uses
+quieter status language. Open-source AI builder references were license-reviewed
+for broad workspace inspiration only; no third-party code, assets, branding, or
+copy were reused.
+
 ## Settings And Prompt Workflow
 
 - `Settings` configures local/API/hybrid mode and provider preferences per

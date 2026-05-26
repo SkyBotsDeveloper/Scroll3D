@@ -41,8 +41,8 @@ export function RightInspector({
     <aside className="rightInspector" aria-labelledby="inspector-title">
       <div className="inspectorHeader">
         <div>
-          <p className="eyebrow">Inspector</p>
-          <h2 id="inspector-title">Quick controls</h2>
+          <p className="eyebrow">Director</p>
+          <h2 id="inspector-title">Scene controls</h2>
         </div>
         <div
           className="inspectorTabs threeTabs"
@@ -56,7 +56,7 @@ export function RightInspector({
               onPanelChange("scene");
             }}
           >
-            Scenes
+            Scene
           </button>
           <button
             type="button"
@@ -65,7 +65,7 @@ export function RightInspector({
               onPanelChange("edit");
             }}
           >
-            Edit
+            Style
           </button>
           <button
             type="button"

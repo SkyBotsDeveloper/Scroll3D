@@ -106,6 +106,9 @@ that can be hosted on static infrastructure.
 - **Phase 20:** cinematic scene editor foundation completed with editable scene
   metadata, motion presets, narrative roles, drag-and-drop scene sequencing,
   selected-scene navigation, and preview focus state.
+- **Phase 21:** premium AI workspace redesign completed with lighter chrome,
+  fewer nested panels, a more dominant preview, calmer sidebars, quieter status
+  language, and a command-center settings overlay.
 
 The full no-code canvas editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, real binary asset/frame
@@ -437,6 +440,23 @@ schema:
    media generation, frame rendering changes, provider calls, or model execution
    are enabled.
 
+## Phase 21 Architecture
+
+Phase 21 is a UX shell correction pass rather than a feature expansion:
+
+1. The workspace grid now gives the cinematic preview substantially more room on
+   desktop while preserving responsive stacking on smaller screens.
+2. Heavy cards, nested panel borders, repeated pills, and admin-style labels are
+   reduced in favor of floating surfaces, whitespace, and subtle depth.
+3. The sidebar and right inspector are quieter contextual tools instead of
+   primary visual anchors.
+4. The Settings surface is presented as a Control Center overlay so provider,
+   model, runtime, JSON, and diagnostics tools stay available without cluttering
+   the normal creative path.
+5. The redesign was informed by license-reviewed open-source AI builder
+   workspaces, but no third-party code, assets, branding, templates, colors, or
+   copy were reused.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -469,6 +489,8 @@ schema:
   scene timeline foundation, and preview environment polish.
 - Phase 20: cinematic scene editor with motion presets, narrative roles,
   drag-and-drop sequencing, and scene focus state.
+- Phase 21: premium workspace redesign with preview-first layout, lighter
+  sidebars, reduced status noise, and command-center advanced tools.
 
 ## Run Locally
 

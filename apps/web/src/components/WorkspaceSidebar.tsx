@@ -77,7 +77,7 @@ export function WorkspaceSidebar({
 
         <section className="sidebarSection">
           <div className="sidebarSectionHeader">
-            <span className="eyebrow">Build</span>
+            <span className="eyebrow">Direction</span>
             <span className="miniBadge">
               {isGenerating ? activePhase.shortLabel : (result?.status ?? "ready")}
             </span>
@@ -156,7 +156,7 @@ export function WorkspaceSidebar({
             Prompt versions and regeneration checkpoints are planned for a later phase.
           </div>
           <button type="button" className="secondaryButton" onClick={onOpenSettings}>
-            Workspace settings
+            Control center
           </button>
         </section>
       </div>

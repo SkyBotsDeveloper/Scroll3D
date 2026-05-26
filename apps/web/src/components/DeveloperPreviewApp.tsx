@@ -9,7 +9,6 @@ import { GlobalSettingsCenter } from "./GlobalSettingsCenter";
 import { LandingPromptSurface } from "./LandingPromptSurface";
 import { PrimaryPreview } from "./PrimaryPreview";
 import { RightInspector, type InspectorPanel } from "./RightInspector";
-import { StatusBadge } from "./StatusBadge";
 import { WorkspaceSidebar } from "./WorkspaceSidebar";
 import { WorkspaceViewSwitcher, type WorkspaceView } from "./WorkspaceViewSwitcher";
 import { createProjectZipBlob } from "../lib/browser-zip";
@@ -395,13 +394,13 @@ export function DeveloperPreviewApp() {
         />
 
         <div className="consumerNavActions">
-          <StatusBadge tone="accent">Developer Preview</StatusBadge>
-          <StatusBadge tone="warning">
+          <span className="modeLine">
+            Developer preview -{" "}
             {settings.allowMockFallback ? `${modeLabel} + mock` : modeLabel}
-          </StatusBadge>
+          </span>
           <button
             type="button"
-            className="secondaryButton"
+            className="primaryButton"
             onClick={() => {
               setInspectorPanel("export");
               setWorkspaceView("preview");
@@ -417,7 +416,7 @@ export function DeveloperPreviewApp() {
               openAdvanced("providers");
             }}
           >
-            Settings
+            Control Center
           </button>
         </div>
       </header>

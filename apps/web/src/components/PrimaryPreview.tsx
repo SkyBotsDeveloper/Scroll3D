@@ -12,7 +12,6 @@ import {
 } from "../lib/scene-metadata";
 import { AlertBox } from "./AlertBox";
 import { ProgressivePreviewStage } from "./ProgressivePreviewStage";
-import { StatusBadge } from "./StatusBadge";
 
 interface PrimaryPreviewProps {
   exportResult: ExportResult;
@@ -75,21 +74,13 @@ export function PrimaryPreview({
           </p>
         </div>
         <div className="previewHeaderActions">
-          <StatusBadge
-            tone={
-              isGenerating
-                ? "warning"
-                : hasGenerated && exportResult.success
-                  ? "ok"
-                  : "neutral"
-            }
-          >
+          <span className="previewStateText">
             {isGenerating
               ? "Directing"
               : hasGenerated && exportResult.success
-                ? "Website draft ready"
-                : "Waiting"}
-          </StatusBadge>
+                ? "Draft ready"
+                : "Waiting for prompt"}
+          </span>
           <button
             type="button"
             className="secondaryButton"
@@ -109,11 +100,8 @@ export function PrimaryPreview({
           </div>
           <span className="previewUrl">{projectName}</span>
           <div className="previewBadges">
-            <span className="miniBadge">
+            <span className="modeLine">
               {isGenerating ? generationPhase.shortLabel : "Mock preview"}
-            </span>
-            <span className={exportResult.success ? "miniBadge ok" : "miniBadge muted"}>
-              {exportResult.success ? "Ready" : "Needs attention"}
             </span>
           </div>
         </div>

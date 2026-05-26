@@ -1,6 +1,5 @@
 import type { MockPipelineResult } from "../lib/mock-pipeline-client";
 import { PipelineProgressSimple } from "./PipelineProgressSimple";
-import { StatusBadge } from "./StatusBadge";
 
 interface LandingPromptSurfaceProps {
   prompt: string;
@@ -45,16 +44,15 @@ export function LandingPromptSurface({
           </div>
         </div>
         <button type="button" className="secondaryButton" onClick={onOpenSettings}>
-          Settings
+          Control Center
         </button>
       </header>
 
       <div className="landingPromptShell">
         <div className="landingCopy">
-          <div className="inlineCluster">
-            <StatusBadge tone="warning">Developer preview</StatusBadge>
-            <span className="miniBadge">{modeLabel} / mock generation</span>
-          </div>
+          <span className="modeLine">
+            Developer preview - {modeLabel} mock generation
+          </span>
           <h1 id="landing-title">Create a cinematic 3D website from one prompt.</h1>
           <p className="subtitle">
             Describe the site you want. Scroll3D will prepare a website draft, preview,
@@ -133,9 +131,7 @@ export function LandingPromptSurface({
                 <p className="eyebrow">Generation</p>
                 <h2>Preparing your workspace</h2>
               </div>
-              <StatusBadge tone={result.status === "completed" ? "ok" : "warning"}>
-                {result.status}
-              </StatusBadge>
+              <span className="modeLine">{result.status}</span>
             </div>
             <PipelineProgressSimple result={result} />
           </div>
