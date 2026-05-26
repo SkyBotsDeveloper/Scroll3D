@@ -1,18 +1,21 @@
 import type { ExportResult, StaticExportBundle } from "@scroll3d/exporter/browser";
 import type { Scroll3DProject } from "@scroll3d/core";
+import { SceneEditorPanel } from "./SceneEditorPanel";
 import { SimpleEditPanel } from "./SimpleEditPanel";
 import { SimpleExportPanel } from "./SimpleExportPanel";
 
-export type InspectorPanel = "edit" | "export";
+export type InspectorPanel = "scene" | "edit" | "export";
 
 interface RightInspectorProps {
   project: Scroll3DProject;
   hasGenerated: boolean;
   activePanel: InspectorPanel;
+  selectedSceneId: string;
   exportResult: ExportResult;
   bundle: StaticExportBundle | undefined;
   status: string;
   onPanelChange: (panel: InspectorPanel) => void;
+  onSelectScene: (sceneId: string) => void;
   onProjectChange: (project: Scroll3DProject) => void;
   onPreview: () => void;
   onDownloadZip: () => void;
@@ -23,10 +26,12 @@ export function RightInspector({
   project,
   hasGenerated,
   activePanel,
+  selectedSceneId,
   exportResult,
   bundle,
   status,
   onPanelChange,
+  onSelectScene,
   onProjectChange,
   onPreview,
   onDownloadZip,
@@ -39,7 +44,20 @@ export function RightInspector({
           <p className="eyebrow">Inspector</p>
           <h2 id="inspector-title">Quick controls</h2>
         </div>
-        <div className="inspectorTabs" role="tablist" aria-label="Inspector tools">
+        <div
+          className="inspectorTabs threeTabs"
+          role="tablist"
+          aria-label="Inspector tools"
+        >
+          <button
+            type="button"
+            className={activePanel === "scene" ? "tabButton active" : "tabButton"}
+            onClick={() => {
+              onPanelChange("scene");
+            }}
+          >
+            Scenes
+          </button>
           <button
             type="button"
             className={activePanel === "edit" ? "tabButton active" : "tabButton"}
@@ -72,6 +90,14 @@ export function RightInspector({
       ) : activePanel === "edit" ? (
         <SimpleEditPanel
           project={project}
+          onChange={onProjectChange}
+          onPreview={onPreview}
+        />
+      ) : activePanel === "scene" ? (
+        <SceneEditorPanel
+          project={project}
+          selectedSceneId={selectedSceneId}
+          onSelectScene={onSelectScene}
           onChange={onProjectChange}
           onPreview={onPreview}
         />

@@ -103,10 +103,14 @@ that can be hosted on static infrastructure.
   AI-director progress, progressive preview emergence, scene timeline
   foundation, device preview controls, focus-preview mode foundation, and
   motion polish.
+- **Phase 20:** cinematic scene editor foundation completed with editable scene
+  metadata, motion presets, narrative roles, drag-and-drop scene sequencing,
+  selected-scene navigation, and preview focus state.
 
-The full visual drag/drop editor, real provider execution, model downloads, real
-frame extraction implementation, deployment automation, and real binary
-asset/frame copying are intentionally not implemented yet.
+The full no-code canvas editor, real provider execution, model downloads, real
+frame extraction implementation, deployment automation, real binary asset/frame
+copying, and scene-specific media generation are intentionally not implemented
+yet.
 
 ## Phase 2 Architecture
 
@@ -413,6 +417,26 @@ mocked/offline:
 6. The real provider/runtime architecture remains unchanged; no real models,
    APIs, media generation, or backend execution are enabled.
 
+## Phase 20 Architecture
+
+Phase 20 adds scene-directed editing while preserving the existing project
+schema:
+
+1. Scene metadata is stored per section in `section.settings.scene` so older
+   projects remain valid and exports continue to use section order.
+2. The scene metadata model tracks title, scene type, motion preset, transition
+   style, narrative role, intensity, pacing, timing beats, asset placeholder,
+   and director notes.
+3. The right inspector includes a Scene Director panel with drag-and-drop scene
+   sequencing and move-button fallbacks.
+4. The sidebar scene timeline now reflects real project sections and syncs the
+   selected scene with the inspector and preview.
+5. The preview shows the focused scene, narrative role, motion preset, and
+   transition label as workspace context.
+6. Motion presets and narrative roles are descriptive metadata only; no real
+   media generation, frame rendering changes, provider calls, or model execution
+   are enabled.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -443,6 +467,8 @@ mocked/offline:
   shell, global settings center, and provider compatibility UX.
 - Phase 19: cinematic streaming generation feel, progressive preview states,
   scene timeline foundation, and preview environment polish.
+- Phase 20: cinematic scene editor with motion presets, narrative roles,
+  drag-and-drop sequencing, and scene focus state.
 
 ## Run Locally
 

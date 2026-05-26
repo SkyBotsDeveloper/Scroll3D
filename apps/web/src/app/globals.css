@@ -72,7 +72,10 @@ button,
 .quickTypeChip,
 .fileItem,
 .providerManifestCard,
-.deploymentTargetCard {
+.deploymentTargetCard,
+.sceneReorderCard,
+.motionPresetButton,
+.sceneTimelineItem {
   transition:
     border-color 180ms ease,
     background 180ms ease,
@@ -1302,6 +1305,7 @@ h1 {
 }
 
 .rightInspector > .simpleEditPanel,
+.rightInspector > .sceneEditorPanel,
 .rightInspector > .exportFocusPanel {
   padding: 0;
 }
@@ -1319,6 +1323,10 @@ h1 {
   border-radius: 8px;
   background: rgba(5, 7, 11, 0.46);
   padding: 6px;
+}
+
+.inspectorTabs.threeTabs {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .inspectorEmptyState {
@@ -1925,12 +1933,24 @@ h1 {
   display: grid;
   grid-template-columns: 44px minmax(0, 1fr);
   gap: 10px;
+  width: 100%;
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
     linear-gradient(135deg, rgba(75, 227, 176, 0.07), transparent 52%),
     rgba(246, 247, 251, 0.04);
+  color: var(--foreground);
   padding: 9px;
+  text-align: left;
+}
+
+.sceneTimelineItem:hover,
+.sceneTimelineItem.active {
+  border-color: rgba(75, 227, 176, 0.46);
+  background:
+    linear-gradient(135deg, rgba(75, 227, 176, 0.13), transparent 52%),
+    rgba(246, 247, 251, 0.07);
+  transform: translateX(2px);
 }
 
 .sceneTimelineItem div {
@@ -2003,6 +2023,28 @@ h1 {
   border-color: rgba(75, 227, 176, 0.48);
   background: rgba(75, 227, 176, 0.12);
   color: #dffff3;
+}
+
+.previewSceneFocus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  background:
+    linear-gradient(90deg, rgba(75, 227, 176, 0.09), transparent 58%),
+    rgba(246, 247, 251, 0.035);
+  padding: 9px 12px;
+}
+
+.previewSceneFocus strong {
+  color: #f7fbff;
+}
+
+.previewSceneFocus span:not(.miniBadge) {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 800;
 }
 
 .devicePreviewFrame {
@@ -2233,6 +2275,164 @@ h1 {
 .directorPhaseItem small {
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.sceneEditorPanel {
+  display: grid;
+  gap: 16px;
+}
+
+.sceneFocusCard,
+.sceneSequenceBoard,
+.sceneGuidanceCard {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(75, 227, 176, 0.07), transparent 46%),
+    rgba(5, 7, 11, 0.46);
+  padding: 12px;
+}
+
+.sceneFocusCard {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.sceneFocusThumbnail {
+  display: block;
+  min-height: 68px;
+  border: 1px solid rgba(106, 200, 255, 0.28);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(75, 227, 176, 0.32), transparent 34%),
+    linear-gradient(145deg, rgba(106, 200, 255, 0.18), transparent 58%),
+    rgba(246, 247, 251, 0.06);
+}
+
+.sceneFocusCard div {
+  display: grid;
+  gap: 6px;
+}
+
+.sceneFocusCard p,
+.sceneGuidanceCard p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.sceneSequenceBoard {
+  display: grid;
+  gap: 12px;
+}
+
+.sceneReorderList {
+  display: grid;
+  gap: 8px;
+}
+
+.sceneReorderCard {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(246, 247, 251, 0.04);
+  color: var(--foreground);
+  padding: 10px;
+  text-align: left;
+}
+
+.sceneReorderCard:hover,
+.sceneReorderCard.active {
+  border-color: rgba(75, 227, 176, 0.48);
+  background: rgba(75, 227, 176, 0.08);
+}
+
+.sceneReorderCard.dragging {
+  opacity: 0.52;
+  transform: scale(0.98);
+}
+
+.dragHandle {
+  color: rgba(153, 168, 205, 0.68);
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.sceneOrderNumber {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 1px solid rgba(106, 200, 255, 0.22);
+  border-radius: 8px;
+  background: rgba(106, 200, 255, 0.08);
+  color: #dff3ff;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.sceneReorderCard span:last-child {
+  display: grid;
+  gap: 3px;
+}
+
+.sceneReorderCard small {
+  color: var(--muted);
+}
+
+.sceneFormGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.motionPresetGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.motionPresetButton {
+  display: grid;
+  gap: 5px;
+  min-height: 82px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(246, 247, 251, 0.04);
+  color: var(--foreground);
+  padding: 10px;
+  text-align: left;
+}
+
+.motionPresetButton span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.motionPresetButton:hover,
+.motionPresetButton.active {
+  border-color: rgba(75, 227, 176, 0.5);
+  background:
+    linear-gradient(145deg, rgba(75, 227, 176, 0.12), transparent),
+    rgba(246, 247, 251, 0.05);
+}
+
+.sceneGuidanceCard {
+  display: grid;
+  gap: 8px;
+}
+
+.sceneGuidanceCard > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .codeWorkspace {
@@ -2722,7 +2922,9 @@ h1 {
   .providerManifestGrid,
   .runtimeStatusGrid,
   .exportPortabilityGrid,
-  .deploymentTargetGrid {
+  .deploymentTargetGrid,
+  .motionPresetGrid,
+  .sceneFocusCard {
     grid-template-columns: minmax(0, 1fr);
   }
 

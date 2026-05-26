@@ -35,9 +35,10 @@ calls, backend persistence, and heavy generated assets in this phase.
 
 - Section visibility is stored as `settings.visible === false` and filtered from
   preview/export output in the web helper.
-- Section reordering uses simple up/down buttons.
+- Section reordering uses simple up/down buttons. Scene sequencing also supports
+  browser-native drag-and-drop plus move-button fallbacks.
 - Nested section content is edited as JSON text.
-- No drag/drop editor or no-code canvas exists yet.
+- No full drag/drop page canvas or no-code layout editor exists yet.
 
 ## Dashboard Structure
 
@@ -98,6 +99,13 @@ paces through AI-director stages, the preview shows progressive skeleton states
 before the final iframe appears, the sidebar includes a scene timeline with
 motion hints, and the preview surface adds desktop/tablet/mobile controls plus a
 focus-preview foundation.
+
+Phase 20 turns the workspace into a scene-directed editor. The right inspector
+adds a Scene Director panel for scene metadata, motion presets, transitions,
+narrative roles, pacing, intensity, director notes, and drag-and-drop scene
+sequencing. The sidebar timeline now reflects real project sections, and the
+preview shows the focused scene so users can direct the story before future
+scene-specific regeneration exists.
 
 ## Settings And Prompt Workflow
 

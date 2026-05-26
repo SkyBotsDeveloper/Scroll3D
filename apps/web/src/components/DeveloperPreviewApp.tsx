@@ -29,6 +29,7 @@ import {
 } from "../lib/cinematic-generation";
 import type { MockPipelineResult } from "../lib/mock-pipeline-client";
 import { runMockPromptPipeline } from "../lib/mock-pipeline-client";
+import { getFirstSceneId, getSceneById } from "../lib/scene-metadata";
 import {
   formatProjectJson,
   sampleProject,
@@ -60,7 +61,7 @@ import { validateProjectJson, type ProjectValidationResult } from "../lib/valida
 export function DeveloperPreviewApp() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [advancedTab, setAdvancedTab] = useState<AdvancedTab>("providers");
-  const [inspectorPanel, setInspectorPanel] = useState<InspectorPanel>("edit");
+  const [inspectorPanel, setInspectorPanel] = useState<InspectorPanel>("scene");
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("preview");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -68,6 +69,9 @@ export function DeveloperPreviewApp() {
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
   const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const [draftReady, setDraftReady] = useState(false);
+  const [selectedSceneId, setSelectedSceneId] = useState(() =>
+    getFirstSceneId(sampleProject)
+  );
   const [prompt, setPrompt] = useState(
     "Create a cinematic SaaS landing page for an AI analytics tool"
   );
@@ -109,6 +113,9 @@ export function DeveloperPreviewApp() {
   const hasWorkspace =
     isGenerating || draftReady || pipelineResult?.status === "completed";
   const generationPhase = getCinematicGenerationPhase(generationPhaseIndex);
+  const selectedScene =
+    getSceneById(appliedProject, selectedSceneId) ??
+    getSceneById(appliedProject, getFirstSceneId(appliedProject));
   const modeLabel =
     settings.mode === "api" ? "API" : settings.mode === "hybrid" ? "Hybrid" : "Local";
   const generationTimers = useRef<number[]>([]);
@@ -197,6 +204,9 @@ export function DeveloperPreviewApp() {
     setProjectJson(nextJson);
     setValidation(nextValidation);
     setDraftReady(true);
+    setSelectedSceneId((current) =>
+      getSceneById(nextProject, current) ? current : getFirstSceneId(nextProject)
+    );
     setDownloadStatus("Changes saved. Preview and export are refreshed.");
   }
 
@@ -206,7 +216,7 @@ export function DeveloperPreviewApp() {
     setDraftReady(false);
     setGenerationPhaseIndex(0);
     setWorkspaceView("preview");
-    setInspectorPanel("edit");
+    setInspectorPanel("scene");
     setPreviewFullscreen(false);
     setPipelineResult(null);
     setDownloadStatus(
@@ -227,6 +237,8 @@ export function DeveloperPreviewApp() {
           if (result.status === "completed" && result.project) {
             applyGeneratedProject(result.project);
             setDraftReady(true);
+            setInspectorPanel("scene");
+            setSelectedSceneId(getFirstSceneId(result.project));
             setDownloadStatus(
               "Website draft ready. Edit sections or download your ZIP."
             );
@@ -246,6 +258,9 @@ export function DeveloperPreviewApp() {
     setAppliedProject(nextProject);
     setProjectJson(nextJson);
     setValidation(nextValidation);
+    setSelectedSceneId((current) =>
+      getSceneById(nextProject, current) ? current : getFirstSceneId(nextProject)
+    );
   }
 
   function handleReset() {
@@ -257,8 +272,9 @@ export function DeveloperPreviewApp() {
     setIsGenerating(false);
     setGenerationPhaseIndex(0);
     setDraftReady(false);
-    setInspectorPanel("edit");
+    setInspectorPanel("scene");
     setWorkspaceView("preview");
+    setSelectedSceneId(getFirstSceneId(sampleProject));
     setDownloadStatus("Sample project restored.");
   }
 
@@ -421,9 +437,15 @@ export function DeveloperPreviewApp() {
           activePhase={generationPhase}
           activePhaseIndex={generationPhaseIndex}
           isGenerating={isGenerating}
+          selectedSceneId={selectedSceneId}
           collapsed={sidebarCollapsed}
           onToggle={() => {
             setSidebarCollapsed((current) => !current);
+          }}
+          onSelectScene={(sceneId) => {
+            setSelectedSceneId(sceneId);
+            setInspectorPanel("scene");
+            setWorkspaceView("preview");
           }}
           onRegenerate={handleGenerate}
           onNewProject={handleReset}
@@ -442,6 +464,7 @@ export function DeveloperPreviewApp() {
               hasGenerated={hasFinalDraft}
               isGenerating={isGenerating}
               generationPhase={generationPhase}
+              activeScene={selectedScene}
               device={previewDevice}
               fullscreen={previewFullscreen}
               onDeviceChange={setPreviewDevice}
@@ -469,11 +492,16 @@ export function DeveloperPreviewApp() {
           project={appliedProject}
           hasGenerated={hasFinalDraft}
           activePanel={inspectorPanel}
+          selectedSceneId={selectedSceneId}
           exportResult={exportResult}
           bundle={bundle}
           status={downloadStatus}
           onPanelChange={(panel) => {
             setInspectorPanel(panel);
+          }}
+          onSelectScene={(sceneId) => {
+            setSelectedSceneId(sceneId);
+            setWorkspaceView("preview");
           }}
           onProjectChange={handleVisualProjectChange}
           onPreview={() => {

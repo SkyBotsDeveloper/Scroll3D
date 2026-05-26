@@ -4,6 +4,12 @@ import {
   type CinematicGenerationPhase,
   type PreviewDevice
 } from "../lib/cinematic-generation";
+import {
+  getMotionPreset,
+  getNarrativeRole,
+  getTransitionStyle,
+  type SceneEditorItem
+} from "../lib/scene-metadata";
 import { AlertBox } from "./AlertBox";
 import { ProgressivePreviewStage } from "./ProgressivePreviewStage";
 import { StatusBadge } from "./StatusBadge";
@@ -16,6 +22,7 @@ interface PrimaryPreviewProps {
   hasGenerated: boolean;
   isGenerating: boolean;
   generationPhase: CinematicGenerationPhase;
+  activeScene: SceneEditorItem | undefined;
   device: PreviewDevice;
   fullscreen: boolean;
   onDeviceChange: (device: PreviewDevice) => void;
@@ -32,6 +39,7 @@ export function PrimaryPreview({
   hasGenerated,
   isGenerating,
   generationPhase,
+  activeScene,
   device,
   fullscreen,
   onDeviceChange,
@@ -39,6 +47,16 @@ export function PrimaryPreview({
   onViewFiles,
   onDownloadZip
 }: PrimaryPreviewProps) {
+  const motion = activeScene
+    ? getMotionPreset(activeScene.metadata.motionPreset)
+    : undefined;
+  const transition = activeScene
+    ? getTransitionStyle(activeScene.metadata.transitionStyle)
+    : undefined;
+  const role = activeScene
+    ? getNarrativeRole(activeScene.metadata.narrativeRole)
+    : undefined;
+
   return (
     <section
       className={fullscreen ? "primaryPreview fullscreenPreview" : "primaryPreview"}
@@ -118,6 +136,16 @@ export function PrimaryPreview({
             </button>
           ))}
         </div>
+
+        {hasGenerated && activeScene ? (
+          <div className="previewSceneFocus" aria-label="Focused scene">
+            <span className="miniBadge">Focused scene</span>
+            <strong>{activeScene.metadata.title}</strong>
+            <span>{role?.label ?? activeScene.metadata.narrativeRole}</span>
+            <span>{motion?.label ?? activeScene.metadata.motionPreset}</span>
+            <span>{transition?.label ?? activeScene.metadata.transitionStyle}</span>
+          </div>
+        ) : null}
 
         <div className="previewViewport">
           {isGenerating ? (

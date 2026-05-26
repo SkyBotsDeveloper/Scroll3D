@@ -1,9 +1,11 @@
 import type { Scroll3DProject } from "@scroll3d/core";
-import {
-  sceneTimelineItems,
-  type CinematicGenerationPhase
-} from "../lib/cinematic-generation";
+import { type CinematicGenerationPhase } from "../lib/cinematic-generation";
 import type { MockPipelineResult } from "../lib/mock-pipeline-client";
+import {
+  getMotionPreset,
+  getNarrativeRole,
+  getProjectScenes
+} from "../lib/scene-metadata";
 import { CinematicGenerationProgress } from "./CinematicGenerationProgress";
 import { StatusBadge } from "./StatusBadge";
 
@@ -14,8 +16,10 @@ interface WorkspaceSidebarProps {
   activePhase: CinematicGenerationPhase;
   activePhaseIndex: number;
   isGenerating: boolean;
+  selectedSceneId: string;
   collapsed: boolean;
   onToggle: () => void;
+  onSelectScene: (sceneId: string) => void;
   onRegenerate: () => void;
   onNewProject: () => void;
   onOpenSettings: () => void;
@@ -28,12 +32,16 @@ export function WorkspaceSidebar({
   activePhase,
   activePhaseIndex,
   isGenerating,
+  selectedSceneId,
   collapsed,
   onToggle,
+  onSelectScene,
   onRegenerate,
   onNewProject,
   onOpenSettings
 }: WorkspaceSidebarProps) {
+  const scenes = getProjectScenes(project);
+
   return (
     <aside
       className={collapsed ? "workspaceSidebar collapsed" : "workspaceSidebar"}
@@ -84,21 +92,37 @@ export function WorkspaceSidebar({
         <section className="sidebarSection">
           <div className="sidebarSectionHeader">
             <span className="eyebrow">Scene timeline</span>
-            <span className="miniBadge">{String(project.pages.length)} page</span>
+            <span className="miniBadge">{String(scenes.length)} scenes</span>
           </div>
           <div className="sceneTimelineList" aria-label="Cinematic scene timeline">
-            {sceneTimelineItems.map((scene) => (
-              <article key={scene.id} className="sceneTimelineItem">
-                <span className="sceneThumbnail" aria-hidden="true" />
-                <div>
-                  <strong>
-                    {String(scene.order)}. {scene.label}
-                  </strong>
-                  <small>{scene.transitionHint}</small>
-                  <p>{scene.motionHint}</p>
-                </div>
-              </article>
-            ))}
+            {scenes.map((scene) => {
+              const motion = getMotionPreset(scene.metadata.motionPreset);
+              const role = getNarrativeRole(scene.metadata.narrativeRole);
+
+              return (
+                <button
+                  key={scene.id}
+                  type="button"
+                  className={
+                    scene.id === selectedSceneId
+                      ? "sceneTimelineItem active"
+                      : "sceneTimelineItem"
+                  }
+                  onClick={() => {
+                    onSelectScene(scene.id);
+                  }}
+                >
+                  <span className="sceneThumbnail" aria-hidden="true" />
+                  <div>
+                    <strong>
+                      {String(scene.order + 1)}. {scene.metadata.title}
+                    </strong>
+                    <small>{role?.label ?? scene.metadata.narrativeRole}</small>
+                    <p>{motion?.label ?? scene.metadata.motionPreset}</p>
+                  </div>
+                </button>
+              );
+            })}
           </div>
           <details className="sidebarDetails">
             <summary>Project sections</summary>
