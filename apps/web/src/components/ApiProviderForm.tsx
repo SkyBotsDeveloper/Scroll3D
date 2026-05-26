@@ -45,7 +45,7 @@ export function ApiProviderForm({
           />
         </label>
         <label className="field">
-          <span>Provider type</span>
+          <span>Capability</span>
           <select
             value={provider.type}
             onChange={(event) => {
@@ -65,10 +65,10 @@ export function ApiProviderForm({
       </div>
 
       <label className="field">
-        <span>Base URL</span>
+        <span>Custom endpoint URL</span>
         <input
           value={provider.baseUrl}
-          placeholder="https://api.example.com/v1"
+          placeholder="https://api.example.com/v1 or http://127.0.0.1:1234/v1"
           onChange={(event) => {
             onChange({ ...provider, baseUrl: event.target.value });
           }}
@@ -87,10 +87,10 @@ export function ApiProviderForm({
           />
         </label>
         <label className="field">
-          <span>Secret reference</span>
+          <span>SecretRef</span>
           <input
             value={provider.secretRef}
-            placeholder="primary-api-key"
+            placeholder="openai.main"
             onChange={(event) => {
               onChange({ ...provider, secretRef: event.target.value });
             }}

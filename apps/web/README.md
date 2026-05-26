@@ -41,30 +41,37 @@ calls, backend persistence, and heavy generated assets in this phase.
 
 ## Dashboard Structure
 
-The app is organized into two layers.
+The app is organized into a prompt-first landing and a generated workspace.
 
-Normal Mode is the default path:
+Before generation:
 
-- Left: prompt composer, example prompts, quick website type chips, and friendly
-  generation progress. The textarea and Generate website button share one
-  primary composition surface.
-- Center: browser-style preview with an empty state before generation and a
-  sandboxed website preview after generation. Once a draft is ready, Download ZIP
-  is available near the preview.
-- Right: simple Edit and Export controls for project name, theme basics,
-  section text/order/visibility, scroll feel, and ZIP download. Edit groups are
-  collapsible to avoid showing every field at once.
+- The first screen focuses on Scroll3D, a large prompt box, example prompt cards,
+  quick website type chips, and the Generate website CTA.
+- JSON, provider tables, model catalogs, generated files, runtime diagnostics,
+  and setup commands are hidden.
 
-Advanced Mode is hidden behind the Advanced drawer:
+After generation:
 
-- `JSON`: power-user project JSON editor with validation.
-- `Generated Files`: generated file list and text preview.
+- Left: collapsible workspace sidebar with the current prompt, generation
+  progress, section navigation, asset placeholders, history placeholders, and
+  regenerate/new project actions.
+- Center: top-center Preview/Code switcher. Preview shows the browser-style
+  website preview. Code shows a generated-file explorer and read-only code panel.
+- Right: simple inspector for edit/export controls.
+- Settings: one global settings center for providers, models, runtime,
+  self-hosting, appearance, JSON, generated files, and diagnostics.
+
+Global Settings includes:
+
 - `Providers`: API/local/hybrid mode and provider preferences.
 - `Local Models`: local model planning and download-plan summaries.
 - `Runtime`: local runtime setup and one-model-at-a-time execution guidance.
 - `Self-hosting`: static export portability and manual deployment guidance.
-- `Diagnostics`: mock pipeline details, full visual editor, sync/export status,
-  recent downloads, commands, and phase notes.
+- `Appearance`: full structured project editor.
+- `JSON`: power-user project JSON editor with validation.
+- `Generated Files`: generated file list and text preview.
+- `Diagnostics`: mock pipeline details, sync/export status, recent downloads,
+  commands, and phase notes.
 
 The Phase 15 layout was inspired only by broad open-source AI builder UX
 patterns: prompt-first generation, preview-dominant workspaces, concise status
@@ -81,6 +88,11 @@ and self-hosting guidance for Vercel, Netlify, Cloudflare Pages, GitHub Pages,
 and self-hosted nginx. These screens are guidance and metadata only; no real API
 calls, model execution, downloads, or deployment automation are enabled.
 
+Phase 18 rebuilds the app into a cinematic AI workspace. The app starts with a
+minimal prompt landing and transitions into an immersive workspace only after a
+mock website draft is generated. The new Code view is a read-only foundation for
+future Monaco/live editing.
+
 ## Settings And Prompt Workflow
 
 - `Settings` configures local/API/hybrid mode and provider preferences per
@@ -88,6 +100,9 @@ calls, model execution, downloads, or deployment automation are enabled.
 - API provider entries use `secretRef` values only. Raw API keys are not stored.
 - API provider connection checks validate local config only; real network calls
   are disabled in developer preview.
+- Provider setup is shaped around custom endpoint URLs, model names, SecretRefs,
+  and per-stage capabilities for future OpenAI-compatible APIs, OpenRouter,
+  Ollama, LM Studio, and custom local inference.
 - Local runtime controls are placeholders for future runtime connection and
   model manager work.
 - Settings includes a Model Manager view that estimates required models,

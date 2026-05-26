@@ -1588,7 +1588,7 @@ h1 {
 
 .advancedTabs {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
   gap: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1612,6 +1612,379 @@ h1 {
 .advancedToolIntro span {
   color: var(--muted);
   line-height: 1.5;
+}
+
+.cinematicLandingPage {
+  min-height: 100vh;
+  place-items: center;
+  padding: clamp(16px, 3vw, 30px);
+}
+
+.cinematicLanding {
+  display: grid;
+  width: min(100%, 1120px);
+  gap: clamp(18px, 4vw, 34px);
+}
+
+.landingHeader,
+.workspaceTopbar {
+  display: grid;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(8, 10, 15, 0.76);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.landingHeader {
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 10px 12px;
+}
+
+.landingPromptShell {
+  display: grid;
+  gap: 18px;
+  border: 1px solid rgba(153, 168, 205, 0.26);
+  border-radius: 8px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(75, 227, 176, 0.16), transparent 34%),
+    radial-gradient(circle at 82% 24%, rgba(106, 200, 255, 0.14), transparent 36%),
+    rgba(13, 16, 24, 0.9);
+  box-shadow: 0 30px 110px rgba(0, 0, 0, 0.42);
+  padding: clamp(20px, 5vw, 42px);
+}
+
+.landingCopy {
+  display: grid;
+  max-width: 820px;
+  gap: 14px;
+}
+
+.landingComposer {
+  display: grid;
+  gap: 14px;
+  border: 1px solid rgba(75, 227, 176, 0.34);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(75, 227, 176, 0.11), transparent 50%),
+    rgba(5, 7, 11, 0.62);
+  padding: 14px;
+}
+
+.landingPromptTextarea {
+  min-height: clamp(180px, 28vh, 300px);
+  font-size: 1.04rem;
+  line-height: 1.55;
+}
+
+.landingComposerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.landingGenerateButton {
+  min-height: 52px;
+  min-width: 210px;
+  box-shadow: 0 18px 42px rgba(75, 227, 176, 0.24);
+  font-size: 1rem;
+}
+
+.landingExampleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.landingProgressCard {
+  display: grid;
+  gap: 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5, 7, 11, 0.44);
+  padding: 14px;
+}
+
+.workspaceAppPage {
+  gap: 14px;
+  padding: 14px;
+}
+
+.workspaceTopbar,
+.cinematicWorkspaceShell,
+.compactStatusBar {
+  width: min(100%, 1600px);
+  margin: 0 auto;
+}
+
+.workspaceTopbar {
+  grid-template-columns: minmax(220px, 0.7fr) auto minmax(220px, 0.7fr);
+  padding: 10px 12px;
+}
+
+.workspaceViewSwitcher {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(110px, 1fr));
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(5, 7, 11, 0.55);
+  padding: 5px;
+}
+
+.workspaceViewButton {
+  min-height: 36px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 850;
+}
+
+.workspaceViewButton.active,
+.workspaceViewButton:hover {
+  border-color: rgba(75, 227, 176, 0.42);
+  background:
+    linear-gradient(135deg, rgba(75, 227, 176, 0.16), rgba(106, 200, 255, 0.1)),
+    rgba(246, 247, 251, 0.05);
+  color: var(--foreground);
+}
+
+.cinematicWorkspaceShell {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr) 330px;
+  gap: 14px;
+  align-items: start;
+}
+
+.cinematicWorkspaceShell.sidebarIsCollapsed {
+  grid-template-columns: 58px minmax(0, 1fr) 330px;
+}
+
+.workspaceSidebar,
+.workspaceMainStage,
+.codeWorkspace,
+.settingsCenterPanel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(75, 227, 176, 0.06), transparent 36%),
+    rgba(13, 16, 24, 0.86);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.workspaceSidebar {
+  display: grid;
+  gap: 12px;
+  max-height: calc(100vh - 106px);
+  overflow: auto;
+  padding: 12px;
+  position: sticky;
+  top: 14px;
+}
+
+.workspaceSidebar.collapsed {
+  justify-items: center;
+}
+
+.workspaceSidebar.collapsed .sidebarExpandedContent {
+  display: none;
+}
+
+.sidebarToggle {
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(246, 247, 251, 0.05);
+  color: var(--foreground);
+  font-weight: 900;
+}
+
+.sidebarExpandedContent {
+  display: grid;
+  gap: 12px;
+}
+
+.sidebarSection {
+  display: grid;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(5, 7, 11, 0.42);
+  padding: 12px;
+}
+
+.sidebarSectionHeader,
+.codePanelHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.sidebarPrompt {
+  max-height: 120px;
+  margin: 0;
+  overflow: auto;
+  color: #e7eaf2;
+  line-height: 1.45;
+}
+
+.sidebarNav {
+  display: grid;
+  gap: 8px;
+}
+
+.sidebarNav a,
+.sidebarPlaceholder {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(246, 247, 251, 0.04);
+  padding: 9px 10px;
+}
+
+.sidebarNav a {
+  display: grid;
+  gap: 3px;
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+.sidebarNav small,
+.sidebarPlaceholder {
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.workspaceMainStage {
+  min-width: 0;
+  padding: 0;
+}
+
+.workspaceMainStage .primaryPreview,
+.workspaceMainStage .codeWorkspace {
+  width: 100%;
+  border: 0;
+  box-shadow: none;
+  position: static;
+}
+
+.codeWorkspace {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+}
+
+.codeWorkspaceTopbar {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.codeWorkspaceTopbar > div:first-child {
+  display: grid;
+  gap: 6px;
+}
+
+.codeEditorShell {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.3fr) minmax(0, 1fr);
+  min-height: 680px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--code);
+}
+
+.codeFileExplorer {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  border-right: 1px solid var(--line);
+  background: rgba(246, 247, 251, 0.03);
+  padding: 12px;
+}
+
+.codeEditorPanel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.codeTabs {
+  display: flex;
+  gap: 6px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(246, 247, 251, 0.04);
+  padding: 8px;
+}
+
+.codeTabs .tabButton {
+  min-height: 34px;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.codeEditorBody {
+  min-height: 0;
+  overflow: auto;
+}
+
+.codeEditorBody pre {
+  margin: 0;
+  padding: 16px;
+  color: #e7eaf2;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 0.84rem;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.settingsCenterOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+}
+
+.settingsCenterBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(3, 5, 9, 0.72);
+  backdrop-filter: blur(14px);
+}
+
+.settingsCenterPanel {
+  position: relative;
+  display: grid;
+  width: min(100%, 1320px);
+  max-height: calc(100vh - 36px);
+  gap: 14px;
+  overflow: auto;
+  padding: 18px;
+}
+
+.settingsCenterHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.settingsCenterHeader > div {
+  display: grid;
+  gap: 6px;
 }
 
 .providerSetupPanel,
@@ -1838,16 +2211,24 @@ h1 {
   .appShell,
   .fileWorkspace,
   .consumerWorkspace,
-  .aiBuilderWorkspace {
+  .aiBuilderWorkspace,
+  .cinematicWorkspaceShell,
+  .cinematicWorkspaceShell.sidebarIsCollapsed,
+  .codeEditorShell {
     grid-template-columns: minmax(0, 1fr);
   }
 
   .previewPane,
   .primaryPreview,
   .rightInspector,
-  .consumerHero {
+  .consumerHero,
+  .workspaceSidebar {
     position: static;
     max-height: none;
+  }
+
+  .workspaceSidebar.collapsed .sidebarExpandedContent {
+    display: grid;
   }
 }
 
@@ -1860,13 +2241,18 @@ h1 {
   .panelHeader,
   .splitHeader,
   .topNav,
-  .consumerTopNav {
+  .consumerTopNav,
+  .landingHeader,
+  .workspaceTopbar,
+  .codeWorkspaceTopbar,
+  .settingsCenterHeader {
     display: grid;
   }
 
   .toolbarMeta,
   .buttonRow,
-  .consumerNavActions {
+  .consumerNavActions,
+  .landingComposerActions {
     justify-content: start;
   }
 
@@ -1888,6 +2274,7 @@ h1 {
   .workflowStepper,
   .advancedTabs,
   .examplePromptGrid,
+  .landingExampleGrid,
   .previewStatusStrip,
   .metricsGrid,
   .colorGrid,
@@ -1935,7 +2322,8 @@ h1 {
   }
 
   .simplePipelineStep,
-  .exportChecklist div {
+  .exportChecklist div,
+  .workspaceViewSwitcher {
     grid-template-columns: minmax(0, 1fr);
   }
 

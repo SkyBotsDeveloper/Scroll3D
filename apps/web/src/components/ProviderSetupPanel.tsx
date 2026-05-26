@@ -34,6 +34,34 @@ const capabilityTypes = [
   { id: "code", label: "Website compile" }
 ] as const;
 
+const universalProviderTargets = [
+  {
+    name: "OpenAI-compatible APIs",
+    fields: "endpoint URL, model, SecretRef, capability",
+    note: "Use any compatible hosted API later without changing project schema."
+  },
+  {
+    name: "OpenRouter",
+    fields: "base URL, route model, SecretRef",
+    note: "Prepared for BYO routing while keeping keys outside exports."
+  },
+  {
+    name: "Ollama",
+    fields: "localhost URL, local model, capability",
+    note: "Future local LLM stages can bind to local models."
+  },
+  {
+    name: "LM Studio",
+    fields: "local OpenAI-compatible URL, model, capability",
+    note: "Prepared for custom local inference endpoints."
+  },
+  {
+    name: "Custom inference",
+    fields: "endpoint, stage capability, runtime notes",
+    note: "Plugin manifests can describe new local/API providers later."
+  }
+];
+
 export function ProviderSetupPanel({
   settings,
   onChange,
@@ -84,6 +112,31 @@ export function ProviderSetupPanel({
           <span>comfy.remote</span>
         </div>
       </div>
+
+      <section
+        className="providerManifestGroup"
+        aria-labelledby="universal-provider-title"
+      >
+        <div className="sectionHeader">
+          <h4 id="universal-provider-title">Universal provider compatibility</h4>
+          <p className="statusText">
+            Setup forms are shaped around custom endpoint URLs, model names, SecretRefs,
+            and per-stage capabilities. Real execution stays disabled.
+          </p>
+        </div>
+        <div className="providerDecisionGrid">
+          {universalProviderTargets.map((target) => (
+            <div key={target.name} className="providerDecisionCard">
+              <div className="inlineCluster">
+                <strong>{target.name}</strong>
+                <span className="providerBadge configured">planned</span>
+              </div>
+              <span>{target.fields}</span>
+              <small>{target.note}</small>
+            </div>
+          ))}
+        </div>
+      </section>
 
       <div className="providerDecisionGrid" aria-label="Current stage decisions">
         {statuses.map((status) => (

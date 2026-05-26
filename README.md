@@ -95,6 +95,10 @@ that can be hosted on static infrastructure.
 - **Phase 17:** provider/plugin manifest foundation, polished Advanced provider
   setup, SecretRef guidance, runtime visibility cards, and self-hosting guidance
   completed.
+- **Phase 18:** cinematic AI-native workspace rebuild completed with a minimal
+  prompt-first landing, post-generation workspace mode, collapsible sidebar,
+  Preview/Code switcher, global settings center, and universal provider setup
+  direction.
 
 The full visual drag/drop editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, and real binary
@@ -368,6 +372,25 @@ execution model:
 6. No provider manifest, UI card, or runtime panel performs real network calls,
    model downloads, model execution, deployment, or media generation.
 
+## Phase 18 Architecture
+
+Phase 18 rebuilds the web app shell into an AI-native workspace:
+
+1. Before generation, the app shows a minimal cinematic prompt landing focused
+   on examples, website type chips, and a single Generate website action.
+2. After mock generation, the app enters a workspace with a top bar, collapsible
+   left sidebar, main stage, and right inspector.
+3. The top-center Preview/Code switcher lets users move between the generated
+   website preview and a read-only generated-file workspace.
+4. Advanced tools are consolidated into one global settings center for
+   providers, models, runtime, self-hosting, appearance, JSON, files, and
+   diagnostics.
+5. Provider setup now orients around custom endpoint URLs, model names,
+   SecretRefs, and capability selection for future OpenAI-compatible APIs,
+   OpenRouter, Ollama, LM Studio, and custom local inference.
+6. All provider execution, local inference, model downloads, deployment
+   automation, and media generation remain disabled.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -394,6 +417,8 @@ execution model:
 - Phase 16: serious UI quality pass for the AI builder workspace.
 - Phase 17: plugin provider setup, runtime visibility, and self-hosting
   foundation.
+- Phase 18: AI-native cinematic workspace with prompt landing, Preview/Code
+  shell, global settings center, and provider compatibility UX.
 
 ## Run Locally
 

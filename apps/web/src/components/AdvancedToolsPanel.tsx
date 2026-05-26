@@ -26,6 +26,7 @@ export type AdvancedTab =
   | "models"
   | "runtime"
   | "deploy"
+  | "appearance"
   | "diagnostics";
 
 interface AdvancedToolsPanelProps {
@@ -62,12 +63,13 @@ interface AdvancedToolsPanelProps {
 }
 
 const tabs: Array<{ id: AdvancedTab; label: string }> = [
-  { id: "json", label: "JSON" },
-  { id: "files", label: "Generated Files" },
   { id: "providers", label: "Providers" },
   { id: "models", label: "Local Models" },
   { id: "runtime", label: "Runtime" },
   { id: "deploy", label: "Self-hosting" },
+  { id: "appearance", label: "Appearance" },
+  { id: "json", label: "JSON" },
+  { id: "files", label: "Generated Files" },
   { id: "diagnostics", label: "Diagnostics" }
 ];
 
@@ -108,10 +110,10 @@ export function AdvancedToolsPanel({
       <div className="panelHeader">
         <div>
           <p className="eyebrow">Advanced</p>
-          <h2 id="advanced-title">Developer tools</h2>
+          <h2 id="advanced-title">Global settings center</h2>
           <p className="statusText">
-            Advanced tools are for local models, provider configuration, JSON editing,
-            generated files, and debugging.
+            Configure providers, local models, runtime visibility, self-hosting,
+            appearance, JSON, generated files, and diagnostics from one place.
           </p>
         </div>
       </div>
@@ -226,10 +228,22 @@ export function AdvancedToolsPanel({
         </section>
       ) : null}
 
+      {activeTab === "appearance" ? (
+        <section className="toolPanel" aria-label="Appearance tools">
+          <div className="advancedToolIntro">
+            <strong>Appearance</strong>
+            <span>
+              Edit project basics, theme, sections, and scroll feel from the full
+              structured editor. Normal mode keeps only common controls visible.
+            </span>
+          </div>
+          <VisualEditor project={project} onChange={onProjectChange} />
+        </section>
+      ) : null}
+
       {activeTab === "diagnostics" ? (
         <section className="toolPanel diagnosticsPanel" aria-label="Diagnostics">
           <PipelineRunPanel result={pipelineResult} onApply={onApplyPipelineProject} />
-          <VisualEditor project={project} onChange={onProjectChange} />
           <JsonSyncPanel
             dirty={dirty}
             validation={validation}

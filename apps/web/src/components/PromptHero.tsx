@@ -63,7 +63,7 @@ export function PromptHero({
               onChange={(event) => {
                 onPromptChange(event.target.value);
               }}
-              placeholder="Describe the 3D website you want to build…"
+              placeholder="Describe the 3D website you want to build..."
             />
           </label>
           <button

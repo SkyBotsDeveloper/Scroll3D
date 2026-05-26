@@ -23,4 +23,5 @@ Current docs:
 - [Phase 15 AI Builder UX Polish](./phase-15-ai-builder-ux.md)
 - [Phase 16 UI Quality Pass](./phase-16-ui-quality-pass.md)
 - [Phase 17 Provider And Self-Hosting Foundation](./phase-17-provider-and-self-hosting-foundation.md)
+- [Phase 18 AI Workspace UX Rebuild](./phase-18-ai-workspace-ux-rebuild.md)
 - [Provider Manifest Spec](./provider-manifest-spec.md)

@@ -3,13 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Scroll3DProject } from "@scroll3d/core";
 import { AdvancedToolsPanel, type AdvancedTab } from "./AdvancedToolsPanel";
-import { AdvancedDrawer } from "./AdvancedDrawer";
+import { CodeWorkspace } from "./CodeWorkspace";
 import { CompactStatusBar } from "./CompactStatusBar";
+import { GlobalSettingsCenter } from "./GlobalSettingsCenter";
+import { LandingPromptSurface } from "./LandingPromptSurface";
 import { PrimaryPreview } from "./PrimaryPreview";
-import { PromptHero } from "./PromptHero";
 import { RightInspector, type InspectorPanel } from "./RightInspector";
 import { StatusBadge } from "./StatusBadge";
-import { WorkflowStepper } from "./WorkflowStepper";
+import { WorkspaceSidebar } from "./WorkspaceSidebar";
+import { WorkspaceViewSwitcher, type WorkspaceView } from "./WorkspaceViewSwitcher";
 import { createProjectZipBlob } from "../lib/browser-zip";
 import { getDirtyState } from "../lib/editor-state";
 import {
@@ -49,13 +51,13 @@ import {
 } from "../lib/settings-state";
 import type { SystemScanResult } from "../lib/model-recommendations";
 import { validateProjectJson, type ProjectValidationResult } from "../lib/validation";
-import type { ConsumerWorkflowStep } from "../lib/workflow-state";
 
 export function DeveloperPreviewApp() {
-  const [activeStep, setActiveStep] = useState<ConsumerWorkflowStep>("prompt");
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [advancedTab, setAdvancedTab] = useState<AdvancedTab>("providers");
   const [inspectorPanel, setInspectorPanel] = useState<InspectorPanel>("edit");
+  const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("preview");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [draftReady, setDraftReady] = useState(false);
   const [prompt, setPrompt] = useState(
     "Create a cinematic SaaS landing page for an AI analytics tool"
@@ -171,7 +173,7 @@ export function DeveloperPreviewApp() {
   }
 
   function handleGenerate() {
-    setActiveStep("generate");
+    setWorkspaceView("preview");
     const result = runMockPromptPipeline(appliedProject, prompt, settings);
     setPipelineResult(result);
 
@@ -179,11 +181,10 @@ export function DeveloperPreviewApp() {
       applyGeneratedProject(result.project);
       setDraftReady(true);
       setInspectorPanel("edit");
-      setActiveStep("preview");
+      setWorkspaceView("preview");
       setDownloadStatus("Website draft ready. Edit sections or download your ZIP.");
     } else {
       setDownloadStatus(result.warnings[0] ?? "Generation failed.");
-      setActiveStep("prompt");
     }
   }
 
@@ -203,7 +204,7 @@ export function DeveloperPreviewApp() {
     setPipelineResult(null);
     setDraftReady(false);
     setInspectorPanel("edit");
-    setActiveStep("prompt");
+    setWorkspaceView("preview");
     setDownloadStatus("Sample project restored.");
   }
 
@@ -240,9 +241,76 @@ export function DeveloperPreviewApp() {
     setAdvancedOpen(true);
   }
 
+  const settingsCenter = (
+    <GlobalSettingsCenter
+      open={advancedOpen}
+      onClose={() => {
+        setAdvancedOpen(false);
+      }}
+    >
+      <AdvancedToolsPanel
+        project={appliedProject}
+        projectJson={projectJson}
+        validation={validation}
+        dirty={dirty}
+        visibleSectionCount={visibleSectionCount}
+        exportedFileCount={bundle?.files.length ?? 0}
+        bundle={bundle}
+        selectedPath={displaySelectedPath}
+        filePreview={filePreview}
+        settings={settings}
+        scan={systemScan}
+        settingsMessage={settingsMessage}
+        pipelineResult={pipelineResult}
+        downloadStatus={downloadStatus}
+        history={history}
+        exportReady={exportResult.success}
+        activeTab={advancedTab}
+        onTabChange={setAdvancedTab}
+        onProjectChange={handleVisualProjectChange}
+        onJsonChange={setProjectJson}
+        onValidate={handleValidate}
+        onApplyJson={handleApplyJson}
+        onResetProject={handleReset}
+        onSelectFile={setSelectedPath}
+        onSettingsChange={setSettings}
+        onScanChange={setSystemScan}
+        onSettingsMessage={setSettingsMessage}
+        onApplyPipelineProject={() => {
+          if (pipelineResult?.project) {
+            applyGeneratedProject(pipelineResult.project);
+            setDownloadStatus("Generated project update applied.");
+          }
+        }}
+        onDownloadZip={() => {
+          void handleDownloadZip();
+        }}
+        onClearStorage={handleClearStorage}
+      />
+    </GlobalSettingsCenter>
+  );
+
+  if (!hasGeneratedDraft) {
+    return (
+      <main className="page cinematicLandingPage">
+        <LandingPromptSurface
+          prompt={prompt}
+          result={pipelineResult}
+          modeLabel={settings.allowMockFallback ? `${modeLabel} + mock` : modeLabel}
+          onPromptChange={setPrompt}
+          onGenerate={handleGenerate}
+          onOpenSettings={() => {
+            openAdvanced("providers");
+          }}
+        />
+        {settingsCenter}
+      </main>
+    );
+  }
+
   return (
-    <main className="page consumerAppPage">
-      <header className="consumerTopNav" aria-label="Scroll3D header">
+    <main className="page workspaceAppPage">
+      <header className="workspaceTopbar" aria-label="Scroll3D workspace header">
         <div className="brandLockup">
           <span className="logoMark">S3D</span>
           <div>
@@ -250,6 +318,12 @@ export function DeveloperPreviewApp() {
             <span>{appliedProject.name}</span>
           </div>
         </div>
+
+        <WorkspaceViewSwitcher
+          activeView={workspaceView}
+          onViewChange={setWorkspaceView}
+        />
+
         <div className="consumerNavActions">
           <StatusBadge tone="accent">Developer Preview</StatusBadge>
           <StatusBadge tone="warning">
@@ -259,8 +333,8 @@ export function DeveloperPreviewApp() {
             type="button"
             className="secondaryButton"
             onClick={() => {
-              setActiveStep("export");
               setInspectorPanel("export");
+              setWorkspaceView("preview");
             }}
           >
             Export
@@ -270,51 +344,61 @@ export function DeveloperPreviewApp() {
             className="secondaryButton"
             aria-expanded={advancedOpen}
             onClick={() => {
-              setAdvancedOpen((current) => !current);
+              openAdvanced("providers");
             }}
           >
-            Advanced
+            Settings
           </button>
         </div>
       </header>
 
-      <WorkflowStepper activeStep={activeStep} onStepChange={setActiveStep} />
-
       <section
-        className="aiBuilderWorkspace"
+        className={
+          sidebarCollapsed
+            ? "cinematicWorkspaceShell sidebarIsCollapsed"
+            : "cinematicWorkspaceShell"
+        }
         aria-label="Scroll3D AI builder workspace"
       >
-        <PromptHero
+        <WorkspaceSidebar
+          project={appliedProject}
           prompt={prompt}
           result={pipelineResult}
-          onPromptChange={setPrompt}
-          onGenerate={handleGenerate}
-          onEdit={() => {
-            setActiveStep("edit");
-            setInspectorPanel("edit");
+          collapsed={sidebarCollapsed}
+          onToggle={() => {
+            setSidebarCollapsed((current) => !current);
           }}
-          onPreview={() => {
-            setActiveStep("preview");
-          }}
-          onExport={() => {
-            setActiveStep("export");
-            setInspectorPanel("export");
+          onRegenerate={handleGenerate}
+          onNewProject={handleReset}
+          onOpenSettings={() => {
+            openAdvanced("providers");
           }}
         />
 
-        <PrimaryPreview
-          exportResult={exportResult}
-          bundle={bundle}
-          srcDoc={previewSrcDoc}
-          projectName={appliedProject.name}
-          hasGenerated={hasGeneratedDraft}
-          onViewFiles={() => {
-            openAdvanced("files");
-          }}
-          onDownloadZip={() => {
-            void handleDownloadZip();
-          }}
-        />
+        <section className="workspaceMainStage" aria-label="Workspace main stage">
+          {workspaceView === "preview" ? (
+            <PrimaryPreview
+              exportResult={exportResult}
+              bundle={bundle}
+              srcDoc={previewSrcDoc}
+              projectName={appliedProject.name}
+              hasGenerated={hasGeneratedDraft}
+              onViewFiles={() => {
+                setWorkspaceView("code");
+              }}
+              onDownloadZip={() => {
+                void handleDownloadZip();
+              }}
+            />
+          ) : (
+            <CodeWorkspace
+              bundle={bundle}
+              selectedPath={displaySelectedPath}
+              preview={filePreview}
+              onSelectFile={setSelectedPath}
+            />
+          )}
+        </section>
 
         <RightInspector
           project={appliedProject}
@@ -325,73 +409,27 @@ export function DeveloperPreviewApp() {
           status={downloadStatus}
           onPanelChange={(panel) => {
             setInspectorPanel(panel);
-            setActiveStep(panel === "edit" ? "edit" : "export");
           }}
           onProjectChange={handleVisualProjectChange}
           onPreview={() => {
-            setActiveStep("preview");
+            setWorkspaceView("preview");
           }}
           onDownloadZip={() => {
             void handleDownloadZip();
           }}
           onViewFiles={() => {
-            openAdvanced("files");
+            setWorkspaceView("code");
           }}
         />
       </section>
 
       <CompactStatusBar
         validation={validation}
-        fileCount={hasGeneratedDraft ? (bundle?.files.length ?? 0) : 0}
+        fileCount={bundle?.files.length ?? 0}
         status={downloadStatus}
       />
 
-      <AdvancedDrawer
-        open={advancedOpen}
-        onToggle={() => {
-          setAdvancedOpen((current) => !current);
-        }}
-      >
-        <AdvancedToolsPanel
-          project={appliedProject}
-          projectJson={projectJson}
-          validation={validation}
-          dirty={dirty}
-          visibleSectionCount={visibleSectionCount}
-          exportedFileCount={bundle?.files.length ?? 0}
-          bundle={bundle}
-          selectedPath={displaySelectedPath}
-          filePreview={filePreview}
-          settings={settings}
-          scan={systemScan}
-          settingsMessage={settingsMessage}
-          pipelineResult={pipelineResult}
-          downloadStatus={downloadStatus}
-          history={history}
-          exportReady={exportResult.success}
-          activeTab={advancedTab}
-          onTabChange={setAdvancedTab}
-          onProjectChange={handleVisualProjectChange}
-          onJsonChange={setProjectJson}
-          onValidate={handleValidate}
-          onApplyJson={handleApplyJson}
-          onResetProject={handleReset}
-          onSelectFile={setSelectedPath}
-          onSettingsChange={setSettings}
-          onScanChange={setSystemScan}
-          onSettingsMessage={setSettingsMessage}
-          onApplyPipelineProject={() => {
-            if (pipelineResult?.project) {
-              applyGeneratedProject(pipelineResult.project);
-              setDownloadStatus("Generated project update applied.");
-            }
-          }}
-          onDownloadZip={() => {
-            void handleDownloadZip();
-          }}
-          onClearStorage={handleClearStorage}
-        />
-      </AdvancedDrawer>
+      {settingsCenter}
     </main>
   );
 }
