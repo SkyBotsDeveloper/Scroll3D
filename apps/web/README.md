@@ -128,6 +128,14 @@ the viewport, and the inspector is lighter. Bolt.diy, Open Lovable, LibreChat,
 Open WebUI, and Flowise were cloned and studied for broad interaction patterns
 only; no third-party code, assets, branding, or copy were reused.
 
+Phase 24 replaces fixed workspace sizing with a real resizable workbench. The
+left sidebar, center preview, and right inspector use draggable split panels,
+persisted proportions, explicit min/max constraints, and stacked fallbacks on
+smaller screens. The preview remains the dominant center surface while users can
+resize or collapse secondary tools. The only reused implementation dependency is
+the MIT-licensed `react-resizable-panels` package; no third-party branding,
+assets, product copy, or proprietary layouts were copied.
+
 ## Settings And Prompt Workflow
 
 - `Settings` configures local/API/hybrid mode and provider preferences per

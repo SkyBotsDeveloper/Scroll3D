@@ -2,6 +2,14 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Scroll3DProject } from "@scroll3d/core";
+import {
+  Group,
+  Panel,
+  Separator,
+  useDefaultLayout,
+  usePanelRef,
+  type LayoutStorage
+} from "react-resizable-panels";
 import { AdvancedToolsPanel, type AdvancedTab } from "./AdvancedToolsPanel";
 import { CodeWorkspace } from "./CodeWorkspace";
 import { CompactStatusBar } from "./CompactStatusBar";
@@ -92,6 +100,32 @@ export function DeveloperPreviewApp() {
     createPlaceholderSystemScan()
   );
   const [pipelineResult, setPipelineResult] = useState<MockPipelineResult | null>(null);
+  const sidebarPanelRef = usePanelRef();
+  const inspectorPanelRef = usePanelRef();
+  const workspaceLayoutStorage = useMemo<LayoutStorage>(
+    () => ({
+      getItem(key) {
+        if (typeof window === "undefined") {
+          return null;
+        }
+
+        return window.localStorage.getItem(key);
+      },
+      setItem(key, value) {
+        if (typeof window === "undefined") {
+          return;
+        }
+
+        window.localStorage.setItem(key, value);
+      }
+    }),
+    []
+  );
+  const workspaceLayoutPersistence = useDefaultLayout({
+    id: "scroll3d-workspace-layout-v1",
+    panelIds: ["workspace-sidebar", "workspace-stage", "workspace-inspector"],
+    storage: workspaceLayoutStorage
+  });
 
   const exportResult = useMemo(
     () => exportProjectToBundle(appliedProject),
@@ -180,6 +214,20 @@ export function DeveloperPreviewApp() {
       clearGenerationTimers();
     };
   }, []);
+
+  useEffect(() => {
+    if (previewFocusMode || sidebarCollapsed) {
+      sidebarPanelRef.current?.collapse();
+    } else {
+      sidebarPanelRef.current?.expand();
+    }
+
+    if (previewFocusMode) {
+      inspectorPanelRef.current?.collapse();
+    } else {
+      inspectorPanelRef.current?.expand();
+    }
+  }, [inspectorPanelRef, previewFocusMode, sidebarCollapsed, sidebarPanelRef]);
 
   function handleValidate() {
     setValidation(validateProjectJson(projectJson));
@@ -437,92 +485,137 @@ export function DeveloperPreviewApp() {
           .join(" ")}
         aria-label="Scroll3D AI builder workspace"
       >
-        <WorkspaceSidebar
-          project={appliedProject}
-          prompt={prompt}
-          result={pipelineResult}
-          activePhase={generationPhase}
-          activePhaseIndex={generationPhaseIndex}
-          isGenerating={isGenerating}
-          selectedSceneId={selectedSceneId}
-          collapsed={sidebarCollapsed}
-          focusMode={previewFocusMode}
-          onToggle={() => {
-            setSidebarCollapsed((current) => !current);
-          }}
-          onSelectScene={(sceneId) => {
-            setSelectedSceneId(sceneId);
-            setInspectorPanel("scene");
-            setWorkspaceView("preview");
-          }}
-          onRegenerate={handleGenerate}
-          onNewProject={handleReset}
-          onOpenSettings={() => {
-            openAdvanced("providers");
-          }}
-        />
+        <Group
+          className="workspacePanelGroup"
+          defaultLayout={workspaceLayoutPersistence.defaultLayout}
+          id="scroll3d-workspace-layout-v1"
+          onLayoutChanged={workspaceLayoutPersistence.onLayoutChanged}
+          orientation="horizontal"
+          resizeTargetMinimumSize={{ coarse: 34, fine: 14 }}
+        >
+          <Panel
+            id="workspace-sidebar"
+            className="workspaceResizablePanel workspaceSidebarPanel"
+            collapsible
+            collapsedSize="4%"
+            defaultSize="18%"
+            minSize="13%"
+            maxSize="28%"
+            panelRef={sidebarPanelRef}
+          >
+            <WorkspaceSidebar
+              project={appliedProject}
+              prompt={prompt}
+              result={pipelineResult}
+              activePhase={generationPhase}
+              activePhaseIndex={generationPhaseIndex}
+              isGenerating={isGenerating}
+              selectedSceneId={selectedSceneId}
+              collapsed={sidebarCollapsed}
+              focusMode={previewFocusMode}
+              onToggle={() => {
+                setSidebarCollapsed((current) => !current);
+              }}
+              onSelectScene={(sceneId) => {
+                setSelectedSceneId(sceneId);
+                setInspectorPanel("scene");
+                setWorkspaceView("preview");
+              }}
+              onRegenerate={handleGenerate}
+              onNewProject={handleReset}
+              onOpenSettings={() => {
+                openAdvanced("providers");
+              }}
+            />
+          </Panel>
 
-        <section className="workspaceMainStage" aria-label="Workspace main stage">
-          {workspaceView === "preview" ? (
-            <PrimaryPreview
+          <Separator
+            className="workspaceResizeHandle"
+            aria-label="Resize workspace sidebar"
+          />
+
+          <Panel
+            id="workspace-stage"
+            className="workspaceResizablePanel workspaceStagePanel"
+            defaultSize="60%"
+            minSize="44%"
+          >
+            <section className="workspaceMainStage" aria-label="Workspace main stage">
+              {workspaceView === "preview" ? (
+                <PrimaryPreview
+                  exportResult={exportResult}
+                  bundle={bundle}
+                  srcDoc={previewSrcDoc}
+                  projectName={appliedProject.name}
+                  hasGenerated={hasFinalDraft}
+                  isGenerating={isGenerating}
+                  generationPhase={generationPhase}
+                  activeScene={selectedScene}
+                  device={previewDevice}
+                  fullscreen={previewFullscreen}
+                  onDeviceChange={setPreviewDevice}
+                  onToggleFullscreen={() => {
+                    setPreviewFullscreen((current) => !current);
+                  }}
+                  onViewFiles={() => {
+                    setWorkspaceView("code");
+                  }}
+                  onDownloadZip={() => {
+                    void handleDownloadZip();
+                  }}
+                />
+              ) : (
+                <CodeWorkspace
+                  bundle={bundle}
+                  selectedPath={displaySelectedPath}
+                  preview={filePreview}
+                  onSelectFile={setSelectedPath}
+                />
+              )}
+            </section>
+          </Panel>
+
+          <Separator className="workspaceResizeHandle" aria-label="Resize inspector" />
+
+          <Panel
+            id="workspace-inspector"
+            className="workspaceResizablePanel workspaceInspectorPanel"
+            collapsible
+            collapsedSize="5%"
+            defaultSize="22%"
+            minSize="16%"
+            maxSize="30%"
+            panelRef={inspectorPanelRef}
+          >
+            <RightInspector
+              project={appliedProject}
+              hasGenerated={hasFinalDraft}
+              activePanel={inspectorPanel}
+              selectedSceneId={selectedSceneId}
               exportResult={exportResult}
               bundle={bundle}
-              srcDoc={previewSrcDoc}
-              projectName={appliedProject.name}
-              hasGenerated={hasFinalDraft}
-              isGenerating={isGenerating}
-              generationPhase={generationPhase}
-              activeScene={selectedScene}
-              device={previewDevice}
-              fullscreen={previewFullscreen}
-              onDeviceChange={setPreviewDevice}
-              onToggleFullscreen={() => {
-                setPreviewFullscreen((current) => !current);
+              status={downloadStatus}
+              focusMode={previewFocusMode}
+              onPanelChange={(panel) => {
+                setInspectorPanel(panel);
               }}
-              onViewFiles={() => {
-                setWorkspaceView("code");
+              onSelectScene={(sceneId) => {
+                setSelectedSceneId(sceneId);
+                setWorkspaceView("preview");
+              }}
+              onProjectChange={handleVisualProjectChange}
+              onPreview={() => {
+                setWorkspaceView("preview");
               }}
               onDownloadZip={() => {
                 void handleDownloadZip();
               }}
+              onViewFiles={() => {
+                setWorkspaceView("code");
+              }}
             />
-          ) : (
-            <CodeWorkspace
-              bundle={bundle}
-              selectedPath={displaySelectedPath}
-              preview={filePreview}
-              onSelectFile={setSelectedPath}
-            />
-          )}
-        </section>
-
-        <RightInspector
-          project={appliedProject}
-          hasGenerated={hasFinalDraft}
-          activePanel={inspectorPanel}
-          selectedSceneId={selectedSceneId}
-          exportResult={exportResult}
-          bundle={bundle}
-          status={downloadStatus}
-          focusMode={previewFocusMode}
-          onPanelChange={(panel) => {
-            setInspectorPanel(panel);
-          }}
-          onSelectScene={(sceneId) => {
-            setSelectedSceneId(sceneId);
-            setWorkspaceView("preview");
-          }}
-          onProjectChange={handleVisualProjectChange}
-          onPreview={() => {
-            setWorkspaceView("preview");
-          }}
-          onDownloadZip={() => {
-            void handleDownloadZip();
-          }}
-          onViewFiles={() => {
-            setWorkspaceView("code");
-          }}
-        />
+          </Panel>
+        </Group>
       </section>
 
       <CompactStatusBar

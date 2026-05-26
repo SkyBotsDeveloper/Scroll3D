@@ -17,7 +17,8 @@
     "@scroll3d/providers": "workspace:*",
     "next": "^16.0.7",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "react-resizable-panels": "^4.11.2"
   },
   "devDependencies": {
     "@types/react": "^19.2.7",

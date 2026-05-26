@@ -115,6 +115,10 @@ that can be hosted on static infrastructure.
 - **Phase 23:** OSS-inspired workspace refinement completed with a compact rail
   sidebar, hover-expand desktop navigation, quieter top command bar, stronger
   preview-first proportions, and documented license-aware reference review.
+- **Phase 24:** professional resizable workspace system completed with
+  draggable sidebar and inspector panels, persisted workspace proportions,
+  stronger preview expansion, predictable min/max constraints, and a documented
+  spacing/layout architecture.
 
 The full no-code canvas editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, real binary asset/frame
@@ -493,6 +497,24 @@ workspace references as broad inspiration only:
    responsive patterns, but no third-party code, assets, branding, templates, or
    copy were reused.
 
+## Phase 24 Architecture
+
+Phase 24 replaces fixed workspace columns with a professional split-panel
+layout system:
+
+1. `@scroll3d/web` uses `react-resizable-panels` for draggable sidebar,
+   preview, and inspector regions with explicit min/max constraints.
+2. Workspace proportions persist in browser storage so users can tune their own
+   prompt/preview/edit balance.
+3. Preview remains the dominant center panel and expands naturally when the
+   sidebar, inspector, or focus mode collapses secondary controls.
+4. Mobile and tablet widths fall back to stacked panels instead of forcing a
+   cramped desktop workbench.
+5. Bolt.diy, LibreChat, VS Code workbench internals, and public Replit/v0/Cursor
+   behavior were studied for resizing ergonomics. The implementation uses the
+   MIT-licensed `react-resizable-panels` package and does not copy
+   third-party branding, assets, product copy, or proprietary layouts.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -532,6 +554,8 @@ workspace references as broad inspiration only:
 - Phase 23: OSS-inspired workspace refinement with compact rail ergonomics,
   lighter command chrome, preview-dominant layout tuning, and documented
   reference review without copying third-party code or assets.
+- Phase 24: professional resizable workspace layout with draggable panels,
+  persisted proportions, responsive fallbacks, and preview-dominant constraints.
 
 ## Run Locally
 

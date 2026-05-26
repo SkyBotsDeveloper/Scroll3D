@@ -29,4 +29,5 @@ Current docs:
 - [Phase 21 Premium Workspace Redesign](./phase-21-premium-workspace-redesign.md)
 - [Phase 22 Immersive Preview System](./phase-22-immersive-preview-system.md)
 - [Phase 23 OSS-Inspired Workspace Refinement](./phase-23-oss-inspired-workspace-refinement.md)
+- [Phase 24 Professional Workspace Layout System](./phase-24-professional-workspace-layout-system.md)
 - [Provider Manifest Spec](./provider-manifest-spec.md)

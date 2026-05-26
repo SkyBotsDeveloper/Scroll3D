@@ -4226,3 +4226,312 @@ body {
     display: inline;
   }
 }
+
+/* Phase 24 professional workspace layout: real split panels with predictable constraints. */
+:root {
+  --workspace-gap: 8px;
+  --workspace-shell-height: calc(100vh - 82px);
+  --workspace-panel-radius: 18px;
+  --workspace-panel-padding: 10px;
+}
+
+.workspaceAppPage {
+  gap: 8px;
+  padding: 8px;
+}
+
+.workspaceTopbar,
+.cinematicWorkspaceShell,
+.compactStatusBar {
+  width: min(100%, 100vw - 16px);
+}
+
+.workspaceTopbar {
+  top: 8px;
+  min-height: 48px;
+  grid-template-columns: minmax(190px, 0.7fr) auto minmax(190px, 0.7fr);
+  border-radius: 16px;
+  padding: 6px 9px;
+}
+
+.cinematicWorkspaceShell,
+.cinematicWorkspaceShell.sidebarIsCollapsed,
+.cinematicWorkspaceShell.previewFocusMode,
+.cinematicWorkspaceShell:not(.sidebarIsCollapsed):not(.previewFocusMode) {
+  display: block;
+  width: min(100%, 100vw - 16px);
+  min-height: var(--workspace-shell-height);
+  height: var(--workspace-shell-height);
+  margin: 0 auto;
+}
+
+.workspacePanelGroup {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  align-items: stretch;
+  overflow: hidden;
+}
+
+.workspaceResizablePanel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.workspaceSidebarPanel,
+.workspaceInspectorPanel {
+  min-width: 52px;
+}
+
+.workspaceStagePanel {
+  min-width: 0;
+}
+
+.workspaceResizeHandle {
+  position: relative;
+  display: flex;
+  width: var(--workspace-gap);
+  min-width: var(--workspace-gap);
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.workspaceResizeHandle::before {
+  display: block;
+  width: 2px;
+  height: 42px;
+  border-radius: 999px;
+  background: rgba(198, 215, 255, 0.12);
+  content: "";
+  transition:
+    width 160ms ease,
+    height 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.workspaceResizeHandle:hover::before,
+.workspaceResizeHandle:focus-visible::before,
+.workspaceResizeHandle[data-separator="focus"]::before,
+.workspaceResizeHandle[data-separator="active"]::before {
+  width: 3px;
+  height: 72px;
+  background: rgba(75, 227, 176, 0.72);
+  box-shadow: 0 0 26px rgba(75, 227, 176, 0.24);
+}
+
+.workspaceSidebar,
+.rightInspector,
+.workspaceMainStage,
+.primaryPreview,
+.codeWorkspace {
+  position: relative;
+  top: auto;
+  width: 100%;
+  height: 100%;
+  max-height: none;
+  min-height: 0;
+}
+
+.workspaceSidebar,
+.rightInspector {
+  border-radius: var(--workspace-panel-radius);
+  padding: var(--workspace-panel-padding);
+  overflow: hidden;
+}
+
+.workspaceSidebar {
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-content: stretch;
+}
+
+.workspaceSidebar.collapsed,
+.workspaceSidebar.focusMode {
+  grid-template-columns: 40px;
+}
+
+.sidebarRail {
+  min-height: 0;
+  height: 100%;
+}
+
+.sidebarExpandedContent {
+  max-height: none;
+  height: 100%;
+  min-height: 0;
+  overflow: auto;
+  padding-right: 3px;
+}
+
+.workspaceMainStage {
+  padding: 0;
+  overflow: hidden;
+}
+
+.workspaceMainStage .primaryPreview,
+.workspaceMainStage .codeWorkspace {
+  height: 100%;
+}
+
+.primaryPreview {
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.primaryPreview > .panelHeader {
+  min-height: 34px;
+  flex-shrink: 0;
+}
+
+.previewBrowser {
+  min-height: 0;
+  height: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.previewViewport {
+  min-height: 0;
+  height: 100%;
+  overflow: auto;
+}
+
+.previewEmptyState,
+.consumerPreviewFrame,
+.progressivePreviewStage {
+  min-height: 100%;
+}
+
+.devicePreviewFrame {
+  max-width: 100%;
+}
+
+.rightInspector {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.rightInspector > :not(.inspectorHeader) {
+  min-height: 0;
+  overflow: auto;
+}
+
+.inspectorHeader {
+  flex-shrink: 0;
+}
+
+.workspaceAppPage.previewFocusMode {
+  --workspace-shell-height: calc(100vh - 62px);
+  padding: 6px;
+}
+
+.workspaceAppPage.previewFocusMode .cinematicWorkspaceShell {
+  width: min(100%, 100vw - 12px);
+}
+
+.workspaceAppPage.previewFocusMode .workspaceResizeHandle {
+  width: 6px;
+  min-width: 6px;
+}
+
+.previewFocusMode .previewBrowser {
+  min-height: 0;
+}
+
+.previewFocusMode .previewViewport,
+.previewFocusMode .previewEmptyState,
+.previewFocusMode .consumerPreviewFrame,
+.previewFocusMode .progressivePreviewStage {
+  min-height: 100%;
+}
+
+@media (max-width: 1180px) {
+  :root {
+    --workspace-shell-height: auto;
+  }
+
+  .cinematicWorkspaceShell,
+  .cinematicWorkspaceShell.sidebarIsCollapsed,
+  .cinematicWorkspaceShell.previewFocusMode,
+  .cinematicWorkspaceShell:not(.sidebarIsCollapsed):not(.previewFocusMode) {
+    height: auto;
+    min-height: 0;
+  }
+
+  .workspacePanelGroup {
+    display: grid !important;
+    gap: 10px;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  .workspacePanelGroup > [data-panel] {
+    flex: none !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .workspaceResizablePanel {
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  .workspaceResizeHandle {
+    display: none;
+  }
+
+  .workspaceSidebar,
+  .rightInspector,
+  .workspaceMainStage,
+  .primaryPreview,
+  .codeWorkspace {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .workspaceSidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebarRail {
+    height: auto;
+  }
+
+  .sidebarExpandedContent {
+    height: auto;
+    max-height: none;
+  }
+
+  .previewBrowser {
+    height: auto;
+  }
+
+  .previewViewport,
+  .previewEmptyState,
+  .consumerPreviewFrame,
+  .progressivePreviewStage {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 760px) {
+  .workspaceTopbar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .previewViewport,
+  .previewEmptyState,
+  .consumerPreviewFrame,
+  .progressivePreviewStage {
+    min-height: 460px;
+  }
+}
