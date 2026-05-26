@@ -44,15 +44,13 @@ export function LandingPromptSurface({
           </div>
         </div>
         <button type="button" className="secondaryButton" onClick={onOpenSettings}>
-          Control Center
+          Advanced
         </button>
       </header>
 
       <div className="landingPromptShell">
         <div className="landingCopy">
-          <span className="modeLine">
-            Developer preview - {modeLabel} mock generation
-          </span>
+          <span className="modeLine">{modeLabel} mock generation</span>
           <h1 id="landing-title">Create a cinematic 3D website from one prompt.</h1>
           <p className="subtitle">
             Describe the site you want. Scroll3D will prepare a website draft, preview,

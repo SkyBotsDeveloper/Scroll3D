@@ -121,6 +121,13 @@ float over the preview stage, and the status chrome recedes. The change is
 visual and interaction-focused only; generation, providers, runtime, exports,
 and model systems remain mocked/offline as before.
 
+Phase 23 refines the workspace ergonomics after another open-source AI workspace
+review. The left side is now rail-first with hover/focus expansion on desktop,
+the top bar uses quieter command-style language, the preview receives more of
+the viewport, and the inspector is lighter. Bolt.diy, Open Lovable, LibreChat,
+Open WebUI, and Flowise were cloned and studied for broad interaction patterns
+only; no third-party code, assets, branding, or copy were reused.
+
 ## Settings And Prompt Workflow
 
 - `Settings` configures local/API/hybrid mode and provider preferences per

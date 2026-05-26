@@ -3883,3 +3883,346 @@ body {
     min-height: 470px;
   }
 }
+
+/* Phase 23 OSS-inspired workspace refinement: compact rail shell and preview-first ergonomics. */
+.workspaceAppPage {
+  padding: 8px 10px 10px;
+}
+
+.workspaceTopbar {
+  min-height: 50px;
+  border-color: rgba(198, 215, 255, 0.06);
+  background:
+    linear-gradient(90deg, rgba(75, 227, 176, 0.06), transparent 34%),
+    rgba(5, 7, 12, 0.54);
+  box-shadow: 0 10px 42px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(24px);
+}
+
+.workspaceTopbar .modeLine {
+  border: 0;
+  background: transparent;
+  color: rgba(223, 229, 242, 0.5);
+  padding: 0;
+}
+
+.consumerNavActions .primaryButton,
+.consumerNavActions .secondaryButton {
+  min-height: 32px;
+  padding-inline: 14px;
+}
+
+.workspaceSidebar {
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-content: start;
+  gap: 10px;
+  overflow: visible;
+  padding: 8px;
+}
+
+.sidebarRail {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  min-height: calc(100vh - 110px);
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(198, 215, 255, 0.065);
+  border-radius: 18px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 45%),
+    rgba(255, 255, 255, 0.025);
+  padding: 6px 4px;
+}
+
+.sidebarToggleButton {
+  margin-bottom: 6px;
+}
+
+.sidebarRailDivider {
+  width: 18px;
+  height: 1px;
+  margin-block: 2px;
+  background: rgba(198, 215, 255, 0.12);
+}
+
+.sidebarExpandedContent {
+  max-height: calc(100vh - 104px);
+  min-width: 0;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.workspaceSidebar.collapsed,
+.workspaceSidebar.focusMode {
+  grid-template-columns: 40px;
+  justify-items: stretch;
+  padding-inline: 6px;
+}
+
+.workspaceSidebar.collapsed .sidebarExpandedContent,
+.workspaceSidebar.focusMode .sidebarExpandedContent {
+  display: none;
+}
+
+.workspaceSidebar.collapsed .sidebarRail,
+.workspaceSidebar.focusMode .sidebarRail {
+  min-height: calc(100vh - 104px);
+}
+
+.sidebarSection {
+  padding: 7px 2px;
+}
+
+.sidebarSectionHeader {
+  min-height: 20px;
+}
+
+.sidebarSectionHeader .miniBadge,
+.sidebarSectionHeader .statusBadge {
+  opacity: 0.72;
+}
+
+.sceneTimelineList {
+  gap: 5px;
+}
+
+.sceneTimelineItem {
+  border-radius: 13px;
+}
+
+.workspaceMainStage {
+  min-height: calc(100vh - 78px);
+}
+
+.primaryPreview > .panelHeader {
+  display: flex;
+  min-height: 40px;
+  align-items: end;
+  justify-content: space-between;
+  padding-inline: 2px;
+}
+
+.primaryPreview > .panelHeader .eyebrow {
+  display: none;
+}
+
+.primaryPreview h2 {
+  font-size: clamp(1.1rem, 1.5vw, 1.6rem);
+}
+
+.primaryPreview .statusText {
+  color: rgba(223, 229, 242, 0.46);
+  font-size: 0.82rem;
+}
+
+.previewBrowser {
+  min-height: calc(100vh - 142px);
+  border-color: rgba(198, 215, 255, 0.085);
+  border-radius: 30px;
+}
+
+.previewBrowserBar {
+  min-height: 40px;
+  padding: 7px 11px;
+}
+
+.previewUrl {
+  background: transparent;
+  color: rgba(247, 248, 252, 0.64);
+}
+
+.previewBadges,
+.previewStateText {
+  opacity: 0.72;
+}
+
+.previewDeviceBar {
+  position: absolute;
+  top: 52px;
+  right: 16px;
+  z-index: 5;
+  width: auto;
+  border: 1px solid rgba(198, 215, 255, 0.07);
+  border-radius: 999px;
+  background: rgba(4, 6, 10, 0.46);
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.18);
+  padding: 4px;
+  backdrop-filter: blur(18px);
+}
+
+.previewDeviceButton {
+  padding-inline: 11px;
+}
+
+.previewSceneFocus {
+  position: absolute;
+  right: 16px;
+  bottom: 18px;
+  z-index: 5;
+  width: min(520px, calc(100% - 32px));
+  border: 1px solid rgba(198, 215, 255, 0.065);
+  border-radius: 18px;
+  background: rgba(4, 6, 10, 0.44);
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(18px);
+}
+
+.previewViewport,
+.previewEmptyState,
+.consumerPreviewFrame,
+.progressivePreviewStage {
+  min-height: clamp(700px, calc(100vh - 184px), 1120px);
+}
+
+.previewFooter {
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  z-index: 6;
+  width: auto;
+  max-width: min(580px, calc(100% - 570px));
+  border: 1px solid rgba(198, 215, 255, 0.065);
+  border-radius: 18px;
+  background: rgba(4, 6, 10, 0.44);
+  box-shadow: 0 18px 70px rgba(0, 0, 0, 0.18);
+  padding: 9px 11px;
+  backdrop-filter: blur(18px);
+}
+
+.previewFooter span:nth-of-type(2),
+.previewFooter span:nth-of-type(3) {
+  display: none;
+}
+
+.previewFooterActions {
+  margin-left: 8px;
+}
+
+.rightInspector {
+  border-color: rgba(198, 215, 255, 0.06);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 36%),
+    rgba(5, 7, 12, 0.44);
+  padding: 12px;
+}
+
+.rightInspector .panelHeader,
+.inspectorHeader {
+  gap: 8px;
+}
+
+.inspectorHeader .eyebrow {
+  display: none;
+}
+
+.inspectorHeader h2 {
+  font-size: 0.98rem;
+}
+
+.inspectorTabs {
+  padding: 3px;
+}
+
+.tabButton {
+  min-height: 29px;
+  font-size: 0.72rem;
+}
+
+.sceneFocusCard,
+.sceneSequenceBoard,
+.sceneGuidanceCard,
+.simpleEditGroup,
+.simpleSectionCard,
+.exportChecklist div {
+  border-color: rgba(198, 215, 255, 0.055);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.018);
+}
+
+@media (hover: hover) and (min-width: 1181px) {
+  .workspaceSidebar.collapsed:hover .sidebarExpandedContent,
+  .workspaceSidebar.collapsed:focus-within .sidebarExpandedContent {
+    position: absolute;
+    top: 0;
+    left: 52px;
+    z-index: 15;
+    display: grid;
+    width: 286px;
+    max-height: calc(100vh - 88px);
+    overflow: auto;
+    border: 1px solid rgba(198, 215, 255, 0.08);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 42%),
+      rgba(6, 8, 13, 0.82);
+    box-shadow: 0 32px 120px rgba(0, 0, 0, 0.42);
+    padding: 12px;
+    backdrop-filter: blur(24px);
+    animation: panelDriftIn 180ms cubic-bezier(0.2, 0, 0, 1) both;
+  }
+}
+
+@media (min-width: 1181px) {
+  .cinematicWorkspaceShell {
+    grid-template-columns:
+      clamp(48px, 3.6vw, 58px) minmax(900px, 1fr)
+      clamp(224px, 14vw, 282px);
+    gap: 8px;
+    width: min(100%, 1960px);
+  }
+
+  .cinematicWorkspaceShell:not(.sidebarIsCollapsed):not(.previewFocusMode) {
+    grid-template-columns:
+      clamp(216px, 14vw, 276px) minmax(900px, 1fr)
+      clamp(224px, 14vw, 282px);
+  }
+
+  .cinematicWorkspaceShell.sidebarIsCollapsed {
+    grid-template-columns:
+      clamp(48px, 3.6vw, 58px) minmax(980px, 1fr)
+      clamp(224px, 14vw, 282px);
+  }
+
+  .cinematicWorkspaceShell.previewFocusMode {
+    grid-template-columns: 48px minmax(1020px, 1fr) 54px;
+    gap: 6px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .workspaceSidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sidebarRail {
+    min-height: auto;
+    flex-direction: row;
+    justify-content: flex-start;
+  }
+
+  .sidebarRailDivider {
+    width: 1px;
+    height: 18px;
+  }
+
+  .workspaceSidebar.collapsed .sidebarExpandedContent {
+    display: grid;
+  }
+
+  .previewDeviceBar,
+  .previewSceneFocus,
+  .previewFooter {
+    position: static;
+    width: auto;
+    max-width: none;
+    margin: 8px;
+  }
+
+  .previewFooter span:nth-of-type(2),
+  .previewFooter span:nth-of-type(3) {
+    display: inline;
+  }
+}

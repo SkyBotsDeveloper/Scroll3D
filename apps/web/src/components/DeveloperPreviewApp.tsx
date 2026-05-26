@@ -402,8 +402,7 @@ export function DeveloperPreviewApp() {
 
         <div className="consumerNavActions">
           <span className="modeLine">
-            Developer preview -{" "}
-            {settings.allowMockFallback ? `${modeLabel} + mock` : modeLabel}
+            {settings.allowMockFallback ? "Mock preview" : modeLabel}
           </span>
           <button
             type="button"
@@ -423,7 +422,7 @@ export function DeveloperPreviewApp() {
               openAdvanced("providers");
             }}
           >
-            Control Center
+            Advanced
           </button>
         </div>
       </header>

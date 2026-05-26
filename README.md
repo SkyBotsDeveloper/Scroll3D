@@ -112,6 +112,9 @@ that can be hosted on static infrastructure.
 - **Phase 22:** immersive preview-first workspace completed with app-level focus
   mode, floating preview controls, compact side rails, a quieter inspector, and
   more edge-to-edge cinematic preview composition.
+- **Phase 23:** OSS-inspired workspace refinement completed with a compact rail
+  sidebar, hover-expand desktop navigation, quieter top command bar, stronger
+  preview-first proportions, and documented license-aware reference review.
 
 The full no-code canvas editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, real binary asset/frame
@@ -475,6 +478,21 @@ Phase 22 pushes the web app toward a preview-first cinematic workspace:
 5. Responsive fallbacks keep the panels readable on smaller screens instead of
    forcing desktop-only rail behavior.
 
+## Phase 23 Architecture
+
+Phase 23 refines workspace ergonomics using license-aware open-source AI
+workspace references as broad inspiration only:
+
+1. The sidebar is reshaped into a compact rail plus expandable workspace panel,
+   with desktop hover/focus expansion when collapsed.
+2. The top command bar uses quieter status language and fewer competing labels.
+3. The preview receives stronger horizontal and vertical priority through
+   narrower side surfaces, smaller gaps, and floating contextual controls.
+4. The right inspector is visually lighter and remains secondary to the preview.
+5. Reference projects were cloned and reviewed for layout, sidebar, preview, and
+   responsive patterns, but no third-party code, assets, branding, templates, or
+   copy were reused.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -511,6 +529,9 @@ Phase 22 pushes the web app toward a preview-first cinematic workspace:
   sidebars, reduced status noise, and command-center advanced tools.
 - Phase 22: immersive preview-first workspace with app-level focus mode,
   floating controls, compact side rails, and stronger cinematic stage presence.
+- Phase 23: OSS-inspired workspace refinement with compact rail ergonomics,
+  lighter command chrome, preview-dominant layout tuning, and documented
+  reference review without copying third-party code or assets.
 
 ## Run Locally
 

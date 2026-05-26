@@ -55,25 +55,24 @@ export function WorkspaceSidebar({
         .join(" ")}
       aria-label="Workspace navigation"
     >
-      <button
-        type="button"
-        className="sidebarToggle"
-        aria-label={
-          collapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"
-        }
-        onClick={onToggle}
-      >
-        {collapsed ? ">" : "<"}
-      </button>
-
-      <div className="sidebarCollapsedRail" aria-label="Compact workspace rail">
+      <div className="sidebarRail" aria-label="Compact workspace rail">
+        <button
+          type="button"
+          className="sidebarRailButton sidebarToggleButton"
+          aria-label={
+            collapsed ? "Expand workspace sidebar" : "Collapse workspace sidebar"
+          }
+          onClick={onToggle}
+        >
+          {collapsed ? ">" : "<"}
+        </button>
         <button
           type="button"
           className="sidebarRailButton active"
           onClick={onToggle}
           aria-label="Open prompt and scene workspace"
         >
-          S
+          P
         </button>
         <button
           type="button"
@@ -83,6 +82,7 @@ export function WorkspaceSidebar({
         >
           G
         </button>
+        <span className="sidebarRailDivider" aria-hidden="true" />
         <button
           type="button"
           className="sidebarRailButton"

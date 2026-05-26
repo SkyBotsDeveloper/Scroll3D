@@ -28,4 +28,5 @@ Current docs:
 - [Phase 20 Cinematic Scene Editor](./phase-20-cinematic-scene-editor.md)
 - [Phase 21 Premium Workspace Redesign](./phase-21-premium-workspace-redesign.md)
 - [Phase 22 Immersive Preview System](./phase-22-immersive-preview-system.md)
+- [Phase 23 OSS-Inspired Workspace Refinement](./phase-23-oss-inspired-workspace-refinement.md)
 - [Provider Manifest Spec](./provider-manifest-spec.md)

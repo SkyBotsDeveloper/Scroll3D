@@ -63,14 +63,14 @@ export function PrimaryPreview({
     >
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Cinematic preview</p>
+          <p className="eyebrow">Preview</p>
           <h2 id="primary-preview-title">
-            {isGenerating ? generationPhase.previewLabel : "Live website preview"}
+            {isGenerating ? generationPhase.previewLabel : "Website draft"}
           </h2>
           <p className="statusText">
             {isGenerating
               ? generationPhase.directorNote
-              : "Review your website draft here before editing or exporting."}
+              : "Review the generated site, then refine scenes or export."}
           </p>
         </div>
         <div className="previewHeaderActions">
@@ -86,7 +86,7 @@ export function PrimaryPreview({
             className="secondaryButton"
             onClick={onToggleFullscreen}
           >
-            {fullscreen ? "Exit focus" : "Enter focus"}
+            {fullscreen ? "Exit focus" : "Focus"}
           </button>
         </div>
       </div>
