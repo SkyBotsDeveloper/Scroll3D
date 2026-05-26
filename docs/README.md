@@ -22,3 +22,5 @@ Current docs:
 - [Phase 14 Consumer UX Rebuild](./phase-14-consumer-ux-rebuild.md)
 - [Phase 15 AI Builder UX Polish](./phase-15-ai-builder-ux.md)
 - [Phase 16 UI Quality Pass](./phase-16-ui-quality-pass.md)
+- [Phase 17 Provider And Self-Hosting Foundation](./phase-17-provider-and-self-hosting-foundation.md)
+- [Provider Manifest Spec](./provider-manifest-spec.md)

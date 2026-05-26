@@ -47,6 +47,9 @@ importers:
       '@scroll3d/exporter':
         specifier: workspace:*
         version: link:../../packages/exporter
+      '@scroll3d/providers':
+        specifier: workspace:*
+        version: link:../../packages/providers
       next:
         specifier: ^16.0.7
         version: 16.2.6(@babel/core@7.29.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)

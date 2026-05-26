@@ -709,6 +709,18 @@ h1 {
   color: #ffe0ad;
 }
 
+.providerBadge.api {
+  border-color: rgba(106, 200, 255, 0.48);
+  background: rgba(106, 200, 255, 0.12);
+  color: #c9ebff;
+}
+
+.providerBadge.local {
+  border-color: rgba(75, 227, 176, 0.48);
+  background: rgba(75, 227, 176, 0.12);
+  color: #9fffe0;
+}
+
 .providerBadge.unavailable,
 .providerBadge.failed,
 .providerBadge.missing-config,
@@ -1576,7 +1588,7 @@ h1 {
 
 .advancedTabs {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -1600,6 +1612,226 @@ h1 {
 .advancedToolIntro span {
   color: var(--muted);
   line-height: 1.5;
+}
+
+.providerSetupPanel,
+.runtimeVisibilityPanel,
+.selfHostingPanel {
+  display: grid;
+  gap: 18px;
+}
+
+.providerOverviewGrid,
+.providerDecisionGrid,
+.providerManifestGrid,
+.runtimeStatusGrid,
+.exportPortabilityGrid,
+.deploymentTargetGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.providerOverviewGrid,
+.runtimeStatusGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.providerDecisionGrid,
+.providerManifestGrid,
+.deploymentTargetGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.exportPortabilityGrid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.providerModeCard,
+.providerDecisionCard,
+.providerManifestCard,
+.runtimeStatusCard,
+.runtimeLifecycleCard,
+.deploymentTargetCard,
+.secretRefHelp,
+.advancedConfigDetails {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(246, 247, 251, 0.06), transparent), rgba(5, 7, 11, 0.5);
+  padding: 14px;
+}
+
+.providerModeCard,
+.providerDecisionCard,
+.providerManifestCard,
+.runtimeStatusCard,
+.runtimeLifecycleCard,
+.deploymentTargetCard {
+  display: grid;
+  gap: 8px;
+}
+
+.providerModeCard.mock {
+  border-color: rgba(255, 181, 77, 0.34);
+}
+
+.providerModeCard.api {
+  border-color: rgba(106, 200, 255, 0.34);
+}
+
+.providerModeCard.local {
+  border-color: rgba(75, 227, 176, 0.34);
+}
+
+.providerModeCard small,
+.providerDecisionCard small,
+.providerManifestCard p,
+.runtimeStatusCard small,
+.runtimeLifecycleCard li,
+.deploymentTargetCard span,
+.deploymentTargetCard li,
+.secretRefHelp p,
+.advancedConfigDetails small,
+.setupInstructionsDetails p,
+.setupInstructionsDetails li {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.providerManifestGroup {
+  display: grid;
+  gap: 12px;
+}
+
+.providerManifestHeader {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.providerManifestHeader > div {
+  display: grid;
+  gap: 8px;
+}
+
+.providerManifestHeader h4,
+.secretRefHelp h4 {
+  margin: 0;
+}
+
+.providerCapabilityList,
+.secretRefExamples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.providerCapabilityList span,
+.secretRefExamples span {
+  border: 1px solid rgba(106, 200, 255, 0.28);
+  border-radius: 999px;
+  background: rgba(106, 200, 255, 0.08);
+  color: #dff3ff;
+  padding: 6px 9px;
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.secretRefHelp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-color: rgba(75, 227, 176, 0.34);
+  background:
+    linear-gradient(135deg, rgba(75, 227, 176, 0.1), transparent 52%),
+    rgba(5, 7, 11, 0.48);
+}
+
+.secretRefHelp > div:first-child {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+}
+
+.secretRefHelp code {
+  color: #dffff3;
+}
+
+.advancedConfigDetails {
+  display: grid;
+  gap: 14px;
+}
+
+.advancedConfigDetails > summary,
+.setupInstructionsDetails > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.advancedConfigDetails > summary::-webkit-details-marker,
+.setupInstructionsDetails > summary::-webkit-details-marker {
+  display: none;
+}
+
+.advancedConfigDetails > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.advancedConfigDetails > summary::after,
+.setupInstructionsDetails > summary::after {
+  content: "+";
+  display: inline-grid;
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #dfe5f2;
+  font-weight: 900;
+}
+
+.advancedConfigDetails[open] > summary::after,
+.setupInstructionsDetails[open] > summary::after {
+  content: "-";
+}
+
+.advancedConfigDetails > summary > span {
+  display: grid;
+  gap: 4px;
+}
+
+.setupInstructionsDetails {
+  display: grid;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 10px;
+}
+
+.setupInstructionsDetails ol,
+.deploymentTargetCard ol {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.runtimeLifecycleCard {
+  border-color: rgba(75, 227, 176, 0.3);
+}
+
+.deploymentTargetCard {
+  border-color: rgba(106, 200, 255, 0.26);
+}
+
+.deploymentTargetCard > div {
+  display: grid;
+  gap: 4px;
 }
 
 @media (max-width: 1180px) {
@@ -1666,7 +1898,13 @@ h1 {
   .segmentedGrid,
   .providerStage,
   .pipelineStep,
-  .compactSummary {
+  .compactSummary,
+  .providerOverviewGrid,
+  .providerDecisionGrid,
+  .providerManifestGrid,
+  .runtimeStatusGrid,
+  .exportPortabilityGrid,
+  .deploymentTargetGrid {
     grid-template-columns: minmax(0, 1fr);
   }
 
@@ -1699,5 +1937,10 @@ h1 {
   .simplePipelineStep,
   .exportChecklist div {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .secretRefHelp {
+    align-items: start;
+    flex-direction: column;
   }
 }

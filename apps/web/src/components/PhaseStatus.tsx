@@ -14,7 +14,8 @@ const phaseItems = [
   "Phase 13: Model manager planning and runtime handshake completed",
   "Phase 14: Consumer workflow rebuild completed",
   "Phase 15: AI builder workspace polish completed",
-  "Phase 16: UI quality pass completed/in progress",
+  "Phase 16: UI quality pass completed",
+  "Phase 17: Provider/plugin setup and self-hosting foundation completed",
   "Creator: Siddhartha Abhimanyu",
   "Telegram: @iflexelite",
   "Instagram: elite.sid"

@@ -62,6 +62,7 @@ Advanced Mode is hidden behind the Advanced drawer:
 - `Providers`: API/local/hybrid mode and provider preferences.
 - `Local Models`: local model planning and download-plan summaries.
 - `Runtime`: local runtime setup and one-model-at-a-time execution guidance.
+- `Self-hosting`: static export portability and manual deployment guidance.
 - `Diagnostics`: mock pipeline details, full visual editor, sync/export status,
   recent downloads, commands, and phase notes.
 
@@ -73,6 +74,12 @@ assets, branding, templates, colors, or copy were reused.
 The Phase 16 quality pass kept that approach and further reduced clutter. The
 open-source references were reviewed again for licensing and broad UX patterns,
 but no third-party frontend code or assets were copied.
+
+Phase 17 keeps Normal Mode simple and improves Advanced tools with a
+plugin-ready provider setup surface, SecretRef help, runtime visibility cards,
+and self-hosting guidance for Vercel, Netlify, Cloudflare Pages, GitHub Pages,
+and self-hosted nginx. These screens are guidance and metadata only; no real API
+calls, model execution, downloads, or deployment automation are enabled.
 
 ## Settings And Prompt Workflow
 

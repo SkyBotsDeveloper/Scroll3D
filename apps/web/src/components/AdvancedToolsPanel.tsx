@@ -9,10 +9,14 @@ import type { ProjectValidationResult } from "../lib/validation";
 import { ExportActions } from "./ExportActions";
 import { ExportFileList } from "./ExportFileList";
 import { JsonSyncPanel } from "./JsonSyncPanel";
+import { ModelRecommendationPanel } from "./ModelRecommendationPanel";
 import { PhaseStatus } from "./PhaseStatus";
 import { PipelineRunPanel } from "./PipelineRunPanel";
+import { ProviderSetupPanel } from "./ProviderSetupPanel";
 import { ProjectJsonEditor } from "./ProjectJsonEditor";
-import { SettingsPanel } from "./SettingsPanel";
+import { RuntimeVisibilityPanel } from "./RuntimeVisibilityPanel";
+import { SelfHostingPanel } from "./SelfHostingPanel";
+import { SystemScanPanel } from "./SystemScanPanel";
 import { VisualEditor } from "./VisualEditor";
 
 export type AdvancedTab =
@@ -21,6 +25,7 @@ export type AdvancedTab =
   | "providers"
   | "models"
   | "runtime"
+  | "deploy"
   | "diagnostics";
 
 interface AdvancedToolsPanelProps {
@@ -62,6 +67,7 @@ const tabs: Array<{ id: AdvancedTab; label: string }> = [
   { id: "providers", label: "Providers" },
   { id: "models", label: "Local Models" },
   { id: "runtime", label: "Runtime" },
+  { id: "deploy", label: "Self-hosting" },
   { id: "diagnostics", label: "Diagnostics" }
 ];
 
@@ -150,16 +156,13 @@ export function AdvancedToolsPanel({
           <div className="advancedToolIntro">
             <strong>Providers</strong>
             <span>
-              Configure API, local, hybrid, and mock provider preferences here. Normal
-              mode keeps these details hidden.
+              Explore plugin-ready provider manifests, capability groups, SecretRef
+              guidance, and stage preferences. Normal mode keeps these details hidden.
             </span>
           </div>
-          <SettingsPanel
+          <ProviderSetupPanel
             settings={settings}
-            scan={scan}
-            message={settingsMessage}
-            onSettingsChange={onSettingsChange}
-            onScanChange={onScanChange}
+            onChange={onSettingsChange}
             onMessage={onSettingsMessage}
           />
         </section>
@@ -174,13 +177,11 @@ export function AdvancedToolsPanel({
               Downloads remain disabled until a later phase.
             </span>
           </div>
-          <SettingsPanel
+          <SystemScanPanel scan={scan} onScan={onScanChange} />
+          <ModelRecommendationPanel
             settings={settings}
             scan={scan}
-            message={settingsMessage}
-            onSettingsChange={onSettingsChange}
-            onScanChange={onScanChange}
-            onMessage={onSettingsMessage}
+            onChange={onSettingsChange}
           />
         </section>
       ) : null}
@@ -194,13 +195,33 @@ export function AdvancedToolsPanel({
               one-model-at-a-time execution plan.
             </span>
           </div>
-          <SettingsPanel
+          <RuntimeVisibilityPanel
             settings={settings}
-            scan={scan}
-            message={settingsMessage}
-            onSettingsChange={onSettingsChange}
-            onScanChange={onScanChange}
+            onChange={onSettingsChange}
             onMessage={onSettingsMessage}
+          />
+          {settingsMessage ? (
+            <div className="alertBox info">
+              <strong>Latest runtime message</strong>
+              <p>{settingsMessage}</p>
+            </div>
+          ) : null}
+        </section>
+      ) : null}
+
+      {activeTab === "deploy" ? (
+        <section className="toolPanel" aria-label="Self-hosting tools">
+          <div className="advancedToolIntro">
+            <strong>Self-hosting</strong>
+            <span>
+              Review the static export flow and hosting options. Scroll3D does not
+              deploy anything automatically in this phase.
+            </span>
+          </div>
+          <SelfHostingPanel
+            bundle={bundle}
+            exportReady={exportReady}
+            onDownloadZip={onDownloadZip}
           />
         </section>
       ) : null}

@@ -3,6 +3,7 @@ export * from "./connection";
 export * from "./config";
 export * from "./errors";
 export * from "./mock-providers";
+export * from "./plugin-manifest";
 export * from "./presets";
 export * from "./registry";
 export * from "./scroll3d-config";

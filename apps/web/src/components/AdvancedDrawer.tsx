@@ -18,7 +18,9 @@ export function AdvancedDrawer({ open, onToggle, children }: AdvancedDrawerProps
       >
         <span>
           <strong id="advanced-drawer-title">Advanced tools</strong>
-          <small>Settings, providers, models, JSON, files, and diagnostics</small>
+          <small>
+            Providers, models, runtime, self-hosting, JSON, files, and diagnostics
+          </small>
         </span>
         <span aria-hidden="true">{open ? "Hide" : "Open"}</span>
       </button>

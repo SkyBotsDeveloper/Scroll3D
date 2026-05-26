@@ -92,10 +92,13 @@ that can be hosted on static infrastructure.
   quieter workflow progress, more dominant preview, simplified collapsible
   inspector controls, stronger export actions, and documented open-source
   reference review.
+- **Phase 17:** provider/plugin manifest foundation, polished Advanced provider
+  setup, SecretRef guidance, runtime visibility cards, and self-hosting guidance
+  completed.
 
-The full visual drag/drop editor, real provider integrations, model downloads,
-real frame extraction implementation, and real binary asset/frame copying are
-intentionally not implemented yet.
+The full visual drag/drop editor, real provider execution, model downloads, real
+frame extraction implementation, deployment automation, and real binary
+asset/frame copying are intentionally not implemented yet.
 
 ## Phase 2 Architecture
 
@@ -345,6 +348,26 @@ Phase 16 tightens the same normal-user workflow after a UI audit:
 7. The open-source references were used for license-aware inspiration only. No
    third-party code, components, assets, or copy were reused.
 
+## Phase 17 Architecture
+
+Phase 17 adds provider and self-hosting foundations without changing the mocked
+execution model:
+
+1. `@scroll3d/providers` exposes provider plugin manifest schemas, validation
+   helpers, and bundled manifests for mock, API, local runtime, ComfyUI, Ollama,
+   and FFmpeg scaffolds.
+2. Advanced Providers now shows friendly provider cards, capability groups,
+   setup guidance, SecretRef examples, and current stage decisions.
+3. SecretRef guidance explains that raw API keys stay outside project files,
+   exports, generated websites, and logs.
+4. Advanced Runtime now shows offline/mock runtime visibility, one-heavy-job
+   execution constraints, and future local runtime lifecycle guidance.
+5. Advanced Self-hosting explains the static export flow and common deployment
+   targets such as Vercel, Netlify, Cloudflare Pages, GitHub Pages, and
+   self-hosted nginx.
+6. No provider manifest, UI card, or runtime panel performs real network calls,
+   model downloads, model execution, deployment, or media generation.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -369,7 +392,8 @@ Phase 16 tightens the same normal-user workflow after a UI audit:
 - Phase 14: consumer-first web app workflow rebuild.
 - Phase 15: polished AI builder workspace for normal users.
 - Phase 16: serious UI quality pass for the AI builder workspace.
-- Phase 17: plugin provider system and self-hosting documentation.
+- Phase 17: plugin provider setup, runtime visibility, and self-hosting
+  foundation.
 
 ## Run Locally
 
