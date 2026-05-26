@@ -86,7 +86,7 @@ export function PrimaryPreview({
             className="secondaryButton"
             onClick={onToggleFullscreen}
           >
-            {fullscreen ? "Exit focus" : "Focus preview"}
+            {fullscreen ? "Exit focus" : "Enter focus"}
           </button>
         </div>
       </div>

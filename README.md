@@ -109,6 +109,9 @@ that can be hosted on static infrastructure.
 - **Phase 21:** premium AI workspace redesign completed with lighter chrome,
   fewer nested panels, a more dominant preview, calmer sidebars, quieter status
   language, and a command-center settings overlay.
+- **Phase 22:** immersive preview-first workspace completed with app-level focus
+  mode, floating preview controls, compact side rails, a quieter inspector, and
+  more edge-to-edge cinematic preview composition.
 
 The full no-code canvas editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, real binary asset/frame
@@ -457,6 +460,21 @@ Phase 21 is a UX shell correction pass rather than a feature expansion:
    workspaces, but no third-party code, assets, branding, templates, colors, or
    copy were reused.
 
+## Phase 22 Architecture
+
+Phase 22 pushes the web app toward a preview-first cinematic workspace:
+
+1. Preview focus mode is now an app-level state, so the full shell reacts when
+   the user enters focus preview.
+2. The desktop grid compresses the left workspace into a compact rail and the
+   right inspector into lightweight contextual tabs during focus mode.
+3. Preview controls, device controls, scene context, and export actions become
+   floating overlays around the stage instead of permanent dashboard panels.
+4. The preview frame is larger, closer to edge-to-edge, and visually treated as
+   the primary product surface.
+5. Responsive fallbacks keep the panels readable on smaller screens instead of
+   forcing desktop-only rail behavior.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -491,6 +509,8 @@ Phase 21 is a UX shell correction pass rather than a feature expansion:
   drag-and-drop sequencing, and scene focus state.
 - Phase 21: premium workspace redesign with preview-first layout, lighter
   sidebars, reduced status noise, and command-center advanced tools.
+- Phase 22: immersive preview-first workspace with app-level focus mode,
+  floating controls, compact side rails, and stronger cinematic stage presence.
 
 ## Run Locally
 

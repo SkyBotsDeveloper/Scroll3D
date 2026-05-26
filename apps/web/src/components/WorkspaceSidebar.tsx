@@ -18,6 +18,7 @@ interface WorkspaceSidebarProps {
   isGenerating: boolean;
   selectedSceneId: string;
   collapsed: boolean;
+  focusMode: boolean;
   onToggle: () => void;
   onSelectScene: (sceneId: string) => void;
   onRegenerate: () => void;
@@ -34,6 +35,7 @@ export function WorkspaceSidebar({
   isGenerating,
   selectedSceneId,
   collapsed,
+  focusMode,
   onToggle,
   onSelectScene,
   onRegenerate,
@@ -44,7 +46,13 @@ export function WorkspaceSidebar({
 
   return (
     <aside
-      className={collapsed ? "workspaceSidebar collapsed" : "workspaceSidebar"}
+      className={[
+        "workspaceSidebar",
+        collapsed ? "collapsed" : "",
+        focusMode ? "focusMode" : ""
+      ]
+        .filter(Boolean)
+        .join(" ")}
       aria-label="Workspace navigation"
     >
       <button
@@ -57,6 +65,33 @@ export function WorkspaceSidebar({
       >
         {collapsed ? ">" : "<"}
       </button>
+
+      <div className="sidebarCollapsedRail" aria-label="Compact workspace rail">
+        <button
+          type="button"
+          className="sidebarRailButton active"
+          onClick={onToggle}
+          aria-label="Open prompt and scene workspace"
+        >
+          S
+        </button>
+        <button
+          type="button"
+          className="sidebarRailButton"
+          onClick={onRegenerate}
+          aria-label="Regenerate website draft"
+        >
+          G
+        </button>
+        <button
+          type="button"
+          className="sidebarRailButton"
+          onClick={onOpenSettings}
+          aria-label="Open Control Center"
+        >
+          C
+        </button>
+      </div>
 
       <div className="sidebarExpandedContent">
         <section className="sidebarSection">

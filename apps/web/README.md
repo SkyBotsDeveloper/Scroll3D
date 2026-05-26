@@ -114,6 +114,13 @@ quieter status language. Open-source AI builder references were license-reviewed
 for broad workspace inspiration only; no third-party code, assets, branding, or
 copy were reused.
 
+Phase 22 makes the preview the primary product surface. Entering focus preview
+now affects the full app shell: the sidebar compresses into a compact rail, the
+inspector becomes lightweight contextual tabs, device/scene/export controls
+float over the preview stage, and the status chrome recedes. The change is
+visual and interaction-focused only; generation, providers, runtime, exports,
+and model systems remain mocked/offline as before.
+
 ## Settings And Prompt Workflow
 
 - `Settings` configures local/API/hybrid mode and provider preferences per

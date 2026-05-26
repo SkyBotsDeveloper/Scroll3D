@@ -111,6 +111,7 @@ export function DeveloperPreviewApp() {
     !isGenerating && (draftReady || pipelineResult?.status === "completed");
   const hasWorkspace =
     isGenerating || draftReady || pipelineResult?.status === "completed";
+  const previewFocusMode = previewFullscreen && workspaceView === "preview";
   const generationPhase = getCinematicGenerationPhase(generationPhaseIndex);
   const selectedScene =
     getSceneById(appliedProject, selectedSceneId) ??
@@ -378,7 +379,13 @@ export function DeveloperPreviewApp() {
   }
 
   return (
-    <main className="page workspaceAppPage">
+    <main
+      className={
+        previewFocusMode
+          ? "page workspaceAppPage previewFocusMode"
+          : "page workspaceAppPage"
+      }
+    >
       <header className="workspaceTopbar" aria-label="Scroll3D workspace header">
         <div className="brandLockup">
           <span className="logoMark">S3D</span>
@@ -422,11 +429,13 @@ export function DeveloperPreviewApp() {
       </header>
 
       <section
-        className={
-          sidebarCollapsed
-            ? "cinematicWorkspaceShell sidebarIsCollapsed"
-            : "cinematicWorkspaceShell"
-        }
+        className={[
+          "cinematicWorkspaceShell",
+          sidebarCollapsed ? "sidebarIsCollapsed" : "",
+          previewFocusMode ? "previewFocusMode" : ""
+        ]
+          .filter(Boolean)
+          .join(" ")}
         aria-label="Scroll3D AI builder workspace"
       >
         <WorkspaceSidebar
@@ -438,6 +447,7 @@ export function DeveloperPreviewApp() {
           isGenerating={isGenerating}
           selectedSceneId={selectedSceneId}
           collapsed={sidebarCollapsed}
+          focusMode={previewFocusMode}
           onToggle={() => {
             setSidebarCollapsed((current) => !current);
           }}
@@ -495,6 +505,7 @@ export function DeveloperPreviewApp() {
           exportResult={exportResult}
           bundle={bundle}
           status={downloadStatus}
+          focusMode={previewFocusMode}
           onPanelChange={(panel) => {
             setInspectorPanel(panel);
           }}

@@ -14,6 +14,7 @@ interface RightInspectorProps {
   exportResult: ExportResult;
   bundle: StaticExportBundle | undefined;
   status: string;
+  focusMode: boolean;
   onPanelChange: (panel: InspectorPanel) => void;
   onSelectScene: (sceneId: string) => void;
   onProjectChange: (project: Scroll3DProject) => void;
@@ -30,6 +31,7 @@ export function RightInspector({
   exportResult,
   bundle,
   status,
+  focusMode,
   onPanelChange,
   onSelectScene,
   onProjectChange,
@@ -38,7 +40,10 @@ export function RightInspector({
   onViewFiles
 }: RightInspectorProps) {
   return (
-    <aside className="rightInspector" aria-labelledby="inspector-title">
+    <aside
+      className={focusMode ? "rightInspector focusMode" : "rightInspector"}
+      aria-labelledby="inspector-title"
+    >
       <div className="inspectorHeader">
         <div>
           <p className="eyebrow">Director</p>
