@@ -93,6 +93,12 @@ minimal prompt landing and transitions into an immersive workspace only after a
 mock website draft is generated. The new Code view is a read-only foundation for
 future Monaco/live editing.
 
+Phase 19 makes generation feel more cinematic and alive. Mock generation now
+paces through AI-director stages, the preview shows progressive skeleton states
+before the final iframe appears, the sidebar includes a scene timeline with
+motion hints, and the preview surface adds desktop/tablet/mobile controls plus a
+focus-preview foundation.
+
 ## Settings And Prompt Workflow
 
 - `Settings` configures local/API/hybrid mode and provider preferences per

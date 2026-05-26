@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Scroll3DProject } from "@scroll3d/core";
 import { AdvancedToolsPanel, type AdvancedTab } from "./AdvancedToolsPanel";
 import { CodeWorkspace } from "./CodeWorkspace";
@@ -22,6 +22,11 @@ import {
   getDefaultSelectedFile
 } from "../lib/export-client";
 import { downloadBlob } from "../lib/download";
+import {
+  cinematicGenerationPhases,
+  getCinematicGenerationPhase,
+  type PreviewDevice
+} from "../lib/cinematic-generation";
 import type { MockPipelineResult } from "../lib/mock-pipeline-client";
 import { runMockPromptPipeline } from "../lib/mock-pipeline-client";
 import {
@@ -58,6 +63,10 @@ export function DeveloperPreviewApp() {
   const [inspectorPanel, setInspectorPanel] = useState<InspectorPanel>("edit");
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("preview");
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationPhaseIndex, setGenerationPhaseIndex] = useState(0);
+  const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
+  const [previewFullscreen, setPreviewFullscreen] = useState(false);
   const [draftReady, setDraftReady] = useState(false);
   const [prompt, setPrompt] = useState(
     "Create a cinematic SaaS landing page for an AI analytics tool"
@@ -95,9 +104,22 @@ export function DeveloperPreviewApp() {
   const previewSrcDoc = useMemo(() => createPreviewSrcDoc(bundle), [bundle]);
   const selectedFile = getBundleFile(bundle, displaySelectedPath);
   const filePreview = createFilePreview(selectedFile);
-  const hasGeneratedDraft = draftReady || pipelineResult?.status === "completed";
+  const hasFinalDraft =
+    !isGenerating && (draftReady || pipelineResult?.status === "completed");
+  const hasWorkspace =
+    isGenerating || draftReady || pipelineResult?.status === "completed";
+  const generationPhase = getCinematicGenerationPhase(generationPhaseIndex);
   const modeLabel =
     settings.mode === "api" ? "API" : settings.mode === "hybrid" ? "Hybrid" : "Local";
+  const generationTimers = useRef<number[]>([]);
+
+  function clearGenerationTimers() {
+    for (const timer of generationTimers.current) {
+      window.clearTimeout(timer);
+    }
+
+    generationTimers.current = [];
+  }
 
   useEffect(() => {
     const handle = window.setTimeout(() => {
@@ -146,6 +168,12 @@ export function DeveloperPreviewApp() {
     saveSettings(settings);
   }, [settings]);
 
+  useEffect(() => {
+    return () => {
+      clearGenerationTimers();
+    };
+  }, []);
+
   function handleValidate() {
     setValidation(validateProjectJson(projectJson));
   }
@@ -173,19 +201,42 @@ export function DeveloperPreviewApp() {
   }
 
   function handleGenerate() {
+    clearGenerationTimers();
+    setIsGenerating(true);
+    setDraftReady(false);
+    setGenerationPhaseIndex(0);
     setWorkspaceView("preview");
-    const result = runMockPromptPipeline(appliedProject, prompt, settings);
-    setPipelineResult(result);
+    setInspectorPanel("edit");
+    setPreviewFullscreen(false);
+    setPipelineResult(null);
+    setDownloadStatus(
+      cinematicGenerationPhases[0]?.directorNote ?? "Reading the creative brief."
+    );
 
-    if (result.status === "completed" && result.project) {
-      applyGeneratedProject(result.project);
-      setDraftReady(true);
-      setInspectorPanel("edit");
-      setWorkspaceView("preview");
-      setDownloadStatus("Website draft ready. Edit sections or download your ZIP.");
-    } else {
-      setDownloadStatus(result.warnings[0] ?? "Generation failed.");
-    }
+    const result = runMockPromptPipeline(appliedProject, prompt, settings);
+
+    generationTimers.current = cinematicGenerationPhases.map((phase, index) =>
+      window.setTimeout(() => {
+        setGenerationPhaseIndex(index);
+        setDownloadStatus(`${phase.title}: ${phase.directorNote}`);
+
+        if (index === cinematicGenerationPhases.length - 1) {
+          setPipelineResult(result);
+          setIsGenerating(false);
+
+          if (result.status === "completed" && result.project) {
+            applyGeneratedProject(result.project);
+            setDraftReady(true);
+            setDownloadStatus(
+              "Website draft ready. Edit sections or download your ZIP."
+            );
+          } else {
+            setDraftReady(false);
+            setDownloadStatus(result.warnings[0] ?? "Generation failed.");
+          }
+        }
+      }, phase.delayMs)
+    );
   }
 
   function applyGeneratedProject(nextProject: Scroll3DProject) {
@@ -198,10 +249,13 @@ export function DeveloperPreviewApp() {
   }
 
   function handleReset() {
+    clearGenerationTimers();
     setProjectJson(sampleProjectJson);
     setAppliedProject(sampleProject);
     setValidation(validateProjectJson(sampleProjectJson));
     setPipelineResult(null);
+    setIsGenerating(false);
+    setGenerationPhaseIndex(0);
     setDraftReady(false);
     setInspectorPanel("edit");
     setWorkspaceView("preview");
@@ -290,7 +344,7 @@ export function DeveloperPreviewApp() {
     </GlobalSettingsCenter>
   );
 
-  if (!hasGeneratedDraft) {
+  if (!hasWorkspace) {
     return (
       <main className="page cinematicLandingPage">
         <LandingPromptSurface
@@ -364,6 +418,9 @@ export function DeveloperPreviewApp() {
           project={appliedProject}
           prompt={prompt}
           result={pipelineResult}
+          activePhase={generationPhase}
+          activePhaseIndex={generationPhaseIndex}
+          isGenerating={isGenerating}
           collapsed={sidebarCollapsed}
           onToggle={() => {
             setSidebarCollapsed((current) => !current);
@@ -382,7 +439,15 @@ export function DeveloperPreviewApp() {
               bundle={bundle}
               srcDoc={previewSrcDoc}
               projectName={appliedProject.name}
-              hasGenerated={hasGeneratedDraft}
+              hasGenerated={hasFinalDraft}
+              isGenerating={isGenerating}
+              generationPhase={generationPhase}
+              device={previewDevice}
+              fullscreen={previewFullscreen}
+              onDeviceChange={setPreviewDevice}
+              onToggleFullscreen={() => {
+                setPreviewFullscreen((current) => !current);
+              }}
               onViewFiles={() => {
                 setWorkspaceView("code");
               }}
@@ -402,7 +467,7 @@ export function DeveloperPreviewApp() {
 
         <RightInspector
           project={appliedProject}
-          hasGenerated={hasGeneratedDraft}
+          hasGenerated={hasFinalDraft}
           activePanel={inspectorPanel}
           exportResult={exportResult}
           bundle={bundle}
@@ -425,7 +490,7 @@ export function DeveloperPreviewApp() {
 
       <CompactStatusBar
         validation={validation}
-        fileCount={bundle?.files.length ?? 0}
+        fileCount={hasFinalDraft ? (bundle?.files.length ?? 0) : 0}
         status={downloadStatus}
       />
 

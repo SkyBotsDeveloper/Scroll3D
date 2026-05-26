@@ -1,5 +1,11 @@
 import type { ExportResult, StaticExportBundle } from "@scroll3d/exporter/browser";
+import {
+  getPreviewDeviceWidth,
+  type CinematicGenerationPhase,
+  type PreviewDevice
+} from "../lib/cinematic-generation";
 import { AlertBox } from "./AlertBox";
+import { ProgressivePreviewStage } from "./ProgressivePreviewStage";
 import { StatusBadge } from "./StatusBadge";
 
 interface PrimaryPreviewProps {
@@ -8,6 +14,12 @@ interface PrimaryPreviewProps {
   srcDoc: string;
   projectName: string;
   hasGenerated: boolean;
+  isGenerating: boolean;
+  generationPhase: CinematicGenerationPhase;
+  device: PreviewDevice;
+  fullscreen: boolean;
+  onDeviceChange: (device: PreviewDevice) => void;
+  onToggleFullscreen: () => void;
   onViewFiles: () => void;
   onDownloadZip: () => void;
 }
@@ -18,22 +30,56 @@ export function PrimaryPreview({
   srcDoc,
   projectName,
   hasGenerated,
+  isGenerating,
+  generationPhase,
+  device,
+  fullscreen,
+  onDeviceChange,
+  onToggleFullscreen,
   onViewFiles,
   onDownloadZip
 }: PrimaryPreviewProps) {
   return (
-    <section className="primaryPreview" aria-labelledby="primary-preview-title">
+    <section
+      className={fullscreen ? "primaryPreview fullscreenPreview" : "primaryPreview"}
+      aria-labelledby="primary-preview-title"
+    >
       <div className="panelHeader">
         <div>
-          <p className="eyebrow">Preview</p>
-          <h2 id="primary-preview-title">Live website preview</h2>
+          <p className="eyebrow">Cinematic preview</p>
+          <h2 id="primary-preview-title">
+            {isGenerating ? generationPhase.previewLabel : "Live website preview"}
+          </h2>
           <p className="statusText">
-            Review your website draft here before editing or exporting.
+            {isGenerating
+              ? generationPhase.directorNote
+              : "Review your website draft here before editing or exporting."}
           </p>
         </div>
-        <StatusBadge tone={hasGenerated && exportResult.success ? "ok" : "neutral"}>
-          {hasGenerated && exportResult.success ? "Website draft ready" : "Waiting"}
-        </StatusBadge>
+        <div className="previewHeaderActions">
+          <StatusBadge
+            tone={
+              isGenerating
+                ? "warning"
+                : hasGenerated && exportResult.success
+                  ? "ok"
+                  : "neutral"
+            }
+          >
+            {isGenerating
+              ? "Directing"
+              : hasGenerated && exportResult.success
+                ? "Website draft ready"
+                : "Waiting"}
+          </StatusBadge>
+          <button
+            type="button"
+            className="secondaryButton"
+            onClick={onToggleFullscreen}
+          >
+            {fullscreen ? "Exit focus" : "Focus preview"}
+          </button>
+        </div>
       </div>
 
       <div className="previewBrowser" aria-label="Generated website browser frame">
@@ -45,21 +91,49 @@ export function PrimaryPreview({
           </div>
           <span className="previewUrl">{projectName}</span>
           <div className="previewBadges">
-            <span className="miniBadge">{hasGenerated ? "Mock preview" : "Empty"}</span>
+            <span className="miniBadge">
+              {isGenerating ? generationPhase.shortLabel : "Mock preview"}
+            </span>
             <span className={exportResult.success ? "miniBadge ok" : "miniBadge muted"}>
               {exportResult.success ? "Ready" : "Needs attention"}
             </span>
           </div>
         </div>
 
+        <div className="previewDeviceBar" aria-label="Device preview controls">
+          {(["desktop", "tablet", "mobile"] as const).map((candidate) => (
+            <button
+              key={candidate}
+              type="button"
+              className={
+                candidate === device
+                  ? "previewDeviceButton active"
+                  : "previewDeviceButton"
+              }
+              onClick={() => {
+                onDeviceChange(candidate);
+              }}
+            >
+              {candidate}
+            </button>
+          ))}
+        </div>
+
         <div className="previewViewport">
-          {hasGenerated ? (
-            <iframe
-              title="Scroll3D generated website preview"
-              className="previewFrame consumerPreviewFrame"
-              sandbox=""
-              srcDoc={srcDoc}
-            />
+          {isGenerating ? (
+            <ProgressivePreviewStage phase={generationPhase} />
+          ) : hasGenerated ? (
+            <div
+              className={`devicePreviewFrame ${device}`}
+              style={{ width: getPreviewDeviceWidth(device) }}
+            >
+              <iframe
+                title="Scroll3D generated website preview"
+                className="previewFrame consumerPreviewFrame"
+                sandbox=""
+                srcDoc={srcDoc}
+              />
+            </div>
           ) : (
             <div className="previewEmptyState">
               <strong>Your generated 3D website preview will appear here.</strong>
@@ -83,12 +157,24 @@ export function PrimaryPreview({
       ) : null}
 
       <div className="previewFooter">
-        <span>{hasGenerated ? "Website draft ready" : "Prompt first"}</span>
-        <span>{hasGenerated ? "Ready to export" : "Generate to preview"}</span>
+        <span>
+          {isGenerating
+            ? generationPhase.title
+            : hasGenerated
+              ? "Website draft ready"
+              : "Prompt first"}
+        </span>
+        <span>
+          {isGenerating
+            ? "Preview evolving"
+            : hasGenerated
+              ? "Ready to export"
+              : "Generate to preview"}
+        </span>
         <span>
           {String(hasGenerated ? (bundle?.files.length ?? 0) : 0)} website files
         </span>
-        {hasGenerated ? (
+        {hasGenerated && !isGenerating ? (
           <div className="previewFooterActions">
             <button
               type="button"

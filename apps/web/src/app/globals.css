@@ -60,6 +60,27 @@ button:disabled {
   opacity: 0.55;
 }
 
+button,
+.workspaceSidebar,
+.primaryPreview,
+.rightInspector,
+.workspaceMainStage,
+.previewBrowser,
+.codeWorkspace,
+.settingsCenterPanel,
+.examplePromptCard,
+.quickTypeChip,
+.fileItem,
+.providerManifestCard,
+.deploymentTargetCard {
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease,
+    opacity 180ms ease;
+}
+
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -740,6 +761,11 @@ h1 {
   color: #d9deea;
 }
 
+.providerBadge.pending {
+  background: rgba(163, 168, 184, 0.12);
+  color: #d9deea;
+}
+
 .statusPill.accent {
   border-color: rgba(106, 200, 255, 0.45);
   background: rgba(106, 200, 255, 0.12);
@@ -800,6 +826,7 @@ h1 {
 
 .primaryButton:hover:not(:disabled) {
   filter: brightness(1.06);
+  transform: translateY(-1px);
 }
 
 .primaryCta {
@@ -816,6 +843,7 @@ h1 {
 .secondaryButton:hover:not(:disabled),
 .iconButton:hover:not(:disabled) {
   background: rgba(246, 247, 251, 0.1);
+  transform: translateY(-1px);
 }
 
 .jsonEditor {
@@ -1777,6 +1805,15 @@ h1 {
   backdrop-filter: blur(18px);
 }
 
+.workspaceMainStage {
+  animation: workspaceRise 280ms ease-out both;
+}
+
+.rightInspector,
+.workspaceSidebar {
+  animation: panelDriftIn 260ms ease-out both;
+}
+
 .workspaceSidebar {
   display: grid;
   gap: 12px;
@@ -1816,6 +1853,13 @@ h1 {
   border-radius: 8px;
   background: rgba(5, 7, 11, 0.42);
   padding: 12px;
+}
+
+.sidebarSection:hover {
+  border-color: rgba(106, 200, 255, 0.28);
+  background:
+    linear-gradient(145deg, rgba(106, 200, 255, 0.06), transparent),
+    rgba(5, 7, 11, 0.46);
 }
 
 .sidebarSectionHeader,
@@ -1861,6 +1905,58 @@ h1 {
   line-height: 1.45;
 }
 
+.sidebarDetails {
+  display: grid;
+  gap: 10px;
+}
+
+.sidebarDetails > summary {
+  cursor: pointer;
+  color: #dfe5f2;
+  font-weight: 800;
+}
+
+.sceneTimelineList {
+  display: grid;
+  gap: 10px;
+}
+
+.sceneTimelineItem {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(75, 227, 176, 0.07), transparent 52%),
+    rgba(246, 247, 251, 0.04);
+  padding: 9px;
+}
+
+.sceneTimelineItem div {
+  display: grid;
+  gap: 3px;
+}
+
+.sceneTimelineItem small,
+.sceneTimelineItem p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.sceneThumbnail {
+  display: block;
+  min-height: 44px;
+  border: 1px solid rgba(75, 227, 176, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(75, 227, 176, 0.26), transparent 52%),
+    linear-gradient(35deg, rgba(106, 200, 255, 0.18), transparent 56%),
+    rgba(246, 247, 251, 0.08);
+}
+
 .workspaceMainStage {
   min-width: 0;
   padding: 0;
@@ -1872,6 +1968,271 @@ h1 {
   border: 0;
   box-shadow: none;
   position: static;
+}
+
+.previewHeaderActions,
+.previewDeviceBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.previewDeviceBar {
+  justify-content: center;
+  border-bottom: 1px solid var(--line);
+  background: rgba(246, 247, 251, 0.035);
+  padding: 8px;
+}
+
+.previewDeviceButton {
+  min-height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(5, 7, 11, 0.44);
+  color: var(--muted);
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 850;
+  text-transform: capitalize;
+}
+
+.previewDeviceButton.active,
+.previewDeviceButton:hover {
+  border-color: rgba(75, 227, 176, 0.48);
+  background: rgba(75, 227, 176, 0.12);
+  color: #dffff3;
+}
+
+.devicePreviewFrame {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  border-inline: 1px solid rgba(153, 168, 205, 0.16);
+  background: #ffffff;
+  transition:
+    width 240ms ease,
+    box-shadow 240ms ease;
+}
+
+.devicePreviewFrame.tablet,
+.devicePreviewFrame.mobile {
+  box-shadow: 0 22px 70px rgba(0, 0, 0, 0.34);
+}
+
+.fullscreenPreview {
+  position: fixed !important;
+  inset: 14px;
+  z-index: 40;
+  overflow: auto;
+  border: 1px solid var(--line) !important;
+  box-shadow: 0 28px 120px rgba(0, 0, 0, 0.58) !important;
+}
+
+.fullscreenPreview .previewViewport,
+.fullscreenPreview .consumerPreviewFrame,
+.fullscreenPreview .previewEmptyState,
+.fullscreenPreview .progressivePreviewStage {
+  min-height: calc(100vh - 220px);
+}
+
+.progressivePreviewStage {
+  position: relative;
+  display: grid;
+  min-height: 680px;
+  overflow: hidden;
+  place-items: center;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(75, 227, 176, 0.14), transparent 30%),
+    radial-gradient(circle at 80% 32%, rgba(106, 200, 255, 0.12), transparent 36%),
+    #05070b;
+}
+
+.progressivePreviewAtmosphere {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      120deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.05),
+      transparent 46%
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 38%);
+  opacity: 0.7;
+  animation: cinematicSweep 2.4s ease-in-out infinite;
+}
+
+.progressiveCanvas {
+  position: relative;
+  display: grid;
+  width: min(86%, 860px);
+  gap: 20px;
+  border: 1px solid rgba(153, 168, 205, 0.2);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(246, 247, 251, 0.08), transparent 38%),
+    rgba(12, 15, 22, 0.82);
+  box-shadow: 0 30px 110px rgba(0, 0, 0, 0.42);
+  padding: clamp(18px, 4vw, 34px);
+  transform: translateY(0);
+  animation: previewFloat 3s ease-in-out infinite;
+}
+
+.progressiveHeroBlock {
+  display: grid;
+  max-width: 620px;
+  gap: 10px;
+}
+
+.progressiveHeroBlock span {
+  width: 86px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-cool));
+}
+
+.progressiveHeroBlock strong {
+  font-size: clamp(1.5rem, 4vw, 3.2rem);
+  line-height: 1;
+}
+
+.progressiveHeroBlock p {
+  max-width: 58ch;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.progressiveSceneStack {
+  display: grid;
+  gap: 10px;
+}
+
+.progressiveSceneStack span,
+.progressiveSectionGrid span {
+  display: block;
+  border: 1px solid rgba(153, 168, 205, 0.14);
+  border-radius: 8px;
+  background:
+    linear-gradient(90deg, rgba(246, 247, 251, 0.08), rgba(75, 227, 176, 0.14)),
+    rgba(246, 247, 251, 0.04);
+}
+
+.progressiveSceneStack span {
+  height: 20px;
+}
+
+.progressiveSceneStack span:nth-child(2) {
+  width: 78%;
+}
+
+.progressiveSceneStack span:nth-child(3) {
+  width: 56%;
+}
+
+.progressiveSectionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.progressiveSectionGrid span {
+  min-height: 88px;
+}
+
+.progressiveTimelineHint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.progressiveTimelineHint span {
+  color: #dffff3;
+  font-weight: 900;
+}
+
+.progressiveTimelineHint small {
+  color: var(--muted);
+}
+
+.progressivePreviewStage.brief .progressiveSectionGrid,
+.progressivePreviewStage.brief .progressiveSceneStack span:nth-child(n + 2) {
+  opacity: 0.24;
+}
+
+.progressivePreviewStage.structure .progressiveSectionGrid {
+  opacity: 0.45;
+}
+
+.progressivePreviewStage.content .progressiveSectionGrid {
+  opacity: 0.78;
+}
+
+.progressivePreviewStage.motion .progressiveCanvas,
+.progressivePreviewStage.final .progressiveCanvas {
+  box-shadow:
+    0 30px 110px rgba(0, 0, 0, 0.42),
+    0 0 60px rgba(75, 227, 176, 0.12);
+}
+
+.directorProgressCard {
+  display: grid;
+  gap: 12px;
+}
+
+.directorProgressTrack {
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(75, 227, 176, 0.28);
+  border-radius: 999px;
+  background: rgba(5, 7, 11, 0.6);
+}
+
+.directorProgressTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-cool));
+  transition: width 420ms ease;
+}
+
+.directorPhaseList {
+  display: grid;
+  gap: 8px;
+}
+
+.directorPhaseItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(246, 247, 251, 0.04);
+  padding: 9px;
+}
+
+.directorPhaseItem.completed {
+  border-color: rgba(75, 227, 176, 0.34);
+  background: rgba(75, 227, 176, 0.08);
+}
+
+.directorPhaseItem.running {
+  border-color: rgba(255, 181, 77, 0.42);
+  background: rgba(255, 181, 77, 0.08);
+  animation: pulseBorder 1.6s ease-in-out infinite;
+}
+
+.directorPhaseItem small {
+  color: var(--muted);
+  font-size: 0.78rem;
 }
 
 .codeWorkspace {
@@ -2205,6 +2566,76 @@ h1 {
 .deploymentTargetCard > div {
   display: grid;
   gap: 4px;
+}
+
+@keyframes workspaceRise {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.995);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes panelDriftIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cinematicSweep {
+  0%,
+  100% {
+    transform: translateX(-10%);
+    opacity: 0.42;
+  }
+
+  50% {
+    transform: translateX(10%);
+    opacity: 0.78;
+  }
+}
+
+@keyframes previewFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes pulseBorder {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(255, 181, 77, 0);
+  }
+
+  50% {
+    box-shadow: 0 0 24px rgba(255, 181, 77, 0.14);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 @media (max-width: 1180px) {

@@ -99,6 +99,10 @@ that can be hosted on static infrastructure.
   prompt-first landing, post-generation workspace mode, collapsible sidebar,
   Preview/Code switcher, global settings center, and universal provider setup
   direction.
+- **Phase 19:** cinematic generation experience completed with staged
+  AI-director progress, progressive preview emergence, scene timeline
+  foundation, device preview controls, focus-preview mode foundation, and
+  motion polish.
 
 The full visual drag/drop editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, and real binary
@@ -391,6 +395,24 @@ Phase 18 rebuilds the web app shell into an AI-native workspace:
 6. All provider execution, local inference, model downloads, deployment
    automation, and media generation remain disabled.
 
+## Phase 19 Architecture
+
+Phase 19 improves perceived generation intelligence while keeping the pipeline
+mocked/offline:
+
+1. Generation now moves through staged AI-director phases: brief, structure,
+   content, motion, and final polish.
+2. The preview evolves during generation with a cinematic skeleton instead of
+   instantly rendering the final iframe.
+3. Workspace panels, progress states, hover states, and preview surfaces use
+   subtle motion with reduced-motion safeguards.
+4. Preview controls now include desktop, tablet, and mobile frame widths plus a
+   focus-preview mode foundation.
+5. The sidebar includes a mocked scene timeline with sequence labels,
+   transition hints, and motion direction notes.
+6. The real provider/runtime architecture remains unchanged; no real models,
+   APIs, media generation, or backend execution are enabled.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -419,6 +441,8 @@ Phase 18 rebuilds the web app shell into an AI-native workspace:
   foundation.
 - Phase 18: AI-native cinematic workspace with prompt landing, Preview/Code
   shell, global settings center, and provider compatibility UX.
+- Phase 19: cinematic streaming generation feel, progressive preview states,
+  scene timeline foundation, and preview environment polish.
 
 ## Run Locally
 

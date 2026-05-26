@@ -1,12 +1,19 @@
 import type { Scroll3DProject } from "@scroll3d/core";
+import {
+  sceneTimelineItems,
+  type CinematicGenerationPhase
+} from "../lib/cinematic-generation";
 import type { MockPipelineResult } from "../lib/mock-pipeline-client";
-import { PipelineProgressSimple } from "./PipelineProgressSimple";
+import { CinematicGenerationProgress } from "./CinematicGenerationProgress";
 import { StatusBadge } from "./StatusBadge";
 
 interface WorkspaceSidebarProps {
   project: Scroll3DProject;
   prompt: string;
   result: MockPipelineResult | null;
+  activePhase: CinematicGenerationPhase;
+  activePhaseIndex: number;
+  isGenerating: boolean;
   collapsed: boolean;
   onToggle: () => void;
   onRegenerate: () => void;
@@ -18,6 +25,9 @@ export function WorkspaceSidebar({
   project,
   prompt,
   result,
+  activePhase,
+  activePhaseIndex,
+  isGenerating,
   collapsed,
   onToggle,
   onRegenerate,
@@ -60,24 +70,47 @@ export function WorkspaceSidebar({
         <section className="sidebarSection">
           <div className="sidebarSectionHeader">
             <span className="eyebrow">Build</span>
-            <span className="miniBadge">{result?.status ?? "ready"}</span>
+            <span className="miniBadge">
+              {isGenerating ? activePhase.shortLabel : (result?.status ?? "ready")}
+            </span>
           </div>
-          <PipelineProgressSimple result={result} />
+          <CinematicGenerationProgress
+            activePhase={activePhase}
+            activeIndex={activePhaseIndex}
+            isGenerating={isGenerating}
+          />
         </section>
 
         <section className="sidebarSection">
           <div className="sidebarSectionHeader">
-            <span className="eyebrow">Scenes</span>
+            <span className="eyebrow">Scene timeline</span>
             <span className="miniBadge">{String(project.pages.length)} page</span>
           </div>
-          <nav className="sidebarNav" aria-label="Project sections">
-            {project.pages[0]?.sections.map((section) => (
-              <a key={section.id} href={`#${section.id}`}>
-                <span>{section.name}</span>
-                <small>{section.type}</small>
-              </a>
+          <div className="sceneTimelineList" aria-label="Cinematic scene timeline">
+            {sceneTimelineItems.map((scene) => (
+              <article key={scene.id} className="sceneTimelineItem">
+                <span className="sceneThumbnail" aria-hidden="true" />
+                <div>
+                  <strong>
+                    {String(scene.order)}. {scene.label}
+                  </strong>
+                  <small>{scene.transitionHint}</small>
+                  <p>{scene.motionHint}</p>
+                </div>
+              </article>
             ))}
-          </nav>
+          </div>
+          <details className="sidebarDetails">
+            <summary>Project sections</summary>
+            <nav className="sidebarNav" aria-label="Project sections">
+              {project.pages[0]?.sections.map((section) => (
+                <a key={section.id} href={`#${section.id}`}>
+                  <span>{section.name}</span>
+                  <small>{section.type}</small>
+                </a>
+              ))}
+            </nav>
+          </details>
         </section>
 
         <section className="sidebarSection">
