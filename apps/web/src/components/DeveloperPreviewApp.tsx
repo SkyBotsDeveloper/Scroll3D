@@ -11,13 +11,11 @@ import {
   type LayoutStorage
 } from "react-resizable-panels";
 import { AdvancedToolsPanel, type AdvancedTab } from "./AdvancedToolsPanel";
+import { AiChatWorkspace } from "./AiChatWorkspace";
 import { CodeWorkspace } from "./CodeWorkspace";
-import { CompactStatusBar } from "./CompactStatusBar";
 import { GlobalSettingsCenter } from "./GlobalSettingsCenter";
-import { LandingPromptSurface } from "./LandingPromptSurface";
 import { PrimaryPreview } from "./PrimaryPreview";
 import { RightInspector, type InspectorPanel } from "./RightInspector";
-import { WorkspaceSidebar } from "./WorkspaceSidebar";
 import { WorkspaceViewSwitcher, type WorkspaceView } from "./WorkspaceViewSwitcher";
 import { createProjectZipBlob } from "../lib/browser-zip";
 import { getDirtyState } from "../lib/editor-state";
@@ -68,9 +66,8 @@ import { validateProjectJson, type ProjectValidationResult } from "../lib/valida
 export function DeveloperPreviewApp() {
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [advancedTab, setAdvancedTab] = useState<AdvancedTab>("providers");
-  const [inspectorPanel, setInspectorPanel] = useState<InspectorPanel>("scene");
+  const [contextPanel, setContextPanel] = useState<InspectorPanel | null>(null);
   const [workspaceView, setWorkspaceView] = useState<WorkspaceView>("preview");
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationPhaseIndex, setGenerationPhaseIndex] = useState(0);
   const [previewDevice, setPreviewDevice] = useState<PreviewDevice>("desktop");
@@ -100,8 +97,7 @@ export function DeveloperPreviewApp() {
     createPlaceholderSystemScan()
   );
   const [pipelineResult, setPipelineResult] = useState<MockPipelineResult | null>(null);
-  const sidebarPanelRef = usePanelRef();
-  const inspectorPanelRef = usePanelRef();
+  const chatPanelRef = usePanelRef();
   const workspaceLayoutStorage = useMemo<LayoutStorage>(
     () => ({
       getItem(key) {
@@ -122,8 +118,8 @@ export function DeveloperPreviewApp() {
     []
   );
   const workspaceLayoutPersistence = useDefaultLayout({
-    id: "scroll3d-workspace-layout-v1",
-    panelIds: ["workspace-sidebar", "workspace-stage", "workspace-inspector"],
+    id: "scroll3d-two-panel-layout-v1",
+    panelIds: ["ai-chat", "workspace-stage"],
     storage: workspaceLayoutStorage
   });
 
@@ -143,8 +139,6 @@ export function DeveloperPreviewApp() {
   const filePreview = createFilePreview(selectedFile);
   const hasFinalDraft =
     !isGenerating && (draftReady || pipelineResult?.status === "completed");
-  const hasWorkspace =
-    isGenerating || draftReady || pipelineResult?.status === "completed";
   const previewFocusMode = previewFullscreen && workspaceView === "preview";
   const generationPhase = getCinematicGenerationPhase(generationPhaseIndex);
   const selectedScene =
@@ -216,18 +210,12 @@ export function DeveloperPreviewApp() {
   }, []);
 
   useEffect(() => {
-    if (previewFocusMode || sidebarCollapsed) {
-      sidebarPanelRef.current?.collapse();
-    } else {
-      sidebarPanelRef.current?.expand();
-    }
-
     if (previewFocusMode) {
-      inspectorPanelRef.current?.collapse();
+      chatPanelRef.current?.collapse();
     } else {
-      inspectorPanelRef.current?.expand();
+      chatPanelRef.current?.expand();
     }
-  }, [inspectorPanelRef, previewFocusMode, sidebarCollapsed, sidebarPanelRef]);
+  }, [chatPanelRef, previewFocusMode]);
 
   function handleValidate() {
     setValidation(validateProjectJson(projectJson));
@@ -264,7 +252,7 @@ export function DeveloperPreviewApp() {
     setDraftReady(false);
     setGenerationPhaseIndex(0);
     setWorkspaceView("preview");
-    setInspectorPanel("scene");
+    setContextPanel(null);
     setPreviewFullscreen(false);
     setPipelineResult(null);
     setDownloadStatus(
@@ -285,7 +273,6 @@ export function DeveloperPreviewApp() {
           if (result.status === "completed" && result.project) {
             applyGeneratedProject(result.project);
             setDraftReady(true);
-            setInspectorPanel("scene");
             setSelectedSceneId(getFirstSceneId(result.project));
             setDownloadStatus(
               "Website draft ready. Edit sections or download your ZIP."
@@ -320,7 +307,7 @@ export function DeveloperPreviewApp() {
     setIsGenerating(false);
     setGenerationPhaseIndex(0);
     setDraftReady(false);
-    setInspectorPanel("scene");
+    setContextPanel(null);
     setWorkspaceView("preview");
     setSelectedSceneId(getFirstSceneId(sampleProject));
     setDownloadStatus("Sample project restored.");
@@ -408,59 +395,39 @@ export function DeveloperPreviewApp() {
     </GlobalSettingsCenter>
   );
 
-  if (!hasWorkspace) {
-    return (
-      <main className="page cinematicLandingPage">
-        <LandingPromptSurface
-          prompt={prompt}
-          result={pipelineResult}
-          modeLabel={settings.allowMockFallback ? `${modeLabel} + mock` : modeLabel}
-          onPromptChange={setPrompt}
-          onGenerate={handleGenerate}
-          onOpenSettings={() => {
-            openAdvanced("providers");
-          }}
-        />
-        {settingsCenter}
-      </main>
-    );
-  }
-
   return (
     <main
       className={
         previewFocusMode
-          ? "page workspaceAppPage previewFocusMode"
-          : "page workspaceAppPage"
+          ? "page aiTwoPanelPage previewFocusMode"
+          : "page aiTwoPanelPage"
       }
     >
-      <header className="workspaceTopbar" aria-label="Scroll3D workspace header">
+      <header className="aiTwoPanelTopbar" aria-label="Scroll3D workspace header">
         <div className="brandLockup">
           <span className="logoMark">S3D</span>
           <div>
             <strong>Scroll3D</strong>
-            <span>{appliedProject.name}</span>
+            <span>{hasFinalDraft ? appliedProject.name : "AI creative workspace"}</span>
           </div>
         </div>
 
-        <WorkspaceViewSwitcher
-          activeView={workspaceView}
-          onViewChange={setWorkspaceView}
-        />
-
         <div className="consumerNavActions">
           <span className="modeLine">
-            {settings.allowMockFallback ? "Mock preview" : modeLabel}
+            {settings.allowMockFallback ? "Developer preview" : modeLabel}
           </span>
           <button
             type="button"
             className="primaryButton"
             onClick={() => {
-              setInspectorPanel("export");
-              setWorkspaceView("preview");
+              if (hasFinalDraft) {
+                void handleDownloadZip();
+              } else {
+                handleGenerate();
+              }
             }}
           >
-            Export
+            {hasFinalDraft ? "Download ZIP" : "Generate"}
           </button>
           <button
             type="button"
@@ -476,128 +443,175 @@ export function DeveloperPreviewApp() {
       </header>
 
       <section
-        className={[
-          "cinematicWorkspaceShell",
-          sidebarCollapsed ? "sidebarIsCollapsed" : "",
-          previewFocusMode ? "previewFocusMode" : ""
-        ]
-          .filter(Boolean)
-          .join(" ")}
+        className={
+          previewFocusMode ? "aiTwoPanelShell previewFocusMode" : "aiTwoPanelShell"
+        }
         aria-label="Scroll3D AI builder workspace"
       >
         <Group
-          className="workspacePanelGroup"
+          className="twoPanelGroup"
           defaultLayout={workspaceLayoutPersistence.defaultLayout}
-          id="scroll3d-workspace-layout-v1"
+          id="scroll3d-two-panel-layout-v1"
           onLayoutChanged={workspaceLayoutPersistence.onLayoutChanged}
           orientation="horizontal"
           resizeTargetMinimumSize={{ coarse: 34, fine: 14 }}
         >
           <Panel
-            id="workspace-sidebar"
-            className="workspaceResizablePanel workspaceSidebarPanel"
+            id="ai-chat"
+            className="workspaceResizablePanel aiChatResizablePanel"
             collapsible
-            collapsedSize="4%"
-            defaultSize="18%"
-            minSize="13%"
-            maxSize="28%"
-            panelRef={sidebarPanelRef}
+            collapsedSize="5%"
+            defaultSize="34%"
+            minSize="27%"
+            maxSize="44%"
+            panelRef={chatPanelRef}
           >
-            <WorkspaceSidebar
+            <AiChatWorkspace
               project={appliedProject}
               prompt={prompt}
+              modeLabel={settings.allowMockFallback ? `${modeLabel} + mock` : modeLabel}
               result={pipelineResult}
               activePhase={generationPhase}
               activePhaseIndex={generationPhaseIndex}
               isGenerating={isGenerating}
+              hasGenerated={hasFinalDraft}
               selectedSceneId={selectedSceneId}
-              collapsed={sidebarCollapsed}
-              focusMode={previewFocusMode}
-              onToggle={() => {
-                setSidebarCollapsed((current) => !current);
-              }}
+              status={downloadStatus}
+              bundle={bundle}
+              onPromptChange={setPrompt}
+              onGenerate={handleGenerate}
+              onNewProject={handleReset}
+              onOpenTools={setContextPanel}
               onSelectScene={(sceneId) => {
                 setSelectedSceneId(sceneId);
-                setInspectorPanel("scene");
                 setWorkspaceView("preview");
               }}
-              onRegenerate={handleGenerate}
-              onNewProject={handleReset}
               onOpenSettings={() => {
                 openAdvanced("providers");
+              }}
+              onDownloadZip={() => {
+                void handleDownloadZip();
               }}
             />
           </Panel>
 
           <Separator
             className="workspaceResizeHandle"
-            aria-label="Resize workspace sidebar"
+            aria-label="Resize chat and preview"
           />
 
           <Panel
             id="workspace-stage"
-            className="workspaceResizablePanel workspaceStagePanel"
-            defaultSize="60%"
-            minSize="44%"
+            className="workspaceResizablePanel creativeStagePanel"
+            defaultSize="66%"
+            minSize="54%"
           >
-            <section className="workspaceMainStage" aria-label="Workspace main stage">
-              {workspaceView === "preview" ? (
-                <PrimaryPreview
-                  exportResult={exportResult}
-                  bundle={bundle}
-                  srcDoc={previewSrcDoc}
-                  projectName={appliedProject.name}
-                  hasGenerated={hasFinalDraft}
-                  isGenerating={isGenerating}
-                  generationPhase={generationPhase}
-                  activeScene={selectedScene}
-                  device={previewDevice}
-                  fullscreen={previewFullscreen}
-                  onDeviceChange={setPreviewDevice}
-                  onToggleFullscreen={() => {
-                    setPreviewFullscreen((current) => !current);
-                  }}
-                  onViewFiles={() => {
-                    setWorkspaceView("code");
-                  }}
-                  onDownloadZip={() => {
-                    void handleDownloadZip();
-                  }}
-                />
-              ) : (
-                <CodeWorkspace
-                  bundle={bundle}
-                  selectedPath={displaySelectedPath}
-                  preview={filePreview}
-                  onSelectFile={setSelectedPath}
-                />
-              )}
+            <section className="creativeStage" aria-label="Preview and code workspace">
+              <header className="creativeStageHeader">
+                <div>
+                  <span className="modeLine">
+                    {workspaceView === "preview" ? "Preview" : "Code"}
+                  </span>
+                  <strong>
+                    {workspaceView === "preview"
+                      ? "Website preview"
+                      : "Generated files"}
+                  </strong>
+                </div>
+                <div className="creativeStageActions">
+                  <WorkspaceViewSwitcher
+                    activeView={workspaceView}
+                    onViewChange={setWorkspaceView}
+                  />
+                  <button
+                    type="button"
+                    className="secondaryButton"
+                    onClick={() => {
+                      setContextPanel("edit");
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    type="button"
+                    className="secondaryButton"
+                    onClick={() => {
+                      setContextPanel("export");
+                    }}
+                  >
+                    Export
+                  </button>
+                </div>
+              </header>
+              <div className="creativeStageViewport">
+                {workspaceView === "preview" ? (
+                  <PrimaryPreview
+                    exportResult={exportResult}
+                    bundle={bundle}
+                    srcDoc={previewSrcDoc}
+                    projectName={appliedProject.name}
+                    hasGenerated={hasFinalDraft}
+                    isGenerating={isGenerating}
+                    generationPhase={generationPhase}
+                    activeScene={selectedScene}
+                    device={previewDevice}
+                    fullscreen={previewFullscreen}
+                    onDeviceChange={setPreviewDevice}
+                    onToggleFullscreen={() => {
+                      setPreviewFullscreen((current) => !current);
+                    }}
+                    onViewFiles={() => {
+                      setWorkspaceView("code");
+                    }}
+                    onDownloadZip={() => {
+                      void handleDownloadZip();
+                    }}
+                  />
+                ) : (
+                  <CodeWorkspace
+                    bundle={bundle}
+                    selectedPath={displaySelectedPath}
+                    preview={filePreview}
+                    onSelectFile={setSelectedPath}
+                  />
+                )}
+              </div>
             </section>
           </Panel>
+        </Group>
+      </section>
 
-          <Separator className="workspaceResizeHandle" aria-label="Resize inspector" />
-
-          <Panel
-            id="workspace-inspector"
-            className="workspaceResizablePanel workspaceInspectorPanel"
-            collapsible
-            collapsedSize="5%"
-            defaultSize="22%"
-            minSize="16%"
-            maxSize="30%"
-            panelRef={inspectorPanelRef}
-          >
+      {contextPanel ? (
+        <div className="contextualToolOverlay" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className="contextualToolScrim"
+            aria-label="Close contextual tools"
+            onClick={() => {
+              setContextPanel(null);
+            }}
+          />
+          <div className="contextualToolDrawer">
+            <button
+              type="button"
+              className="contextualCloseButton"
+              onClick={() => {
+                setContextPanel(null);
+              }}
+            >
+              Close
+            </button>
             <RightInspector
               project={appliedProject}
               hasGenerated={hasFinalDraft}
-              activePanel={inspectorPanel}
+              activePanel={contextPanel}
               selectedSceneId={selectedSceneId}
               exportResult={exportResult}
               bundle={bundle}
               status={downloadStatus}
-              focusMode={previewFocusMode}
+              focusMode={false}
               onPanelChange={(panel) => {
-                setInspectorPanel(panel);
+                setContextPanel(panel);
               }}
               onSelectScene={(sceneId) => {
                 setSelectedSceneId(sceneId);
@@ -614,15 +628,9 @@ export function DeveloperPreviewApp() {
                 setWorkspaceView("code");
               }}
             />
-          </Panel>
-        </Group>
-      </section>
-
-      <CompactStatusBar
-        validation={validation}
-        fileCount={hasFinalDraft ? (bundle?.files.length ?? 0) : 0}
-        status={downloadStatus}
-      />
+          </div>
+        </div>
+      ) : null}
 
       {settingsCenter}
     </main>

@@ -30,4 +30,5 @@ Current docs:
 - [Phase 22 Immersive Preview System](./phase-22-immersive-preview-system.md)
 - [Phase 23 OSS-Inspired Workspace Refinement](./phase-23-oss-inspired-workspace-refinement.md)
 - [Phase 24 Professional Workspace Layout System](./phase-24-professional-workspace-layout-system.md)
+- [Phase 25 AI-Native Two-Panel Workspace](./phase-25-ai-native-two-panel-workspace.md)
 - [Provider Manifest Spec](./provider-manifest-spec.md)

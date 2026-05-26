@@ -119,6 +119,9 @@ that can be hosted on static infrastructure.
   draggable sidebar and inspector panels, persisted workspace proportions,
   stronger preview expansion, predictable min/max constraints, and a documented
   spacing/layout architecture.
+- **Phase 25:** AI-native two-panel workspace completed with chat/prompting on
+  the left, Preview/Code on the right, removed permanent sidebar/inspector
+  regions, contextual floating edit/export tools, and hidden Advanced controls.
 
 The full no-code canvas editor, real provider execution, model downloads, real
 frame extraction implementation, deployment automation, real binary asset/frame
@@ -515,6 +518,25 @@ layout system:
    MIT-licensed `react-resizable-panels` package and does not copy
    third-party branding, assets, product copy, or proprietary layouts.
 
+## Phase 25 Architecture
+
+Phase 25 radically simplifies the web app around one normal-user workspace:
+
+1. The permanent sidebar, scene stack, status footer, and right inspector are
+   removed from the default visual path.
+2. The left side is now an AI chat workspace with message bubbles, prompt
+   history, mock generation progress, refinement suggestions, and a sticky
+   composer.
+3. The right side is now the full Preview/Code work surface with only a compact
+   view switcher and contextual Edit/Export actions.
+4. Scene editing, theme/text controls, export details, JSON, providers, models,
+   runtime, diagnostics, and deployment guidance remain available through
+   floating drawers or Advanced tools instead of permanent layout regions.
+5. ChatGPT, v0, Cursor, Replit, Lovable-style prompting, Bolt.diy, LibreChat,
+   and Open Lovable were studied for broad AI workspace ergonomics only. No
+   third-party code, branding, assets, product copy, or proprietary layouts were
+   copied.
+
 ## Roadmap
 
 - Phase 1: monorepo foundation, core schemas, validation helpers, fixture, tests.
@@ -556,6 +578,8 @@ layout system:
   reference review without copying third-party code or assets.
 - Phase 24: professional resizable workspace layout with draggable panels,
   persisted proportions, responsive fallbacks, and preview-dominant constraints.
+- Phase 25: AI-native two-panel workspace with chat-first prompting,
+  Preview/Code output, contextual tools, and hidden advanced controls.
 
 ## Run Locally
 

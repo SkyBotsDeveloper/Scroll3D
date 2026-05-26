@@ -11,12 +11,12 @@ corepack pnpm --filter @scroll3d/web dev
 ## Current Workflow
 
 - Loads the sample project from `@scroll3d/core`.
-- Opens in a three-panel AI builder workspace: prompt controls, live preview,
-  and edit/export inspector.
+- Opens in a two-panel AI builder workspace: chat/prompting on the left and
+  Preview/Code on the right.
 - Guides users through Prompt, Generate, Edit, Preview, and Export while keeping
   Advanced tools hidden by default.
-- Keeps the first screen focused on the prompt, examples, Generate website
-  action, large preview, and compact inspector.
+- Keeps the first screen focused on conversation, examples, Generate website
+  action, and a large preview/code workspace.
 - Edits common project basics, theme values, sections, and scroll feel without
   showing raw provider/model/runtime details.
 - Validates JSON and the `Scroll3DProject` schema.
@@ -40,27 +40,27 @@ calls, backend persistence, and heavy generated assets in this phase.
 - Nested section content is edited as JSON text.
 - No full drag/drop page canvas or no-code layout editor exists yet.
 
-## Dashboard Structure
+## Workspace Structure
 
-The app is organized into a prompt-first landing and a generated workspace.
+The app is organized as a simple two-panel AI workspace.
 
-Before generation:
+Left:
 
-- The first screen focuses on Scroll3D, a large prompt box, example prompt cards,
-  quick website type chips, and the Generate website CTA.
-- JSON, provider tables, model catalogs, generated files, runtime diagnostics,
-  and setup commands are hidden.
+- AI chat workspace with message bubbles, prompt history, mock generation
+  progress, refinement suggestions, scene requests, and a sticky composer.
 
-After generation:
+Right:
 
-- Left: collapsible workspace sidebar with the current prompt, generation
-  progress, section navigation, asset placeholders, history placeholders, and
-  regenerate/new project actions.
-- Center: top-center Preview/Code switcher. Preview shows the browser-style
-  website preview. Code shows a generated-file explorer and read-only code panel.
-- Right: simple inspector for edit/export controls.
-- Settings: one global settings center for providers, models, runtime,
-  self-hosting, appearance, JSON, generated files, and diagnostics.
+- Preview/Code workspace. Preview shows the generated website. Code shows the
+  generated-file explorer and read-only code panel.
+
+Hidden/contextual:
+
+- Scene editing, theme/text editing, export details, generated files, JSON,
+  providers, local models, runtime, diagnostics, and deployment guidance open in
+  floating drawers or Advanced tools. They are not permanent workspace columns.
+
+Global Settings includes:
 
 Global Settings includes:
 
@@ -135,6 +135,13 @@ smaller screens. The preview remains the dominant center surface while users can
 resize or collapse secondary tools. The only reused implementation dependency is
 the MIT-licensed `react-resizable-panels` package; no third-party branding,
 assets, product copy, or proprietary layouts were copied.
+
+Phase 25 removes the remaining dashboard feel. The app now defaults to a
+two-panel AI-native workspace: chat/prompting on the left and Preview/Code on
+the right. The permanent sidebar, right inspector, and bottom status region are
+hidden from the normal path. Edit, scene, export, provider, runtime, model,
+JSON, and diagnostic tools remain available through contextual drawers or the
+Advanced center.
 
 ## Settings And Prompt Workflow
 

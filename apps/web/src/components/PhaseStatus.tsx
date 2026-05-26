@@ -23,6 +23,7 @@ const phaseItems = [
   "Phase 22: Immersive preview-first workspace completed",
   "Phase 23: OSS-inspired workspace ergonomics refinement completed",
   "Phase 24: Professional resizable workspace system completed",
+  "Phase 25: AI-native two-panel chat workspace completed",
   "Creator: Siddhartha Abhimanyu",
   "Telegram: @iflexelite",
   "Instagram: elite.sid"

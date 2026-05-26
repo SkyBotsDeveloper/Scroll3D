@@ -4535,3 +4535,556 @@ body {
     min-height: 460px;
   }
 }
+
+/* Phase 25 AI-native two-panel workspace: chat left, preview/code right. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+}
+
+.aiTwoPanelPage {
+  min-height: 100vh;
+  gap: 8px;
+  padding: 8px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 28% 14%, rgba(75, 227, 176, 0.12), transparent 28%),
+    radial-gradient(circle at 82% 26%, rgba(98, 153, 255, 0.1), transparent 30%),
+    #05080c;
+}
+
+.aiTwoPanelTopbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  width: min(100%, 100vw - 16px);
+  min-height: 50px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin: 0 auto;
+  padding: 7px 9px;
+  border: 1px solid rgba(188, 205, 255, 0.08);
+  border-radius: 16px;
+  background: rgba(8, 13, 20, 0.72);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(22px);
+}
+
+.aiTwoPanelShell,
+.aiTwoPanelShell.previewFocusMode {
+  width: min(100%, 100vw - 16px);
+  height: calc(100vh - 74px);
+  min-height: 640px;
+  margin: 0 auto;
+}
+
+.twoPanelGroup {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.aiChatResizablePanel,
+.creativeStagePanel {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  overflow: hidden;
+}
+
+.aiChatWorkspace {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid rgba(188, 205, 255, 0.08);
+  border-radius: 24px;
+  background: rgba(7, 12, 18, 0.72);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(22px);
+}
+
+.aiChatHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 18px 10px;
+}
+
+.aiChatHeader h1 {
+  margin: 4px 0 0;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.quietIconButton,
+.composerToolButton {
+  border: 1px solid rgba(188, 205, 255, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(235, 242, 255, 0.8);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease,
+    color 160ms ease;
+}
+
+.quietIconButton {
+  padding: 8px 11px;
+}
+
+.composerToolButton {
+  padding: 7px 10px;
+}
+
+.quietIconButton:hover,
+.composerToolButton:hover,
+.quietIconButton:focus-visible,
+.composerToolButton:focus-visible {
+  border-color: rgba(75, 227, 176, 0.38);
+  background: rgba(75, 227, 176, 0.1);
+  color: #ffffff;
+  outline: none;
+}
+
+.chatMessages {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+  padding: 12px 18px 18px;
+  scroll-behavior: smooth;
+}
+
+.chatMessage {
+  display: flex;
+  gap: 10px;
+  animation: chatMessageIn 220ms ease both;
+}
+
+.userMessage {
+  justify-content: flex-end;
+}
+
+.chatAvatar {
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(75, 227, 176, 0.22);
+  border-radius: 50%;
+  background: rgba(75, 227, 176, 0.09);
+  color: #dffcf4;
+  font-size: 0.7rem;
+  font-weight: 800;
+}
+
+.chatBubble {
+  max-width: min(100%, 560px);
+  padding: 14px;
+  border: 1px solid rgba(188, 205, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(239, 245, 255, 0.9);
+}
+
+.userMessage .chatBubble {
+  border-color: rgba(75, 227, 176, 0.22);
+  background: linear-gradient(
+    135deg,
+    rgba(75, 227, 176, 0.18),
+    rgba(93, 201, 255, 0.12)
+  );
+}
+
+.chatBubble p {
+  margin: 0;
+  color: rgba(239, 245, 255, 0.82);
+  line-height: 1.55;
+}
+
+.chatSmallText {
+  font-size: 0.82rem;
+}
+
+.chatChipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.chatSuggestionChip,
+.sceneRequestChip {
+  border: 1px solid rgba(188, 205, 255, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.045);
+  color: rgba(234, 241, 255, 0.82);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.82rem;
+  transition:
+    transform 160ms ease,
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.chatSuggestionChip {
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.chatSuggestionChip.subtle {
+  padding: 6px 8px;
+  font-size: 0.76rem;
+  color: rgba(216, 226, 244, 0.68);
+}
+
+.chatSuggestionChip:hover,
+.sceneRequestChip:hover,
+.chatSuggestionChip:focus-visible,
+.sceneRequestChip:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(75, 227, 176, 0.34);
+  background: rgba(75, 227, 176, 0.09);
+  outline: none;
+}
+
+.generationMessageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.generationMessageHeader strong {
+  color: #ffffff;
+}
+
+.generationMessageHeader span {
+  color: rgba(191, 205, 230, 0.68);
+  font-size: 0.78rem;
+}
+
+.chatProgressList {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+  margin: 10px 0 12px;
+}
+
+.chatProgressStep {
+  min-width: 0;
+}
+
+.chatProgressStep span {
+  display: block;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(188, 205, 255, 0.14);
+}
+
+.chatProgressStep.done span,
+.chatProgressStep.active span {
+  background: linear-gradient(90deg, #4be3b0, #5dc9ff);
+}
+
+.chatProgressStep p {
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: rgba(205, 216, 236, 0.62);
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chatActionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.compactMessage .chatBubble {
+  width: 100%;
+  max-width: none;
+}
+
+.sceneRequestList {
+  display: grid;
+  gap: 8px;
+}
+
+.sceneRequestChip {
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 14px;
+  text-align: left;
+}
+
+.sceneRequestChip.active {
+  border-color: rgba(75, 227, 176, 0.45);
+  background: rgba(75, 227, 176, 0.1);
+}
+
+.sceneRequestChip strong {
+  color: rgba(246, 249, 255, 0.92);
+}
+
+.sceneRequestChip span {
+  color: rgba(201, 214, 236, 0.62);
+  font-size: 0.76rem;
+}
+
+.chatComposer {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  gap: 9px;
+  padding: 12px;
+  border-top: 1px solid rgba(188, 205, 255, 0.08);
+  background: linear-gradient(180deg, rgba(7, 12, 18, 0.8), rgba(7, 12, 18, 0.96));
+}
+
+.composerToolbar,
+.composerFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.chatPromptInput {
+  width: 100%;
+  min-height: 96px;
+  max-height: 210px;
+  resize: vertical;
+  border: 1px solid rgba(188, 205, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(0, 0, 0, 0.28);
+  color: #ffffff;
+  font: inherit;
+  line-height: 1.5;
+  padding: 13px 14px;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
+}
+
+.chatPromptInput:focus {
+  border-color: rgba(75, 227, 176, 0.48);
+  background: rgba(0, 0, 0, 0.36);
+  box-shadow: 0 0 0 4px rgba(75, 227, 176, 0.08);
+}
+
+.creativeStage {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 8px;
+  overflow: hidden;
+}
+
+.creativeStageHeader {
+  display: flex;
+  min-height: 50px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 6px 4px 6px 10px;
+}
+
+.creativeStageHeader strong {
+  display: block;
+  margin-top: 3px;
+  color: rgba(248, 251, 255, 0.92);
+}
+
+.creativeStageActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.creativeStageViewport {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.creativeStageViewport .primaryPreview,
+.creativeStageViewport .codeWorkspace {
+  height: 100%;
+}
+
+.contextualToolOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  justify-items: end;
+  padding: 8px;
+  pointer-events: none;
+}
+
+.contextualToolScrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(0, 0, 0, 0.22);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.contextualToolDrawer {
+  position: relative;
+  z-index: 1;
+  width: min(470px, calc(100vw - 24px));
+  height: calc(100vh - 16px);
+  pointer-events: auto;
+  animation: contextualDrawerIn 180ms ease both;
+}
+
+.contextualToolDrawer .rightInspector {
+  height: 100%;
+  max-height: none;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+}
+
+.contextualCloseButton {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  right: 14px;
+  border: 1px solid rgba(188, 205, 255, 0.12);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(235, 242, 255, 0.8);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.76rem;
+  padding: 7px 10px;
+}
+
+@keyframes chatMessageIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes contextualDrawerIn {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 1180px) {
+  .aiTwoPanelPage {
+    overflow: auto;
+  }
+
+  .aiTwoPanelShell,
+  .aiTwoPanelShell.previewFocusMode {
+    height: auto;
+    min-height: 0;
+  }
+
+  .twoPanelGroup {
+    display: grid !important;
+    gap: 10px;
+    height: auto !important;
+    overflow: visible;
+  }
+
+  .twoPanelGroup > [data-panel] {
+    flex: none !important;
+    width: 100% !important;
+    height: auto !important;
+  }
+
+  .aiChatWorkspace {
+    min-height: 620px;
+  }
+
+  .creativeStage {
+    min-height: 640px;
+  }
+
+  .creativeStageViewport .previewViewport,
+  .creativeStageViewport .previewEmptyState,
+  .creativeStageViewport .consumerPreviewFrame,
+  .creativeStageViewport .progressivePreviewStage {
+    min-height: 560px;
+  }
+}
+
+@media (max-width: 760px) {
+  .aiTwoPanelTopbar,
+  .creativeStageHeader,
+  .composerFooter {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .consumerNavActions,
+  .creativeStageActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .chatActionGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chatProgressList {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .chatAvatar {
+    display: none;
+  }
+
+  .chatBubble {
+    max-width: 100%;
+  }
+}
